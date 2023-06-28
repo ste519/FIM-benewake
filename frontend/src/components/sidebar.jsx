@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import Dropdown from './dropdown';
 
-export default function Sidebar() {
+export default function Sidebar({addTab}) {
     // primary为一级页面，secondary为二级页面
-    const [activeItem, setActiveItem] = useState(null)
-    function handleItemClick(i) {
-        setActiveItem(i);
+    const [selectedItem, setSelectedItem] = useState(null)
+    function handleItemClick(item) {
+        setSelectedItem(item);
+        addTab(item)
     }
     const structure = {
         primary: ["订单列表",
@@ -34,13 +35,15 @@ export default function Sidebar() {
                     (item, i) =>
                         structure.secondary[i] != null ?
                             <Dropdown
-                                onClick={() => handleItemClick(i)}
+                                addTab={addTab}
                                 label={item}
                                 key={"dropdown" + i}
                                 items={structure.secondary[i]}
-                                active={activeItem == i ? true : false}
+                                onClick={setSelectedItem}
+                                selected={selectedItem === item ? true : false}
                             /> :
-                            <li className={`dropdown-item ${activeItem == i ? "active" : ""}`} key={"li" + i} onClick={() => handleItemClick(i)}> {item} </li>
+                            <li className={`dropdown-item ${selectedItem === item ? "selected" : ""}`} key={"li" + i}
+                                onClick={() => handleItemClick(item)}> {item} </li>
 
                 )}
             </ul>

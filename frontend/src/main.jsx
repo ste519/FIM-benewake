@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useContext} from 'react'
 import ReactDOM from 'react-dom/client'
 import Root from "./routes/root";
 import Charts from './routes/charts';

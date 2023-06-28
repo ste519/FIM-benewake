@@ -1,10 +1,10 @@
-import Bar1 from '../components/bar1';
-import Bar2 from '../components/bar2';
-import Bar3 from '../components/bar3';
-import Line1 from '../components/line1';
-import Pie1 from '../components/pie1';
-import Area1 from '../components/area1';
-import DataPoint from '../components/data-point';
+import Bar1 from '../charts/bar1';
+import Bar2 from '../charts/bar2';
+import Bar3 from '../charts/bar3';
+import Line1 from '../charts/line1';
+import Pie1 from '../charts/pie1';
+import Area1 from '../charts/area1';
+import DataPoint from '../charts/data-point';
 
 export default function Charts() {
     return (

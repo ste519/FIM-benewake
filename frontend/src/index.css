@@ -11,6 +11,16 @@ body {
   font-family: "Microsoft Yahei", "PingFang SC", 微软雅黑;
 }
 
+.col {
+  display: flex;
+  flex-direction: column;
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+}
+
 #root {
   display: flex;
   width: 100%;
@@ -131,7 +141,6 @@ body {
   display: flex;
   flex-direction: column;
   background-color: var(--blue5);
-  width: 200px;
 }
 
 
@@ -160,9 +169,14 @@ body {
   background: url(./assets/icons/up-blue.svg) no-repeat center;
 }
 
-.dropdown-item.active {
+.dropdown-item.selected {
   color: white;
   background-color: var(--blue60);
+}
+
+.tab.active {
+  background-color: var(--blue60);
+  color: white;
 }
 
 .dropdown-item:hover,
@@ -185,19 +199,24 @@ button {
   padding: 0.5rem;
 }
 
-.tab-container {
-  display: flex;
+.tab-labels {
   height: 60px;
-  font-size: 24px;
+  display: flex;
+}
+.tab, .secondary-tab{
+  font-size: 16px;
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border: 1px solid var(--blue40)
 }
 
 .tab {
-  padding: 10px 20px;
+  padding-left: 46px;
 }
 
-.tab.active {
-  font-weight: bold;
-}
 
 .tab-content {
   width: 100%;
@@ -211,4 +230,18 @@ button {
 
 .sidemenu {
   width: max-content;
+}
+
+.close-btn {
+  background: url(./assets/icons/cross.svg) center center no-repeat;
+  visibility: hidden;
+  
+}
+
+.tab:hover .close-btn {
+  visibility: visible;
+}
+
+.secondary-tab.active {
+  background-color: blue
 }
