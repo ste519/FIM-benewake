@@ -1,6 +1,11 @@
-import { useState, useLayoutEffect } from 'react'
+import { useState, useLayoutEffect, useEffect } from 'react'
 
 export const Filter = ({ allFilterValues, setAllFilterValues, headers, conditions, index }) => {
+
+  useEffect(() => {
+    rerenderFilter(allFilterValues)
+  }, [allFilterValues, headers])
+
   const values = allFilterValues[index]
 
   const [header, setHeader] = useState(values[0])
@@ -8,28 +13,11 @@ export const Filter = ({ allFilterValues, setAllFilterValues, headers, condition
   const [string, setString] = useState(values[2])
 
   const rerenderFilter = (newValues) => {
-    setAllFilterValues(newValues)
     setHeader(newValues[index][0])
     setCondition(newValues[index][1])
     setString(newValues[index][2])
   }
-  
-  useLayoutEffect(() => {
-    let rerender = false;
-    const newData = allFilterValues
-    allFilterValues.forEach(
-      (filterValues, i) => {
-        const header = filterValues[0]
-        if (!headers.includes(header)) {
-          rerender = true
-          newData[i] = [headers[0], conditions[0], ""]
-        }
-      }
-    )
-    if (rerender) {
-      rerenderFilter(newData)
-    }
-  }, [headers])
+
 
   const handleHeaderChange = (event) => {
     const newValues = allFilterValues
@@ -53,11 +41,12 @@ export const Filter = ({ allFilterValues, setAllFilterValues, headers, condition
   }
   const removeFilter = () => {
     const data = allFilterValues.filter((_, i) => i !== index)
+    setAllFilterValues(data)
     rerenderFilter(data)
   }
 
   return (
-    <div className='row filter'>
+    <div className='row filter' >
       <select value={header} onChange={handleHeaderChange}>
         {headers.map((header, i) => <option key={i}>{header}</option>)}
       </select>
@@ -74,9 +63,21 @@ export default function Filters({ headers }) {
 
   const conditions = ["等于", "不等于", "大于", "大于等于", "小于", "小于等于", "为空", "不为空", "类似于", "包含", "不包含", "左包含", "右包含", "IN", "NOT IN", "不等于（含空)", "不包含（含空）", "NOT IN（含空）"]
 
+
   const [allFilterValues, setAllFilterValues] = useState(
     //[筛选类型，条件，数值 （例如：物料编码，包含，编码）]
     [[headers[0], conditions[0], ""]])
+
+  useLayoutEffect(() => {
+    const copy = allFilterValues
+    allFilterValues.forEach((filterValues, i) => {
+      if (!headers.includes(filterValues[0])) {
+        copy[i] = [headers[0], conditions[0], ""]
+      }
+    }
+    );
+    setAllFilterValues(copy)
+  }, [headers])
 
   const addFilter = () => {
     setAllFilterValues([...allFilterValues, [headers[0], conditions[0], ""]])
@@ -89,7 +90,7 @@ export default function Filters({ headers }) {
   return (
     <div className='row filter-container'>
       <div className="filter-wrapper">
-        {allFilterValues.map((values, i) =>
+        {allFilterValues.map((_, i) =>
           <Filter
             key={i}
             headers={headers}

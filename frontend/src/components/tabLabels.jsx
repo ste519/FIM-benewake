@@ -1,13 +1,12 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { TabContext } from '../routes/test';
 
 export default function TabLabels() {
-    const { tabLabels, setTabLabels } = useContext(TabContext)
-    const { activeTab, setActiveTab } = useContext(TabContext)
-
-    const removeTab = (removedLabel) => {
-        setTabLabels(tabLabels.filter((label) => { return label !== removedLabel }));
+    const { tabLabels, setTabLabels, activeTab, setActiveTab } = useContext(TabContext)
+    const removeTab = (removedLabel, e) => {
         setActiveTab(null);
+        setTabLabels(tabLabels.filter((label) => { return label !== removedLabel }));
+        e.stopPropagation()
         console.log("Removed " + removedLabel);
     }
 
@@ -16,13 +15,13 @@ export default function TabLabels() {
             {tabLabels.map((label) => (
                 <div
                     key={label}
-                    onClick={() => setActiveTab(label)}
+                    onClick={(e) => {setActiveTab(label)}}
                     className={`tab ${activeTab === label ? 'active' : ""}`}
                 >
                     {label}
                     <button
                         className="close-btn"
-                        onClick={() => { removeTab(label) }}>
+                        onClick={(e) => removeTab(label, e)}>
                     </button>
                 </div>
             ))}

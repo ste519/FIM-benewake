@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import Toolbar from './Toolbar';
 import { TabContext } from '../routes/test';
 import Table from './Table';
@@ -18,7 +18,7 @@ export default function TabContents() {
 
         axios.request(config)
             .then((response) => {
-                
+
                 setTabContents({ ...tabContents, [activeTab]: response.data })
             })
             .catch((error) => {
@@ -26,6 +26,9 @@ export default function TabContents() {
             });
 
     }
+
+
+
     return (
         <div>
             <Toolbar />

@@ -50,13 +50,6 @@ export default function Test() {
                 console.log(error);
             });
     }
-
-    const removeTab = (removedLabel) => {
-        setTabLabels(tabLabels.filter((label) => { return label !== removedLabel }));
-        setActiveTab(null);
-        console.log("Removed " + removedLabel);
-    }
-
     return (
         <TabContext.Provider value={{ 
             tabLabels, setTabLabels, 
