@@ -1,25 +1,34 @@
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import { TabContext } from '../routes/test';
 import React from 'react';
-import CSVUploader from './CSVUploader';
+import ExcelUploader from './ExcelUploader';
 
+export const Popup = ({ close }) => {
+    return (
+        <div className="popup-container ">
+
+        </div>
+    )
+}
 
 export default function Toolbar() {
     const { tabContents, setTabContents, activeTab } = useContext(TabContext)
-    const addData = (newData) => {
-        const oldData = tabContents[activeTab]
+    const [open, setOpen] = useState(false)
 
-        setTabContents({ ...tabContents, [activeTab]: { ...oldData, ...newData } })
+    const togglePopup = () => {
+        setOpen(!open)
     }
-    console.log(tabContents);
     return (
-        <div className='row'>
-            <button onClick={() => addData({ "label1": "newdata" })}>新增</button>
-            <CSVUploader />
+        <div className='row toolbar'>
+            <button>新增</button>
             <button>删除</button>
             <button>保存</button>
-            <button>导入</button>
+            <button onClick={togglePopup}>导入</button>
             <button>导出</button>
+            {open ?
+                <div className="popup-container">
+                    <ExcelUploader close={togglePopup} />
+                </div> : null}
         </div>
     )
 }

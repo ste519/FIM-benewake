@@ -5,10 +5,19 @@
   --blue20: #0CF2F2;
   --blue10: #E1EBF4;
   --blue5: #F1F4F6;
+  --shadow: 0px 2px 5px 0px rgba(60, 64, 67, 0.16);
 }
 
 body {
   font-family: "Microsoft Yahei", "PingFang SC", 微软雅黑;
+}
+
+button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.5rem;
+  cursor: pointer;
 }
 
 .col {
@@ -192,18 +201,14 @@ body {
   height: 15px;
 }
 
-button {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 0.5rem;
-}
 
 .tab-labels {
   height: 60px;
   display: flex;
 }
-.tab, .secondary-tab{
+
+.tab,
+.secondary-tab {
   font-size: 16px;
   padding: 10px 20px;
   display: flex;
@@ -235,13 +240,168 @@ button {
 .close-btn {
   background: url(./assets/icons/cross.svg) center center no-repeat;
   visibility: hidden;
-  
 }
 
-.tab:hover .close-btn {
+.tab:hover .close-btn,
+.tab:focus .close-btn,
+.filter:hover .close-btn,
+.filter:focus .close-btn {
   visibility: visible;
 }
 
 .secondary-tab.active {
   background-color: blue
+}
+
+td,
+th {
+  padding: 10px;
+  border: 1px solid var(--blue10)
+}
+
+table {
+  height: 100%;
+  width: 100%;
+  overflow: scroll;
+}
+
+.toolbar {
+  position: relative
+}
+
+.popup-container {
+  background-color: white;
+  width: fit-content;
+  height: fit-content;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 2rem;
+  bottom: 0;
+  margin: auto;
+  border: 1px solid var(--blue10);
+  border-radius: 10px;
+  box-shadow: var(--shadow);
+}
+
+input[type="file"] {
+  outline: none;
+  padding: 4px;
+  margin: -4px;
+}
+
+input[type="file"]:focus-within::file-selector-button,
+input[type="file"]:focus::file-selector-button {
+  outline: 2px solid #0964b0;
+  outline-offset: 2px;
+}
+
+/* ------- From Step 2 ------- */
+
+input[type="file"] {
+  position: relative;
+}
+
+input[type="file"]::file-selector-button {
+  width: 220px;
+  color: transparent;
+  display: flex;
+}
+
+/* Faked label styles and icon */
+input[type="file"]::after {
+  position: absolute;
+  pointer-events: none;
+  top: 12px;
+  left: 40px;
+  color: #0964b0;
+  content: "上传文件(.xlsx, .xls, .csv)";
+  ;
+}
+
+input[type="file"]::before {
+  position: absolute;
+  pointer-events: none;
+  top: 14px;
+  left: 16px;
+  height: 20px;
+  width: 20px;
+  content: "";
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%230964B0'%3E%3Cpath d='M18 15v3H6v-3H4v3c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2v-3h-2zM7 9l1.41 1.41L11 7.83V16h2V7.83l2.59 2.58L17 9l-5-5-5 5z'/%3E%3C/svg%3E");
+}
+
+input[type="file"]::file-selector-button {
+  border-radius: 4px;
+  height: 40px;
+  background-color: white;
+  border: 1px solid var(--blue10);
+  box-shadow: var(--shadow);
+  margin-right: 16px;
+  transition: background-color 200ms;
+}
+
+/* file upload button hover state */
+input[type="file"]::file-selector-button:hover {
+  background-color: #f3f4f6;
+}
+
+/* file upload button active state */
+input[type="file"]::file-selector-button:active {
+  background-color: #e5e7eb;
+}
+
+.filter {
+  align-items: center;
+}
+
+.filter select,
+.filter input {
+  padding: 10px;
+  background-color: white;
+  border: 1px solid var(--blue10);
+}
+
+.filter:hover select,
+.filter:focus select,
+.filter:focus input,
+.filter:hover input {
+  background-color: var(--blue5);
+}
+
+.filter:active select,
+.filter:active input {
+  background-color: var(--blue5);
+}
+
+.filter button {
+  cursor: pointer;
+  width: 15px;
+  height: 15px;
+  margin-left: 10px
+}
+
+.filter-wrapper {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  width: 100%;
+  padding: 1rem;
+  gap: 5px;
+}
+
+.filter-container {
+  background-color: var(--blue10);
+  width: 100%;
+}
+
+.table-container {
+  position: relative;
+}
+
+.table-container .toggle-btn {
+  position: absolute;
+  right: 0;
+  top: -40px;
 }

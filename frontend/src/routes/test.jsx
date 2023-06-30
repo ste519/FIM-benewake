@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import TabLabels from '../components/tabLabels';
+import TabLabels from '../components/TabLabels';
 import Sidebar from '../components/Sidebar';
 import Loader from '../components/loader';
 import TabContents from '../components/tabContents';
@@ -20,7 +20,6 @@ export default function Test() {
             setTabLabels([...tabLabels, newLabel]);
         }
         setActiveTab(newLabel)
-        console.log(newLabel);
 
         let type;
         switch (newLabel) {
