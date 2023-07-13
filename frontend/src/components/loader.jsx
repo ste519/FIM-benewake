@@ -2,6 +2,8 @@ import React from 'react'
 
 export default function Loader() {
   return (
-    <div>Loading</div>
+    <div className='loader'>
+      <div className="lds-facebook"><div></div><div></div><div></div></div>
+    </div>
   )
 }

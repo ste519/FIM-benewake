@@ -1,12 +1,10 @@
-import { useContext, useState } from 'react';
-import { TabContext } from '../routes/test';
-
-import React from 'react';
+import { useState } from 'react';
 import * as XLSX from 'xlsx';
+import useTabContext from '../context/TabProvider';
 
 export default function ExcelUploader({ close }) {
     const [excelData, setExcelData] = useState(null);
-    const { activeTab, tabContents, setTabContents } = useContext(TabContext)
+    const { activeTab, tabContents, setTabContents } = useTabContext();
 
     const handleFile = (event) => {
         const files = event.target.files;
@@ -39,6 +37,7 @@ export default function ExcelUploader({ close }) {
         <div>
             <input type="file" accept=".xlsx,.xls,.csv" onChange={handleFile} />
             <button onClick={() => addData(excelData)}>导入</button>
+            <button onClick={close}>取消</button>
         </div>
     );
 };

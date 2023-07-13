@@ -1,5 +1,4 @@
 import React from 'react'
-import testdata from "../test/test.json"
 import ReactECharts from 'echarts-for-react';
 import benewake from "../echarts-theme/benewake.json"
 

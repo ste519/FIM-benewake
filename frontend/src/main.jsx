@@ -1,28 +1,25 @@
-import React, {useContext} from 'react'
+import React from 'react'
 import ReactDOM from 'react-dom/client'
-import Root from "./routes/root";
-import Charts from './routes/charts';
 import {
   createBrowserRouter,
   RouterProvider,
 } from "react-router-dom";
 import './index.css'
 import "the-new-css-reset/css/reset.css";
-import Test from './routes/test';
+import App from './routes/App';
+import children from './path/children';
+import Login from './routes/Login';
 
 const router = createBrowserRouter([
   {
+    path: "/login",
+    element: <Login/>,
+  },
+  {
     path: "/",
-    element: <Root />,
+    element: <App />,
+    children: children
   },
-  {
-    path:"/charts",
-    element: <Charts />,
-  },
-  {
-    path:"/test",
-    element: <Test />,
-  }
 ]);
 
 ReactDOM.createRoot(document.getElementById('root')).render(

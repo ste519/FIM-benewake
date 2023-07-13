@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { ReactComponent as ArrowIcon } from '../assets/icons/arrow.svg';
+import { ReactComponent as StarIcon } from '../assets/icons/star.svg'
 
 export default function Dropdown(props) {
     const [isOpen, setIsOpen] = useState(false);
@@ -15,14 +17,17 @@ export default function Dropdown(props) {
             <div
                 className={`dropdown-item ${props.selected ? "selected" : ""}`} onClick={handleClick}>
                 {props.label}
-                <span className={`icon__small arrow`} title="arrow icon"></span>
+                <ArrowIcon className={`icon__small arrow-icon ${isOpen ? "arrow-down" : "arrow-up"}`} />
             </div>
 
             {isOpen &&
                 <ul className="dropdown-menu">
                     {props.items.map(
                         (item, i) =>
-                            <li className="dropdown-item" key={"item" + i} onClick={() => handleItemClick(item)}>{item}</li>)
+                            <li className="dropdown-item" key={"item" + i} onClick={() => handleItemClick(item)}>
+                                <StarIcon className="icon__small star-icon" />
+                                {item}
+                            </li>)
                     }
                 </ul>}
         </li>
