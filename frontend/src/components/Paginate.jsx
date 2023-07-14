@@ -22,6 +22,7 @@ const Paginate = ({ table }) => {
                 <span className="row flex-center">
                     第
                     <input
+                        name="page-number"
                         type="number"
                         value={table.getState().pagination.pageIndex + 1}
                         onChange={e => {
@@ -51,6 +52,7 @@ const Paginate = ({ table }) => {
             <div className="page-size-controller">
                 每页显示
                 <select
+                    name="page-size"
                     value={table.getState().pagination.pageSize}
                     onChange={e => {
                         table.setPageSize(Number(e.target.value))

@@ -1,12 +1,12 @@
-import useTabContext from '../context/TabProvider';
+import useTabContext from '../hooks/useTabContext';
 import { NavLink } from 'react-router-dom';
 import children from '../path/children';
 
 export default function Sidebar() {
-    const { tabs, setTabs, showSidebar } = useTabContext();
+    const { tabLabels, setTabLabels, showSidebar } = useTabContext();
     const addTab = (newTab) => {
-        if (!tabs.includes(newTab)) {
-            setTabs([...tabs, newTab]);
+        if (!tabLabels.includes(newTab)) {
+            setTabLabels([...tabLabels, newTab]);
         }
     }
     return (

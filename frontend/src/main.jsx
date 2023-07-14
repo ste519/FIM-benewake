@@ -9,11 +9,12 @@ import "the-new-css-reset/css/reset.css";
 import App from './routes/App';
 import children from './path/children';
 import Login from './routes/Login';
+import AuthProvider from './context/AuthProvider'
 
 const router = createBrowserRouter([
   {
     path: "/login",
-    element: <Login/>,
+    element: <Login />,
   },
   {
     path: "/",
@@ -24,6 +25,8 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <AuthProvider>
+      <RouterProvider router={router} />
+    </AuthProvider>
   </React.StrictMode>,
 )

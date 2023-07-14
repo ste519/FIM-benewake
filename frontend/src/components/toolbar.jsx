@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import ExcelUploader from './ExcelUploader';
 import * as XLSX from 'xlsx';
-import useTabContext from '../context/TabProvider';
-import { useNavigate } from 'react-router-dom';
+import useTabContext from '../hooks/useTabContext';
+import { useLocation } from 'react-router-dom';
+import fetchData from '../api/fetchData';
+
 
 export default function Toolbar() {
-    const { tabContents, setTabContents, activeTab, selectedRows, setSelectedRows } = useTabContext();
-    const navigate = useNavigate()
+    const { tabContents, setTabContents, rowSelection, setRowSelection } = useTabContext();
 
     const [openImportPopup, setOpenImportPopup] = useState(false)
     const [openDeletePopup, setOpenDeletePopup] = useState(false)
@@ -21,17 +22,23 @@ export default function Toolbar() {
     const toggleExportPopup = () => {
         setOpenExportPopup(!openExportPopup)
     }
+    const activeTab = useLocation().pathname.replace('/', '')
 
     const handleDelete = () => {
+        const removedIndexes = Object.keys(rowSelection).map((str) => parseInt(str))
         let tableData = tabContents[activeTab];
-        tableData = tableData.filter((_, i) => !selectedRows.includes(i));
+        tableData = tableData.filter((_, i) => !removedIndexes.includes(i));
         setTabContents({ ...tabContents, [activeTab]: tableData });
-        setSelectedRows([]);
+        setRowSelection({})
         toggleDeletePopup()
     }
 
-    const handleExport = () => {
+    const handleRefresh = async () => {
+        const data = await fetchData()
+        setTabContents({ ...tabContents, [activeTab]: data });
+    }
 
+    const handleExport = () => {
         let worksheet = XLSX.utils.json_to_sheet(tabContents[activeTab]);
         let workbook = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(workbook, worksheet, activeTab);
@@ -70,7 +77,7 @@ export default function Toolbar() {
             <button onClick={toggleDeletePopup}>删除</button>
             {openDeletePopup ?
                 deletePopup : null}
-            <button onClick={()=>navigate(0)}>刷新</button>
+            <button onClick={handleRefresh}>刷新</button>
             <button onClick={toggleImportPopup}>导入</button>
             {openImportPopup ?
                 importPopup : null}

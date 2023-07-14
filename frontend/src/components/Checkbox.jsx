@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import useTabContext from '../context/TabProvider';
+import useTabContext from '../hooks/useTabContext';
 
 export default function Checkbox(props) {
     const { selectedRows } = useTabContext();

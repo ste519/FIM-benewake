@@ -1,26 +1,64 @@
-import { useContext, createContext, useState } from "react";
+import { useState, useEffect } from "react";
+import { TabContext } from "../js/createContext";
 
-const TabContext = createContext(null);
-
-export const useTabContext = () => {
-    return useContext(TabContext)
+const initialView = {
+    "visibility": {
+        "物料编码": true,
+        "物料名称": true,
+        "6月包装": true
+    },
+    "selectedSecTab": "已完成",
+    "filters": [
+        [
+            "物料编码",
+            "包含",
+            ""
+        ],
+        [
+            "物料名称",
+            "包含",
+            ""
+        ],
+        [
+            "客户类型",
+            "包含",
+            ""
+        ],
+        [
+            "产品类型",
+            "包含",
+            ""
+        ],
+        [
+            "订单状态",
+            "包含",
+            ""
+        ]
+    ]
 }
 
-export const TabProvider = ({ children }) => {
-    const [tabs, setTabs] = useState([])
+const TabProvider = ({ children }) => {
+
+    const [tabLabels, setTabLabels] = useState([])
     const [tabContents, setTabContents] = useState({})
-    const [selectedRows, setSelectedRows] = useState([])
+    const [rowSelection, setRowSelection] = useState({})
     const [showSidebar, setShowSidebar] = useState(true)
+    const [currentPreset, setCurrentPreset] = useState(null)
+    const [currentView, setCurrentView] = useState(initialView)
+
+    //testing
+    useEffect(() => { console.log(currentView); }, [currentView])
     return (
         <TabContext.Provider value={{
-            tabs, setTabs,
+            tabLabels, setTabLabels,
             tabContents, setTabContents,
-            selectedRows, setSelectedRows,
-            showSidebar, setShowSidebar
+            rowSelection, setRowSelection,
+            showSidebar, setShowSidebar,
+            currentPreset, setCurrentPreset,
+            currentView, setCurrentView
         }}>
             {children}
         </TabContext.Provider>
     )
 }
-
-export default useTabContext;
+export default TabProvider;

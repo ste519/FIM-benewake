@@ -14,42 +14,8 @@ import { ReactComponent as FilterIcon } from '../assets/icons/filter.svg';
 import { ReactComponent as ArrowIcon } from '../assets/icons/arrow.svg';
 import { DndProvider, useDrag, useDrop } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
-
-const ColVisibility = ({ table }) => {
-    const [open, setOpen] = useState(false)
-    const toggleOpen = () => setOpen(!open)
-    return (
-        <div className="visibility-container">
-            <div className="row dropdown">
-                显示列
-                <button onClick={toggleOpen}>▾</button>
-            </div>
-            {open &&
-                <form className="col visibility-wrapper">
-                    <label>
-                        <input
-                            type="checkbox"
-                            checked={table.getIsAllColumnsVisible()}
-                            onChange={table.getToggleAllColumnsVisibilityHandler()}
-                        />
-                        全选
-                    </label>
-                    {table.getAllLeafColumns().map(column =>
-                        <label key={column.id}>
-                            <input
-                                type='checkbox'
-                                checked={column.getIsVisible()}
-                                onChange={column.getToggleVisibilityHandler()}
-                            />
-                            {column.id}
-                        </label>
-                    )}
-                    <button onClick={toggleOpen}>取消</button>
-                    <button onClick={toggleOpen}>确认</button>
-                </form >}
-        </div>
-    )
-}
+import useTabContext from '../hooks/useTabContext';
+import ColVisibility from './ColVisibility';
 
 function DebouncedInput({
     value: initialValue,
@@ -97,6 +63,7 @@ function Filter({ column }) {
                 onChange={value => column.setFilterValue(value)}
                 placeholder={`搜索 (${column.getFacetedUniqueValues().size})`}
                 list={column.id + 'list'}
+                name={column.id}
             />
         </>
     )
@@ -177,16 +144,20 @@ const DraggableHeader = ({ header, table }) => {
 
 export default function Table({ data }) {
 
+    const { currentPreset, currentView, setCurrentView } = useTabContext()
     const [sorting, setSorting] = useState([])
     const [columnFilters, setColumnFilters] = useState([])
-    const [columnVisibility, setColumnVisibility] = useState({})
-    const [rowSelection, setRowSelection] = useState({})
+    const [columnVisibility, setColumnVisibility] = useState(currentPreset?.visibility)
+    useEffect(() => { setColumnVisibility(currentPreset?.visibility) }, [currentPreset])
+    useEffect(() => { setCurrentView({ ...currentView, visibility: columnVisibility })}, [columnVisibility])
     const [columnResizeMode] = useState('onChange')
+    const { rowSelection, setRowSelection } = useTabContext()
     const columns = [
         {
             id: "select",
             header: ({ table }) => (
-                <input type="checkbox"
+                <input
+                    type="checkbox"
                     name={table.id}
                     checked={table.getIsAllRowsSelected()}
                     onChange={table.getToggleAllRowsSelectedHandler()}
@@ -199,29 +170,27 @@ export default function Table({ data }) {
                     onChange={row.getToggleSelectedHandler()}
                 />
             ,
-            enableSorting: false
+            enableSorting: false,
+            enableHiding: false,
+            enableResizing: false
         },
         {
             id: "物料编码",
             header: "物料编码",
             accessorKey: "物料编码",
             size: 200,
-            enableResizing: true
-
         },
         {
             id: "物料名称",
             header: "物料名称",
             accessorKey: "物料名称",
             size: 200,
-            enableResizing: true,
         },
         {
             id: "6月包装",
             header: "6月包装",
             accessorKey: "6月包装",
             size: 200,
-            enableResizing: true,
             enableColumnFilter: false
         }]
 
@@ -240,6 +209,9 @@ export default function Table({ data }) {
                 rowSelection,
                 columnOrder
             },
+            initialState: {
+                columnVisibility
+            },
             getCoreRowModel: getCoreRowModel(),
             getPaginationRowModel: getPaginationRowModel(),
             getSortedRowModel: getSortedRowModel(),
@@ -253,7 +225,6 @@ export default function Table({ data }) {
             onColumnVisibilityChange: setColumnVisibility,
             onColumnFiltersChange: setColumnFilters
         })
-
 
     return (
         <DndProvider backend={HTML5Backend}>
@@ -276,8 +247,6 @@ export default function Table({ data }) {
                                                         ? null
                                                         : flexRender(header.column.columnDef.header, header.getContext())
                                                 }
-
-
                                             </th>
                                             :
                                             <DraggableHeader

@@ -1,5 +1,5 @@
 import Sidebar from '../components/Sidebar';
-import { TabProvider } from '../context/TabProvider';
+import TabProvider from '../context/TabProvider';
 import Navbar from '../components/Navbar';
 import { Outlet, useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
@@ -11,6 +11,7 @@ export default function App() {
     useEffect(() => {
         navigate("/user", { replace: true });
     }, []);
+
     return (
         <TabProvider>
             <div id="app" className="container">
