@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ReactComponent as ArrowIcon } from '../assets/icons/arrow.svg';
+import { ReactComponent as ArrowIcon } from '../assets/icons/arrow-down.svg';
 import { ReactComponent as StarIcon } from '../assets/icons/star.svg'
 
 export default function Dropdown(props) {

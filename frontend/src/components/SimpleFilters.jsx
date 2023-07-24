@@ -1,7 +1,7 @@
 import { useState, useEffect, useLayoutEffect } from 'react'
 import { ReactComponent as AddIcon } from '../assets/icons/add.svg'
 import { ReactComponent as CloseIcon } from '../assets/icons/cross.svg'
-import { ReactComponent as ArrowIcon } from '../assets/icons/arrow.svg'
+import { ReactComponent as ArrowIcon } from '../assets/icons/arrow-down.svg'
 import useTabContext from '../hooks/useTabContext'
 
 const CONDITIONS = ["包含", "不包含", "大于", "大于等于", "等于", "不等于", "小于", "小于等于", "为空", "不为空"]

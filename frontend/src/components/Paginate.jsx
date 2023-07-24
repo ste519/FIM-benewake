@@ -49,7 +49,7 @@ const Paginate = ({ table }) => {
                     {'>>'}
                 </button>
             </div>
-            <div className="page-size-controller">
+            <div className="page-size-controller row flex-center">
                 每页显示
                 <select
                     name="page-size"

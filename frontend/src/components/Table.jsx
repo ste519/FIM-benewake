@@ -8,10 +8,11 @@ import {
     getFacetedUniqueValues,
     getPaginationRowModel,
     getSortedRowModel,
+    getGroupedRowModel
 } from '@tanstack/react-table'
 import Paginate from './Paginate';
 import { ReactComponent as FilterIcon } from '../assets/icons/filter.svg';
-import { ReactComponent as ArrowIcon } from '../assets/icons/arrow.svg';
+import { ReactComponent as ArrowIcon } from '../assets/icons/arrow-down.svg';
 import { DndProvider, useDrag, useDrop } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
 import useTabContext from '../hooks/useTabContext';
@@ -108,13 +109,20 @@ const DraggableHeader = ({ header, table }) => {
     })
 
     return (
-        <th
+        <div
+            className='th'
             ref={dropRef}
-            style={{ opacity: isDragging ? 0.5 : 1, width: header.getSize() }}
+            style={{
+                opacity: isDragging ? 0.5 : 1,
+                width: header.getSize()
+            }}
 
+            id={header.id}
+            colSpan={header.colSpan}
         >
             <div ref={previewRef} className='row flex-center header-controls'>
-                <button ref={dragRef}>🟰</button>
+                <button ref={dragRef} >🟰</button>
+                {header.getSize()}
                 {header.isPlaceholder
                     ? null
                     : flexRender(header.column.columnDef.header, header.getContext())}
@@ -128,71 +136,39 @@ const DraggableHeader = ({ header, table }) => {
                     }
                 </button>
             </div>
-            <div
-                onMouseDown={header.getResizeHandler()}
-                onTouchStart={header.getResizeHandler()}
-                className={`resizer ${header.column.getIsResizing() ? 'isResizing' : ''
-                    }`} />
-            {header.column.getCanFilter() ? (
+
+            {/* resizer */}
+            {header.column.getCanResize() &&
+                <div
+                    onMouseDown={header.getResizeHandler()}
+                    onTouchStart={header.getResizeHandler()}
+                    className={`resizer ${header.column.getIsResizing() ? 'isResizing' : ''
+                        }`}
+                />
+            }
+
+            {/* filter */}
+            {/* {header.column.getCanFilter() ? (
                 <div>
                     <Filter column={header.column} table={table} />
                 </div>
-            ) : null}
-        </th>
+            ) : null} */}
+        </div>
     )
 }
 
-export default function Table({ data }) {
-
+export default function Table({ data, columns, showVisibility }) {
     const { currentPreset, currentView, setCurrentView } = useTabContext()
     const [sorting, setSorting] = useState([])
+    const [grouping, setGrouping] = useState([])
     const [columnFilters, setColumnFilters] = useState([])
     const [columnVisibility, setColumnVisibility] = useState(currentPreset?.visibility)
-    useEffect(() => { setColumnVisibility(currentPreset?.visibility) }, [currentPreset])
-    useEffect(() => { setCurrentView({ ...currentView, visibility: columnVisibility })}, [columnVisibility])
+    if (showVisibility) {
+        useEffect(() => { setColumnVisibility(currentPreset?.visibility) }, [currentPreset])
+        useEffect(() => { setCurrentView({ ...currentView, visibility: columnVisibility }) }, [columnVisibility])
+    }
     const [columnResizeMode] = useState('onChange')
     const { rowSelection, setRowSelection } = useTabContext()
-    const columns = [
-        {
-            id: "select",
-            header: ({ table }) => (
-                <input
-                    type="checkbox"
-                    name={table.id}
-                    checked={table.getIsAllRowsSelected()}
-                    onChange={table.getToggleAllRowsSelectedHandler()}
-                />
-            ),
-            cell: ({ row }) =>
-                <input type="checkbox"
-                    name={row.id}
-                    checked={row.getIsSelected()}
-                    onChange={row.getToggleSelectedHandler()}
-                />
-            ,
-            enableSorting: false,
-            enableHiding: false,
-            enableResizing: false
-        },
-        {
-            id: "物料编码",
-            header: "物料编码",
-            accessorKey: "物料编码",
-            size: 200,
-        },
-        {
-            id: "物料名称",
-            header: "物料名称",
-            accessorKey: "物料名称",
-            size: 200,
-        },
-        {
-            id: "6月包装",
-            header: "6月包装",
-            accessorKey: "6月包装",
-            size: 200,
-            enableColumnFilter: false
-        }]
 
     const [columnOrder, setColumnOrder] = useState(columns.map(column => column.id))
 
@@ -204,50 +180,53 @@ export default function Table({ data }) {
             enableRowSelection: true,
             state: {
                 sorting,
+                grouping,
                 columnFilters,
                 columnVisibility,
                 rowSelection,
                 columnOrder
             },
-            initialState: {
-                columnVisibility
-            },
+
+            initialState: columnVisibility,
+            onColumnVisibilityChange: setColumnVisibility,
             getCoreRowModel: getCoreRowModel(),
             getPaginationRowModel: getPaginationRowModel(),
             getSortedRowModel: getSortedRowModel(),
+            getGroupedRowModel: getGroupedRowModel(),
             getFilteredRowModel: getFilteredRowModel(),
             getFacetedRowModel: getFacetedRowModel(),
             getFacetedUniqueValues: getFacetedUniqueValues(),
 
             onSortingChange: setSorting,
+            onGroupingChange: setGrouping,
             onColumnOrderChange: setColumnOrder,
             onRowSelectionChange: setRowSelection,
-            onColumnVisibilityChange: setColumnVisibility,
             onColumnFiltersChange: setColumnFilters
         })
 
     return (
         <DndProvider backend={HTML5Backend}>
             <div className="table-container col" >
-                <ColVisibility table={table} />
+
+                {showVisibility && <ColVisibility table={table} />}
                 <div className="table-wrapper" >
-                    <table style={{
+                    <div className="table" style={{
                         width: table.getCenterTotalSize(),
                     }}>
-                        <thead>
+                        <div className='thead'>
                             {table.getHeaderGroups().map(headerGroup =>
-                                <tr key={headerGroup.id}>
+                                <div className='tr' key={headerGroup.id}>
                                     {headerGroup.headers.map(header =>
                                         header.id === "select" ?
-                                            <th
+                                            <div
                                                 key={header.id}
-                                                className={header.id}>
+                                                className="th">
                                                 {
                                                     header.isPlaceholder
                                                         ? null
                                                         : flexRender(header.column.columnDef.header, header.getContext())
                                                 }
-                                            </th>
+                                            </div>
                                             :
                                             <DraggableHeader
                                                 key={header.id}
@@ -255,26 +234,35 @@ export default function Table({ data }) {
                                                 table={table}
                                             />
                                     )}
-                                </tr>
+                                </div>
                             )}
-                        </thead>
-                        <tbody>
+                        </div>
+                        <div className='tbody'>
                             {table.getRowModel().rows.map(row =>
-                                <tr key={row.id} className={row.getIsSelected() ? 'selected' : ""}>
+                                <div
+                                    key={row.id}
+                                    className={`tr${row.getIsSelected() ? ' selected' : ''}`}
+                                >
                                     {row.getVisibleCells().map(cell =>
-                                        <td key={cell.id} className={cell.column.columnDef.id}>
+                                        <div
+                                            key={cell.id}
+                                            style={{
+                                                width: cell.column.getSize()
+                                            }}
+                                            className={`td ${cell.column.columnDef.id}`}>
                                             {flexRender(
                                                 cell.column.columnDef.cell,
                                                 cell.getContext())}
-                                        </td>
+                                        </div>
                                     )}
-                                </tr>
+                                </div>
                             )}
-                        </tbody>
-                    </table>
+                        </div>
+                    </div>
                 </div>
                 <Paginate table={table} />
             </div>
+
         </DndProvider >
     )
 }

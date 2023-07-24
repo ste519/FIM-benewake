@@ -1,8 +1,8 @@
 import axios from "./axios";
 
-async function fetchPreset(uid) {
+async function fetchOptions() {
     try {
-        const response = await axios.get('mypreset.json')
+        const response = await axios.get('options.json')
         return response.data;
     }
     catch (err) {
@@ -10,4 +10,4 @@ async function fetchPreset(uid) {
     }
 }
 
-export default fetchPreset;
+export default fetchOptions;

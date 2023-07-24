@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { ReactComponent as DownIcon } from '../assets/icons/arrow-down.svg';
 
 const ColVisibility = ({ table }) => {
     const [open, setOpen] = useState(false)
@@ -8,12 +9,10 @@ const ColVisibility = ({ table }) => {
         toggleOpen()
     }
     return (
-        <div className="visibility-container">
-            <div className="row dropdown">
-                显示列
-                <button onClick={toggleOpen}>▾</button>
-            </div>
-            {open &&
+        <div className="visibility-container col" >
+            <button onClick={toggleOpen} className='toggle-btn'>显示列<DownIcon /></button>
+            {
+                open &&
                 <div className="col visibility-wrapper">
                     <label>
                         <input
@@ -31,12 +30,13 @@ const ColVisibility = ({ table }) => {
                             checked={column.getIsVisible()}
                             onChange={column.getToggleVisibilityHandler()}
                         />
-                        {column.id}
+                        {column.columnDef.header}
                     </label> : null
                     )}
                     <button onClick={handleReset}>重置</button>
                     <button onClick={toggleOpen}>确认</button>
-                </div >}
+                </div >
+            }
         </div >
     )
 }

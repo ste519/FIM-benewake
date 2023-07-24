@@ -1,13 +1,11 @@
 import { useState, useEffect } from 'react';
-import useTabContext from '../hooks/useTabContext';
 
-export default function Checkbox(props) {
-    const { selectedRows } = useTabContext();
-    const [checked, setChecked] = useState(props.checked);
-    useEffect(() => setChecked(props.checked), [selectedRows])
+export default function Checkbox({ addRow, removeRow, isSelected }) {
+    const [checked, setChecked] = useState(isSelected);
+    useEffect(() => setChecked(isSelected), [isSelected])
     const handleChange = () => {
-        if (!checked) props.addRow()
-        else props.removeRow()
+        if (!checked) addRow()
+        else removeRow()
         setChecked(!checked);
     };
 

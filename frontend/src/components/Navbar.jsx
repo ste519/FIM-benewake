@@ -10,13 +10,13 @@ const Tabs = () => {
     const navigate = useNavigate();
     const removeTab = (removedTab, e) => {
         e.preventDefault();
-        setTabLabels(tabLabels.filter(({name}) => { return name !== removedTab }));
+        setTabLabels(tabLabels.filter(({ name }) => { return name !== removedTab }));
         navigate("user")
     }
 
     return (
         <div className="tab-labels">
-            {tabLabels.map(({name, path}, i) => (
+            {tabLabels.map(({ name, path }, i) => (
                 name !== "用户主页" &&
                 <NavLink
                     key={i}
@@ -27,7 +27,7 @@ const Tabs = () => {
                     <button
                         className="close-btn"
                         onClick={(e) => removeTab(name, e)}>
-                        <CloseIcon className="icon__small" />
+                        <CloseIcon />
                     </button>
                 </NavLink>
             ))}
@@ -41,9 +41,9 @@ export const Navbar = () => {
     return (
         <div className="row navbar">
             <div className="brand row">
-                <LogoIcon className="logo" onClick={() => navigate("用户主页")} />
-                <button className="toggle-btn" >
-                    <MenuIcon className={`icon__small arrow-icon ${showSidebar ? 'selected' : ''}`} onClick={() => setShowSidebar(!showSidebar)} />
+                <LogoIcon className="logo" onClick={() => navigate("user")} />
+                <button className={`toggle-btn ${showSidebar ? 'blue40' : 'transparent'}`} onClick={() => setShowSidebar(!showSidebar)}>
+                    <MenuIcon />
                 </button>
             </div>
             <Tabs />

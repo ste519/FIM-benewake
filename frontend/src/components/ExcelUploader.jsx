@@ -25,6 +25,7 @@ export default function ExcelUploader({ close }) {
 
             // Output the JSON data to console
             setExcelData(jsonData)
+            console.log(jsonData);
         };
         reader.readAsArrayBuffer(f);
     };
@@ -36,7 +37,7 @@ export default function ExcelUploader({ close }) {
                 setTabContents({ ...tabContents, [activeTab]: [...oldData, ...newData] })
             }
             else {
-                alert("no data")
+                //TODO
             }
         }
         close();
@@ -44,7 +45,7 @@ export default function ExcelUploader({ close }) {
 
     return (
         <div>
-            <input name="excel-uploader"type="file" accept=".xlsx,.xls,.csv" onChange={handleFile} />
+            <input name="excel-uploader" type="file" accept=".xlsx,.xls,.csv" onChange={handleFile} />
             <button onClick={() => addData(excelData)}>导入</button>
             <button onClick={close}>取消</button>
         </div>

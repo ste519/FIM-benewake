@@ -4,8 +4,7 @@ import axios from 'axios'
 import useTabContext from '../hooks/useTabContext'
 import { ReactComponent as AddIcon } from '../assets/icons/add.svg'
 import { useLocation } from 'react-router-dom'
-import fetchData from '../api/fetchData'
-import fetchPreset from '../api/fetchPreset';
+import { fetchNewPresets, fetchData } from '../api/order';
 import SimpleColVisibility from './SimpleColVisibility'
 import SimpleFilters from './SimpleFilters'
 
@@ -52,7 +51,7 @@ const PresetPopup = ({ secTabs, closePopup, presets, setPresets, action, setSele
                     </select>
                 </label>
                 <h1>默认筛选条件：</h1>
-                <SimpleFilters filters={filters} setFilters={setFilters}/>
+                <SimpleFilters filters={filters} setFilters={setFilters} />
                 <h1>默认显示列：</h1>
                 <SimpleColVisibility visibility={visibility} setVisibility={setVisibility} />
                 <input type="button" name="cancel" onClick={closePopup} value="取消" />
@@ -80,8 +79,8 @@ const Presets = ({ presets, editable, secTabs, setPresets }) => {
 
     const handlePresetClick = async (item) => {
         setSelected(item)
-        setTabContents({ ...tabContents, [path]: await fetchData() })
-        setCurrentPreset(await fetchPreset())
+        const res = await fetchData({ tableId: 1, viewId: 0, filterCriterias: [] })
+        setTabContents({ ...tabContents, [path]: res?.data.lists })
     }
 
     return (

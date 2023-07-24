@@ -1,7 +1,7 @@
 import { useState, useEffect, useLayoutEffect } from 'react'
 import { ReactComponent as AddIcon } from '../assets/icons/add.svg'
 import { ReactComponent as CloseIcon } from '../assets/icons/cross.svg'
-import { ReactComponent as ArrowIcon } from '../assets/icons/arrow.svg'
+import { ReactComponent as ArrowIcon } from '../assets/icons/arrow-down.svg'
 import useTabContext from '../hooks/useTabContext'
 
 const CONDITIONS = ["包含", "不包含", "大于", "大于等于", "等于", "不等于", "小于", "小于等于", "为空", "不为空"]
@@ -36,18 +36,12 @@ export const Filter = ({ index, allFilterValues, setAllFilterValues, headers, co
 
   return (
     <div className='row filter' >
-      <div className='select-wrapper'>
-        <select value={values[0]} onChange={handleHeaderChange}>
-          {headers.map((header, i) => <option key={i}>{header}</option>)}
-        </select>
-        <ArrowIcon className="arrow-icon" />
-      </div>
-      <div className='select-wrapper'>
-        <select value={values[1]} onChange={handleConditionChange}>
-          {conditions.map((condition, i) => <option key={i}>{condition}</option>)}
-        </select>
-        <ArrowIcon className="arrow-icon" />
-      </div>
+      <select value={values[0]} onChange={handleHeaderChange}>
+        {headers.map((header, i) => <option key={i}>{header}</option>)}
+      </select>
+      <select value={values[1]} onChange={handleConditionChange}>
+        {conditions.map((condition, i) => <option key={i}>{condition}</option>)}
+      </select>
       <input name={`value${index}`} type="text" placeholder='数值' value={values[2]} onChange={handleStringChange} />
       <button className="close-btn" onClick={removeFilter}>
         <CloseIcon className="icon__small close-icon" />

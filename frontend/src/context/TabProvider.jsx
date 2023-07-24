@@ -45,9 +45,10 @@ const TabProvider = ({ children }) => {
     const [showSidebar, setShowSidebar] = useState(true)
     const [currentPreset, setCurrentPreset] = useState(null)
     const [currentView, setCurrentView] = useState(initialView)
+    const [pinnedRows, setPinnedRows] = useState()
 
-    //testing
-    useEffect(() => { console.log(currentView); }, [currentView])
+    //TODO
+    // useEffect(() => { console.log(showSidebar); }, [showSidebar])
     return (
         <TabContext.Provider value={{
             tabLabels, setTabLabels,
@@ -55,7 +56,8 @@ const TabProvider = ({ children }) => {
             rowSelection, setRowSelection,
             showSidebar, setShowSidebar,
             currentPreset, setCurrentPreset,
-            currentView, setCurrentView
+            currentView, setCurrentView,
+            pinnedRows, setPinnedRows
         }}>
             {children}
         </TabContext.Provider>
