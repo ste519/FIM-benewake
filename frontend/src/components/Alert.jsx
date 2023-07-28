@@ -1,6 +1,10 @@
 import React from 'react'
+import { useAlertContext } from '../hooks/useCustomContext';
 
-export default function Alert({ type, message, closeAlert, action }) {
+export default function Alert({ type, message, action }) {
+    const updateAlert = useAlertContext()
+    const closeAlert = () => updateAlert({ type: "CLOSE_ALERT" })
+
     function getHeading() {
         switch (type) {
             case "warning":

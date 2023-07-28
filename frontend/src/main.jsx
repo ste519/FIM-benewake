@@ -9,7 +9,9 @@ import "the-new-css-reset/css/reset.css";
 import App from './App';
 import children from './path/children';
 import Login from './routes/Login';
-import AuthProvider from './context/AuthProvider'
+import AuthProvider from './providers/AuthProvider'
+import AlertProvider from './providers/AlertProvider';
+
 
 const router = createBrowserRouter([
   {
@@ -20,13 +22,16 @@ const router = createBrowserRouter([
     path: "/",
     element: <App />,
     children: children
-  }
+  },
+
 ]);
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <AuthProvider>
-      <RouterProvider router={router} />
+      <AlertProvider>
+        <RouterProvider router={router} />
+      </AlertProvider>
     </AuthProvider>
   </React.StrictMode>
 )

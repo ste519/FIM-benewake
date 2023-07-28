@@ -1,22 +1,39 @@
 import Sidebar from './components/Sidebar';
-import TabProvider from './context/TabProvider';
+import TabProvider from './providers/TabProvider';
 import Navbar from './components/Navbar';
-import { Outlet, useNavigate } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useState } from 'react';
+import QueryProvider from './providers/QueryProvider';
+import RequireAuth from './components/RequireAuth';
+import TableProvider from './providers/TableProvider';
 
+const Layout = ({ children }) => {
+    const [showSidebar, setShowSidebar] = useState(true);
+
+    return (
+        <div id="app" className="container">
+            <Navbar
+                showSidebar={showSidebar}
+                setShowSidebar={setShowSidebar}
+            />
+            <div className='row'>
+                <Sidebar showSidebar={showSidebar} />
+                {children}
+            </div>
+        </div>)
+}
 
 export default function App() {
-    const navigate = useNavigate();
-    useEffect(() => navigate('/user'), [])
+    console.log("Rendered app");
+
     return (
         <TabProvider>
-            <div id="app" className="container">
-                <Navbar />
-                <div className='row'>
-                    <Sidebar />
-                    <Outlet />
-                </div>
-            </div>
+            <QueryProvider>
+                <TableProvider>
+                    <Layout>
+                        <RequireAuth />
+                    </Layout>
+                </TableProvider>
+            </QueryProvider>
         </TabProvider>
     )
 }

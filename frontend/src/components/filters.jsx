@@ -2,90 +2,90 @@ import { useState, useEffect, useLayoutEffect } from 'react'
 import { ReactComponent as AddIcon } from '../assets/icons/add.svg'
 import { ReactComponent as CloseIcon } from '../assets/icons/cross.svg'
 import { ReactComponent as ArrowIcon } from '../assets/icons/arrow-down.svg'
-import useTabContext from '../hooks/useTabContext'
+import { HEADERS, CONDITIONS } from '../constants/FilterConsts'
+import { useQueryContext, useUpdateQueryContext, useUpdateTableDataContext } from '../hooks/useCustomContext'
+import { fetchData } from '../api/fetch'
+import { useAlertContext } from '../hooks/useCustomContext'
 
-const CONDITIONS = ["包含", "不包含", "大于", "大于等于", "等于", "不等于", "小于", "小于等于", "为空", "不为空"]
-const HEADERS = ["销售员", "单据编号", "单据类型", "单据状态", "物料编码", "物料名称", "数量", "客户名称", "订单状态", "产品类型", "客户类型", "期望发货日期", "计划反馈日期", "是否延期", "订单交付进度", "运输单号", "签收时间", "最新状态", "是否定制", "创建人", "备注"]
+const headers = HEADERS
+const conditions = CONDITIONS
 
-export const Filter = ({ index, allFilterValues, setAllFilterValues, headers, conditions }) => {
-  //values: ["销售员","包含",""]
-  const [values, setValues] = useState(allFilterValues[index])
+export const Filter = ({ index, initialValues, setFilters }) => {
+  const [values, setValues] = useState(initialValues)
+  
 
-  useLayoutEffect(() => setValues(allFilterValues[index]), [allFilterValues, index])
+  useEffect(() => setValues(initialValues), [initialValues])
+
   useEffect(() => {
-    const copy = [...allFilterValues]
-    copy[index] = values
-    setAllFilterValues(copy)
-  }, [values])
+    setFilters(prev => prev.map((filter, i) => i === index ? values : filter));
+  }, [values]);
+
 
   const removeFilter = () => {
-    setAllFilterValues(allFilterValues.filter((_, i) => i !== index))
+    setFilters(prev => prev.filter((_, i) => i !== index))
   }
 
-  const handleHeaderChange = (event) => {
-    setValues([event.target.value, values[1], values[2]])
-  }
-
-  const handleConditionChange = (event) => {
-    setValues([values[0], event.target.value, values[2]])
-  }
-
-  const handleStringChange = (event) => {
-    setValues([values[0], values[1], event.target.value])
+  const handleChange = (key, value) => {
+    setValues(prev => ({
+      ...prev,
+      [key]: value,
+    }));
   }
 
   return (
     <div className='row filter' >
-      <select value={values[0]} onChange={handleHeaderChange}>
-        {headers.map((header, i) => <option key={i}>{header}</option>)}
+      <select value={values?.colName} onChange={(e) => handleChange("colName", e.target.value)}>
+        {headers.map((header, i) => <option value={header.id} key={i}>{header.name}</option>)}
       </select>
-      <select value={values[1]} onChange={handleConditionChange}>
-        {conditions.map((condition, i) => <option key={i}>{condition}</option>)}
+      <select value={values?.condition} onChange={(e) => handleChange("condition", e.target.value)}>
+        {conditions.map((condition, i) => <option value={condition.id} key={i}>{condition.name}</option>)}
       </select>
-      <input name={`value${index}`} type="text" placeholder='数值' value={values[2]} onChange={handleStringChange} />
+      <input value={values?.value} name="value" type="text" placeholder='数值' onChange={(e) => handleChange("value", e.target.value)} />
       <button className="close-btn" onClick={removeFilter}>
         <CloseIcon className="icon__small close-icon" />
       </button>
     </div>
   )
-
 }
 
-export default function Filters() {
-  const { currentPreset, setCurrentView, currentView } = useTabContext()
-  const [isVisible, setIsVisible] = useState(true)
-  const headers = HEADERS
-  const conditions = CONDITIONS
-  const toggleVisible = () => {
-    setIsVisible(!isVisible)
+export default function Filters({ filters, setFilters, display }) {
+  const [isVisible, setIsVisible] = useState(display ?? true)
+  const toggleVisible = () => setIsVisible(!isVisible)
+
+  const query = useQueryContext()
+  const updateQuery = useUpdateQueryContext()
+  const updateTableData = useUpdateTableDataContext()
+
+  const initialFilterValue = {
+    colName: headers[0].id, condition: conditions[0].id, value: ""
   }
 
-  const [allFilterValues, setAllFilterValues] = useState(currentPreset?.filters ?? [])
-  useEffect(() => { setAllFilterValues(currentPreset?.filters) }, [currentPreset])
+  console.log("Filters mounted");
 
-  useEffect(() => { setCurrentView({ ...currentView, filters: allFilterValues }) }, [allFilterValues])
-  const addFilter = (e) => {
-    e.preventDefault()
-    setAllFilterValues([...allFilterValues, [headers[0], conditions[0], ""]])
+  const addFilter = () => {
+    setFilters(prev => [...prev, initialFilterValue])
   }
 
-  const queryData = () => {
-    console.log(allFilterValues);
+  const queryData = async () => {
+    updateQuery({ type: "SET_FILTER_CRITERIAS", filterCriterias: filters })
+    updateTableData({ type: "CLEAR_TABLE_DATA" })
+    const res = await fetchData({...query, filterCriterias: filters})
+    updateTableData({ type: "SET_TABLE_DATA", tableData: res })
   }
+
   return (
     <div className='col filter-container'>
       {
         isVisible &&
         <div className='row'>
           <div className="filter-wrapper">
-            {allFilterValues?.map((_, i) =>
+            {filters?.map((value, i) =>
               <Filter
                 key={i}
-                headers={headers}
-                conditions={conditions}
                 index={i}
-                allFilterValues={allFilterValues}
-                setAllFilterValues={setAllFilterValues}
+                initialValues={value}
+                filters={filters}
+                setFilters={setFilters}
               />
             )}
             <button onClick={addFilter} className="icon-btn">

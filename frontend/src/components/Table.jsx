@@ -15,8 +15,8 @@ import { ReactComponent as FilterIcon } from '../assets/icons/filter.svg';
 import { ReactComponent as ArrowIcon } from '../assets/icons/arrow-down.svg';
 import { DndProvider, useDrag, useDrop } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
-import useTabContext from '../hooks/useTabContext';
 import ColVisibility from './ColVisibility';
+import { useTableStatesContext, useUpdateTableStatesContext } from '../hooks/useCustomContext';
 
 function DebouncedInput({
     value: initialValue,
@@ -122,7 +122,6 @@ const DraggableHeader = ({ header, table }) => {
         >
             <div ref={previewRef} className='row flex-center header-controls'>
                 <button ref={dragRef} >🟰</button>
-                {header.getSize()}
                 {header.isPlaceholder
                     ? null
                     : flexRender(header.column.columnDef.header, header.getContext())}
@@ -158,19 +157,24 @@ const DraggableHeader = ({ header, table }) => {
 }
 
 export default function Table({ data, columns, showVisibility }) {
-    const { currentPreset, currentView, setCurrentView } = useTabContext()
+    console.log("Table Rerendered");
+    const states = useTableStatesContext()
+    const [rowSelection, setRowSelection] = useState({})
+
+    const columnVisibility = states.ColVisibility
     const [sorting, setSorting] = useState([])
     const [grouping, setGrouping] = useState([])
     const [columnFilters, setColumnFilters] = useState([])
-    const [columnVisibility, setColumnVisibility] = useState(currentPreset?.visibility)
-    if (showVisibility) {
-        useEffect(() => { setColumnVisibility(currentPreset?.visibility) }, [currentPreset])
-        useEffect(() => { setCurrentView({ ...currentView, visibility: columnVisibility }) }, [columnVisibility])
-    }
     const [columnResizeMode] = useState('onChange')
-    const { rowSelection, setRowSelection } = useTabContext()
+
+    const updateTableStates = useUpdateTableStatesContext()
 
     const [columnOrder, setColumnOrder] = useState(columns.map(column => column.id))
+
+    useEffect(()=> console.log(123), [states])
+    useEffect(() => setRowSelection({}), [data,])
+    useEffect(() => updateTableStates({ type: "SET_ROW_SELECTION", rowSelection }), [rowSelection])
+
 
     const table = useReactTable
         ({
@@ -188,7 +192,7 @@ export default function Table({ data, columns, showVisibility }) {
             },
 
             initialState: columnVisibility,
-            onColumnVisibilityChange: setColumnVisibility,
+
             getCoreRowModel: getCoreRowModel(),
             getPaginationRowModel: getPaginationRowModel(),
             getSortedRowModel: getSortedRowModel(),
@@ -201,7 +205,19 @@ export default function Table({ data, columns, showVisibility }) {
             onGroupingChange: setGrouping,
             onColumnOrderChange: setColumnOrder,
             onRowSelectionChange: setRowSelection,
-            onColumnFiltersChange: setColumnFilters
+            onColumnFiltersChange: setColumnFilters,
+            meta: {
+                updateData: (rowIndex, columnId, value) => {
+                    setTableData(prev =>
+                        prev.map((row, index) => {
+                            if (index === rowIndex) {
+                                return { ...prev[rowIndex], [columnId]: value, }
+                            }
+                            return row
+                        })
+                    )
+                },
+            },
         })
 
     return (

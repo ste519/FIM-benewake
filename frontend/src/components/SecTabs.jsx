@@ -1,23 +1,30 @@
-import { useState, useEffect } from 'react';
-import useTabContext from '../hooks/useTabContext';
+import { useState } from 'react';
+import { useQueryContext, useUpdateQueryContext, useUpdateTableDataContext } from '../hooks/useCustomContext';
+import { fetchData } from '../api/fetch';
 
-
-const SecTabs = ({ labels }) => {
+const SecTabs = () => {
     const [activeSecTab, setActiveSecTab] = useState();
-    const { currentPreset, currentView, setCurrentView } = useTabContext()
-    useEffect(() => { setActiveSecTab(currentPreset?.defaultSecTab) }, [currentPreset])
-    const handleSecTabClick = (label) => {
-        setActiveSecTab(label);
-        setCurrentView({ ...currentView, selectedSecTab: label })
+    const updateQuery = useUpdateQueryContext();
+    const query = useQueryContext()
+    const updateTableData = useUpdateTableDataContext()
+
+    const handleSecTabClick = async (secTab) => {
+        setActiveSecTab(secTab);
+        updateQuery({ type: "SET_SEC_TAB", secTab })
+        updateTableData({ type: "CLEAR_TABLE_DATA" })
+        const res = await fetchData({ ...query, secTab })
+        updateTableData({ type: "SET_TABLE_DATA", tableData: res })
     }
+    const secTabs = ['已完成', '未过期未完成', '已过期未完成']
 
     return (
         <div className="sec-tab-wrapper row">
-            {labels.map((label, i) =>
+            {secTabs.map((secTab, i) =>
                 <div key={i}
-                    className={`secondary-tab ${activeSecTab === label ? "active" : ""}`}
-                    onClick={() => handleSecTabClick(label)}>
-                    {label}
+                    className={`secondary-tab 
+                    ${activeSecTab === secTab ? "active" : ""}`}
+                    onClick={() => handleSecTabClick(secTab)}>
+                    {secTab}
                 </div>
             )}
         </div>

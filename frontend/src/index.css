@@ -73,6 +73,14 @@ input:disabled {
   background-color: var(--gray20);
 }
 
+div.read-only {
+  background-color: var(--gray20);
+}
+
+div.read-only>* {
+  background: none;
+}
+
 .col {
   display: flex;
   flex-direction: column;
@@ -96,7 +104,7 @@ input:disabled {
 }
 
 .sidebar.hidden {
-  max-width:0;
+  max-width: 0;
   overflow: hidden;
   transition: 0.2s;
 }
@@ -120,20 +128,8 @@ input:disabled {
   min-height: 100vh;
 }
 
-.login-form,
 .banner {
   flex: 1 1 100%;
-}
-
-.login-form {
-  width: 40%;
-  min-width: 300px;
-  max-width: 600px;
-  background-color: white;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
 }
 
 .input-container {
@@ -224,15 +220,13 @@ svg {
 
 .sidebar {
   height: calc(100vh - 48px);
-  display: flex;
-  position: relative;
-  flex-direction: column;
   background-color: var(--blue5);
   font-size: 12px;
   align-items: center;
   width: max-content;
   max-width: 200px;
   transition: 0.2s;
+  justify-content: space-between;
 }
 
 .dropdown ul {
@@ -362,18 +356,24 @@ button svg {
   white-space: nowrap;
 }
 
-.table-wrapper .table {
+.table {
   flex: 1 1 auto;
   border-right: 1px solid;
   border-color: var(--blue30);
+  display: table;
+}
+
+.table .thead {
+  display: table-header-group;
 }
 
 .table .td {
   border-bottom: 1px solid;
   border-right: 1px solid;
   border-color: var(--blue30);
-  overflow-wrap: break-word;
   overflow: hidden;
+  text-overflow: ellipsis;
+  display: table-cell;
 }
 
 .table .th {
@@ -383,16 +383,16 @@ button svg {
   border-right: 1px solid;
   border-color: var(--blue30);
   background-color: var(--blue10);
+  display: table-cell;
 }
 
 .table .tr {
   display: flex;
   flex-direction: row;
-
 }
 
-.tr,.thead, .tbody {
-  width: fit-content;
+.table .tbody {
+  display: table-row-group;
 }
 
 .table .tr.selected {
@@ -716,9 +716,10 @@ tr:focus {
   min-width: 200px;
 }
 
-.app-icon {
-  margin-bottom: 2rem;
+.login-form input{
+width: 100%;
 }
+
 
 .login-form-wrapper form {
   display: flex;
@@ -775,7 +776,7 @@ tr:focus {
   color: var(--blue60)
 }
 
-.preset-container {
+.view-container {
   padding: 2rem 2rem 0 2rem;
   background: var(--blue5);
   gap: 1rem;
@@ -783,18 +784,18 @@ tr:focus {
   border-bottom: none;
 }
 
-.preset-container .controls {
+.view-container .controls {
   flex-grow: 1;
   justify-content: end;
 }
 
-.preset {
+.view {
   background-color: white;
   padding: 0.5rem 1rem;
   cursor: pointer;
 }
 
-.preset.selected {
+.view.selected {
   background-color: var(--blue40);
   color: white
 }
@@ -963,7 +964,7 @@ td.select {
     opacity: 1;
   }
 
-  .preset:hover,
+  .view:hover,
   .secondary-tab:hover {
     background-color: var(--blue40);
     color: white;
@@ -997,7 +998,7 @@ td.select {
 .placeholder {
   width: 100%;
   background-color: var(--blue5);
-  height: 2rem;
+  height: 1rem;
   border: 1px solid var(--blue30);
   border-top: none
 }
@@ -1100,7 +1101,7 @@ strong {
 }
 
 .new-table-container {
-  flex-grow: 1
+  flex: 1;
 }
 
 .alert-container {
@@ -1141,7 +1142,7 @@ strong {
 
 .alert-container.error {
   background-color: var(--error-light);
-  border-color: var(--eroor-dark);
+  border-color: var(--error-dark);
 }
 
 .alert-container.error h1 {
@@ -1166,7 +1167,6 @@ strong {
   color: var(--confirm-dark)
 }
 
-
 button.small {
   display: flex;
   padding: 0 2rem;
@@ -1177,4 +1177,30 @@ th input[type="text"] {
   display: none;
   width: 10px;
   height: 1.5rem;
+}
+
+.new-table-container .td {
+  display: flex;
+  padding: 0;
+  justify-content: center;
+  align-items: center;
+}
+
+datalist {
+  display: block;
+  appearance: initial;
+}
+
+.new-table-container input:not([type="checkbox"]) {
+  padding: 10px;
+  border: none;
+  width: 100%;
+  text-overflow: ellipsis;
+}
+
+.forget-password {
+  justify-content: flex-end;
+  margin-top: 0.5rem;
+  margin-bottom: -0.5rem;
+  color: var(--blue40);
 }

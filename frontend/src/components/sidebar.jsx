@@ -1,32 +1,42 @@
-import useTabContext from '../hooks/useTabContext';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import children from '../path/children';
-import { fetchNewPresets } from '../api/order';
+import { useUpdateTabContext, useQueryContext, useUpdateQueryContext } from '../hooks/useCustomContext';
+import {  logout } from '../api/auth';
 
+export default function Sidebar({ showSidebar }) {
+    console.log("Sidebar mounted");
+    const updateTabs = useUpdateTabContext()
+    const updateQuery = useUpdateQueryContext()
+    const navigate = useNavigate()
 
-export default function Sidebar() {
-    const { tabLabels, setTabLabels, showSidebar, setShowSidebar } = useTabContext();
-    const addTab = async (newTab) => {
+    const handleClick = (newTab, event) => {
+        event.stopPropagation();
+        updateTabs({ type: "ADD_TAB", tab: newTab })
+        updateQuery({ type: "SET_TABLE_ID", tableId: newTab.id })
+    }
 
-        if (!tabLabels.includes(newTab)) {
-            setTabLabels([...tabLabels, newTab]);
-        }
-        setShowSidebar(false)
+    const handleLogout = async() => {
+        await logout()
+        document.cookie.split(";").forEach(function(c) { document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); });
+        navigate("/login")
     }
     return (
-        <nav className={`sidebar  ${showSidebar ? "" : "hidden"}`}>
-            {children.map((obj, i) =>
-                obj.name !== "用户主页" &&
-                obj.name !== "新增询单" &&
-                obj.name !== "404" &&
-                <NavLink
-                    key={i}
-                    to={obj.path}
-                    className="sidebar-item"
-                    onClick={() => addTab(obj)}
-                >
-                    {obj.name}
-                </NavLink>)}
-        </nav >
+        <div className={`sidebar col ${showSidebar ? "" : "hidden"}`}>
+            <nav className="col">
+                {children.map((obj, i) =>
+                    obj.name !== "用户主页" &&
+                    obj.name !== "新增询单" &&
+                    obj.name !== "404" &&
+                    <NavLink
+                        key={i}
+                        to={obj.path}
+                        className="sidebar-item"
+                        onClick={(e) => handleClick(obj, e)}
+                    >
+                        {obj.name}
+                    </NavLink>)}
+            </nav >
+            <button onClick={handleLogout}>退出登录</button>
+        </div>
     )
 }
