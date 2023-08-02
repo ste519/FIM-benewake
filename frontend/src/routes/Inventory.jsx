@@ -7,15 +7,10 @@ import {useTabContext} from '../hooks/useCustomContext';;
 
 // 库存占用情况
 export default function Inventory() {
-  const data = useLoaderData()
-  const { tabContents, setTabContents } = useTabContext()
-  useEffect(() => {
-    setTabContents({ ...tabContents, "inventory": data })
-  }, [])
+
   return (
     <div className='col full-screen'>
       <Toolbar features={['pin', 'unpin', 'refresh', 'export']} />
-      <Table data={data} columns={InventoryDefs} showVisibility={false} />
     </div>
   )
 }

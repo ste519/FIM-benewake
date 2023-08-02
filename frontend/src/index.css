@@ -14,7 +14,7 @@
   --success-light: #E5FFE4;
   --success-dark: #2DC620;
   --confirm-light: #D9E9F8;
-  --confirm-darl: #1D89E9;
+  --confirm-dark: #1D89E9;
   --shadow: 0px 2px 5px 0px rgba(60, 64, 67, 0.16);
   font-size: 12px;
 }
@@ -209,7 +209,7 @@ div.read-only>* {
 }
 
 .data-point h1 {
-  font-size: 36px;
+  font-size: 30.5rem;
   font-weight: 900;
   color: var(--blue20)
 }
@@ -294,9 +294,10 @@ button svg {
 .tab {
   cursor: pointer;
   display: flex;
-  justify-self: center;
+  justify-content: center;
   align-items: center;
-  padding: 1rem 1rem 1rem 3rem;
+  padding: 0.5rem;
+  padding-left: 2rem;
 }
 
 .secondary-tab {
@@ -304,7 +305,7 @@ button svg {
   border-top: 1px solid var(--blue30);
   background-color: var(--blue5);
   cursor: pointer;
-  gap: 6px;
+  gap: 0.5rem;
   display: flex;
   justify-self: center;
   align-items: center;
@@ -319,11 +320,6 @@ button svg {
   border-left: 1px solid var(--blue30);
 }
 
-.tab {
-  padding-right: 1rem;
-  border-top: none;
-}
-
 #app {
   display: flex;
   flex-direction: column;
@@ -334,7 +330,6 @@ button svg {
   background: none;
   color: var(--blue30);
   visibility: hidden;
-  margin-right: 1rem;
 }
 
 .tab:hover .close-btn,
@@ -358,9 +353,10 @@ button svg {
 
 .table {
   flex: 1 1 auto;
-  border-right: 1px solid;
-  border-color: var(--blue30);
   display: table;
+  border-right: 1px solid;
+  border-left: 1px solid;
+  border-color: var(--blue30);
 }
 
 .table .thead {
@@ -391,6 +387,11 @@ button svg {
   flex-direction: row;
 }
 
+.td:last-child,
+.th:last-child {
+  border-right: none
+}
+
 .table .tbody {
   display: table-row-group;
 }
@@ -402,8 +403,6 @@ button svg {
 .table-wrapper {
   flex: 1 1 1px;
   overflow: auto;
-  border: 1px solid;
-  border-color: var(--blue30);
 }
 
 .popup-container {
@@ -475,7 +474,7 @@ input[type="file"]::before {
   position: absolute;
   pointer-events: none;
   top: 14px;
-  left: 16px;
+  left: 10.5rem;
   height: 20px;
   width: 20px;
   content: "";
@@ -488,7 +487,7 @@ input[type="file"]::file-selector-button {
   background-color: white;
   border: 1px solid var(--blue10);
   box-shadow: var(--shadow);
-  margin-right: 16px;
+  margin-right: 10.5rem;
   transition: background-color 200ms;
 }
 
@@ -557,6 +556,7 @@ input[type="file"]::file-selector-button:active {
   width: 100%;
   border-right: 1px solid;
   border-left: 1px solid;
+  border-bottom: 1px solid;
   border-color: var(--blue30);
 }
 
@@ -607,7 +607,7 @@ tr:focus {
   display: inline-block;
   position: absolute;
   left: 8px;
-  width: 16px;
+  width: 10.5rem;
   background: var(--blue60);
   animation: lds-facebook 1.2s cubic-bezier(0, 0.5, 0.5, 1) infinite;
 }
@@ -623,7 +623,7 @@ tr:focus {
 }
 
 .lds-facebook div:nth-child(3) {
-  left: 56px;
+  left: 50.5rem;
   animation-delay: 0;
 }
 
@@ -716,8 +716,8 @@ tr:focus {
   min-width: 200px;
 }
 
-.login-form input{
-width: 100%;
+.login-form input {
+  width: 100%;
 }
 
 
@@ -792,12 +792,31 @@ width: 100%;
 .view {
   background-color: white;
   padding: 0.5rem 1rem;
-  cursor: pointer;
 }
 
 .view.selected {
   background-color: var(--blue40);
   color: white
+}
+
+.view button {
+  visibility: hidden;
+}
+
+.view:hover button,
+.view:focus button {
+  visibility: visible;
+}
+.view input {
+  width: initial;
+  height: initial;
+  padding: initial;
+  background: none;
+  border: none;
+}
+
+.view input:focus {
+  border-bottom: 1px solid white;
 }
 
 button.rounded {
@@ -986,13 +1005,13 @@ td.select {
   align-items: center;
   width: max-content;
   padding: 0 1rem;
-  gap: 6px;
+  gap: 0.5rem;
   height: 30px;
 }
 
 .filter-container .toggle-btn {
-  height: 2rem;
-  gap: 6px
+  height: 3rem;
+  gap: 0.5rem
 }
 
 .placeholder {
@@ -1112,7 +1131,7 @@ strong {
   justify-content: space-between;
   gap: 1rem;
   flex-shrink: 0;
-  border-left: 6px solid;
+  border-left: 0.5rem solid;
   border-radius: 5px;
 }
 
@@ -1203,4 +1222,19 @@ datalist {
   margin-top: 0.5rem;
   margin-bottom: -0.5rem;
   color: var(--blue40);
+}
+
+.new-table-container .itemName,
+.new-table-container .itemType,
+.new-table-container .customerType,
+.new-table-container .arrangedTime,
+.new-table-container .isLate {
+  background-color: var(--gray20);
+}
+
+.col-selection {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  row-gap: 0.5rem;
+  column-gap: 2rem;
 }

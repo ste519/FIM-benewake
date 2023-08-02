@@ -4,15 +4,15 @@ import Table from '../components/Table';
 import Views from '../components/Views';
 import Toolbar from '../components/Toolbar';
 import { useTableDataContext } from '../hooks/useCustomContext';
-import { orderViews } from '../constants/Views'
+import { itemViews } from '../constants/Views'
 import AllDefs from '../constants/AllDefs';
 
 // 全部订单
-export default function Order() {
+export default function Item() {
   const tableData = useTableDataContext()
   const columns = useMemo(() => AllDefs, [])
   const features = ["delete", "export", "refresh", 'visibility']
-  const [views, setViews] = useState(orderViews)
+  const [views, setViews] = useState(itemViews)
 
   return (
     <div className='col full-screen'>

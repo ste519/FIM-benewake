@@ -1,89 +1,78 @@
 import { useState, useEffect, useLayoutEffect } from 'react'
 import { ReactComponent as AddIcon } from '../assets/icons/add.svg'
 import { ReactComponent as CloseIcon } from '../assets/icons/cross.svg'
-import { ReactComponent as ArrowIcon } from '../assets/icons/arrow-down.svg'
-import {useTabContext} from '../hooks/useCustomContext';
+import { CONDITIONS } from '../constants/FilterConsts'
 
-const CONDITIONS = ["包含", "不包含", "大于", "大于等于", "等于", "不等于", "小于", "小于等于", "为空", "不为空"]
-const HEADERS = ["销售员", "单据编号", "单据类型", "单据状态", "物料编码", "物料名称", "数量", "客户名称", "订单状态", "产品类型", "客户类型", "期望发货日期", "计划反馈日期", "是否延期", "订单交付进度", "运输单号", "签收时间", "最新状态", "是否定制", "创建人", "备注"]
+const conditions = CONDITIONS
 
-export const Filter = ({ index, filters, setFilters, headers, conditions }) => {
-    //values: ["销售员","包含",""]
-    const [values, setValues] = useState(filters[index])
+export const Filter = ({ index, initialValues, setFilters, headers }) => {
+    const [values, setValues] = useState(initialValues)
 
-    useLayoutEffect(() => setValues(filters[index]), [filters[index]])
+    useEffect(() => setValues(initialValues), [initialValues])
+
     useEffect(() => {
-        const copy = [...filters]
-        copy[index] = values
-        setFilters(copy)
-    }, [values])
+        setFilters(prev => prev.map((filter, i) => i === index ? values : filter));
+    }, [values]);
+
 
     const removeFilter = () => {
-        setFilters(filters.filter((_, i) => i !== index))
+        setFilters(prev => prev.filter((_, i) => i !== index))
     }
 
-    const handleHeaderChange = (event) => {
-        setValues([event.target.value, values[1], values[2]])
-    }
-
-    const handleConditionChange = (event) => {
-        setValues([values[0], event.target.value, values[2]])
-    }
-
-    const handleStringChange = (event) => {
-        setValues([values[0], values[1], event.target.value])
+    const handleChange = (key, value) => {
+        setValues(prev => ({
+            ...prev,
+            [key]: value,
+        }));
     }
 
     return (
         <div className='row filter' >
-            <div className='select-wrapper'>
-                <select value={values[0]} onChange={handleHeaderChange}>
-                    {headers.map((header, i) => <option key={i}>{header}</option>)}
-                </select>
-                <ArrowIcon className="arrow-icon" />
-            </div>
-            <div className='select-wrapper'>
-                <select value={values[1]} onChange={handleConditionChange}>
-                    {conditions.map((condition, i) => <option key={i}>{condition}</option>)}
-                </select>
-                <ArrowIcon className="arrow-icon" />
-            </div>
-            <input name={`value${index}`} type="text" placeholder='数值' value={values[2]} onChange={handleStringChange} />
+            <select value={values?.colName} onChange={(e) => handleChange("colName", e.target.value)}>
+                {headers.map((header, i) => <option value={header.id} key={i}>{header.name}</option>)}
+            </select>
+            <select value={values?.condition} onChange={(e) => handleChange("condition", e.target.value)}>
+                {conditions.map((condition, i) => <option value={condition.id} key={i}>{condition.name}</option>)}
+            </select>
+            <input value={values?.value} name="value" type="text" placeholder='数值' onChange={(e) => handleChange("value", e.target.value)} />
             <button className="close-btn" onClick={removeFilter}>
                 <CloseIcon className="icon__small close-icon" />
             </button>
         </div>
     )
-
 }
 
-const SimpleFilters = ({ filters, setFilters }) => {
-    const headers = HEADERS
-    const conditions = CONDITIONS
+export default function SimpleFilters({ filters, setFilters, headers}) {
 
-    const addFilter = (e) => {
-        e.preventDefault()
-        setFilters([...filters, [headers[0], conditions[0], ""]])
+    const initialFilterValue = {
+        colName: headers[0].id, condition: conditions[0].id, value: ""
+    }
+
+    console.log("Filters mounted");
+
+    const addFilter = () => {
+        setFilters(prev => [...prev, initialFilterValue])
     }
 
     return (
-        <div className="filter-wrapper">
-            {filters?.map((_, i) =>
-                <Filter
-                    key={i}
-                    headers={headers}
-                    conditions={conditions}
-                    index={i}
-                    filters={filters}
-                    setFilters={setFilters}
-                />
-            )}
-            <button onClick={addFilter} className="icon-btn">
-                <AddIcon className="icon__small add-icon" /> 新增筛选
-            </button>
+        <div className='col filter-container'>
+            <div className='row'>
+                <div className="filter-wrapper">
+                    {filters?.map((value, i) =>
+                        <Filter
+                            key={i}
+                            index={i}
+                            initialValues={value}
+                            filters={filters}
+                            setFilters={setFilters}
+                            headers={headers}
+                        />
+                    )}
+                    <button onClick={addFilter} className="icon-btn">
+                        <AddIcon className="icon__small add-icon" /> 新增筛选
+                    </button>
+                </div>
+            </div>
         </div>
-
     )
 }
-
-export default SimpleFilters;

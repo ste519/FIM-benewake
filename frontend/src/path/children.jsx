@@ -7,18 +7,22 @@ import fetchInventory from '../api/test';
 import Production from '../routes/Production';
 import Order from '../routes/Order';
 import Customer from '../routes/Customer';
-import Product from '../routes/Product';
+import Item from '../routes/Item';
 import Inquiry from '../routes/Inquiry';
 import Delivery from '../routes/Delivery';
 import Inventory from '../routes/Inventory';
 import Sales from '../routes/Sales';
+import { fetchNewViews } from '../api/fetch';
 
 const children = [
-    { name: "全部订单", path: "all", element: <All />, id: 1 },
+    {
+        name: "全部订单", path: "all", element: <All />, id: 1,
+        loader: async () => await fetchNewViews("1")
+    },
     { name: "订单类型列表", path: "order", element: <Order />, id: 2 },
     { name: "客户类型列表", path: "customer", element: <Customer />, id: 3 },
-    { name: "产品类型列表", path: "product", element: <Product />, id: 4 },
-    { name: "询单列表", path: "inquiry", element: <Inquiry />, id: 5 },
+    { name: "产品类型列表", path: "item", element: <Item />, id: 4 },
+    { name: "订单转换列表", path: "inquiry", element: <Inquiry />, id: 5 },
     { name: "订单交付进度", path: "delivery", element: <Delivery />, id: 6 },
     { name: "库存占用情况", path: "inventory", element: <Inventory /> },
     { name: "生产计划", path: "production", element: <Production /> },

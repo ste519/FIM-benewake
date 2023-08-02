@@ -15,7 +15,6 @@ import { ReactComponent as FilterIcon } from '../assets/icons/filter.svg';
 import { ReactComponent as ArrowIcon } from '../assets/icons/arrow-down.svg';
 import { DndProvider, useDrag, useDrop } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
-import ColVisibility from './ColVisibility';
 import { useTableStatesContext, useUpdateTableStatesContext } from '../hooks/useCustomContext';
 
 function DebouncedInput({
@@ -156,12 +155,12 @@ const DraggableHeader = ({ header, table }) => {
     )
 }
 
-export default function Table({ data, columns, showVisibility }) {
+export default function Table({ data, columns, setNewInquiryData }) {
     console.log("Table Rerendered");
     const states = useTableStatesContext()
     const [rowSelection, setRowSelection] = useState({})
 
-    const columnVisibility = states.ColVisibility
+    const columnVisibility = states.columnVisibility
     const [sorting, setSorting] = useState([])
     const [grouping, setGrouping] = useState([])
     const [columnFilters, setColumnFilters] = useState([])
@@ -171,8 +170,7 @@ export default function Table({ data, columns, showVisibility }) {
 
     const [columnOrder, setColumnOrder] = useState(columns.map(column => column.id))
 
-    useEffect(()=> console.log(123), [states])
-    useEffect(() => setRowSelection({}), [data,])
+    useEffect(() => setRowSelection({}), [data])
     useEffect(() => updateTableStates({ type: "SET_ROW_SELECTION", rowSelection }), [rowSelection])
 
 
@@ -182,6 +180,9 @@ export default function Table({ data, columns, showVisibility }) {
             columns,
             columnResizeMode,
             enableRowSelection: true,
+            defaultColumn: {
+                isVisible: false
+            },
             state: {
                 sorting,
                 grouping,
@@ -190,7 +191,6 @@ export default function Table({ data, columns, showVisibility }) {
                 rowSelection,
                 columnOrder
             },
-
             initialState: columnVisibility,
 
             getCoreRowModel: getCoreRowModel(),
@@ -208,7 +208,7 @@ export default function Table({ data, columns, showVisibility }) {
             onColumnFiltersChange: setColumnFilters,
             meta: {
                 updateData: (rowIndex, columnId, value) => {
-                    setTableData(prev =>
+                    setNewInquiryData(prev =>
                         prev.map((row, index) => {
                             if (index === rowIndex) {
                                 return { ...prev[rowIndex], [columnId]: value, }
@@ -223,8 +223,6 @@ export default function Table({ data, columns, showVisibility }) {
     return (
         <DndProvider backend={HTML5Backend}>
             <div className="table-container col" >
-
-                {showVisibility && <ColVisibility table={table} />}
                 <div className="table-wrapper" >
                     <div className="table" style={{
                         width: table.getCenterTotalSize(),

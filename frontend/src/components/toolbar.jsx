@@ -8,9 +8,10 @@ import children from '../path/children';
 import moment from 'moment';
 moment.updateLocale('zh-cn')
 import "moment/dist/locale/zh-cn";
-import { NEW_INQUIRY_TAB } from '../constants/Global'
 import { deleteInquiry } from '../api/delete';
 import { startInquiry } from '../api/inquiry';
+import ColVisibility from './ColVisibility';
+import colNameDict from '../constants/ColNameDict.json'
 
 function isObjectEmpty(obj) {
     return Object.keys(obj).length === 0 && obj.constructor === Object;
@@ -64,10 +65,18 @@ async function parseInquiryObj(source) {
     return result;
 }
 
+function noData(tableData) {
+    return (!tableData || tableData.length <= 0)
+}
+
+function EngToCn(col_name_ENG) {
+    console.log(col_name_ENG);
+    return colNameDict.find(col => col.col_name_ENG === col_name_ENG)?.col_name_CN
+}
 export default function Toolbar({ features }) {
 
     console.log("Toolbar mounted");
-    console.log(children);
+
     const updateTabs = useUpdateTabContext()
     const updateTableData = useUpdateTableDataContext()
     const updateTableStates = useUpdateTableStatesContext()
@@ -97,7 +106,6 @@ export default function Toolbar({ features }) {
         else { return false }
     }
 
-
     const handleDelete = async () => {
         setAction({ type: "删除", time: new Date() })
         if (!noRowSelected()) {
@@ -117,26 +125,38 @@ export default function Toolbar({ features }) {
         setAction({ type: "刷新", time: new Date() })
         updateTableData({ type: "CLEAR_TABLE_DATA" })
         const res = await fetchData(query)
-        updateTableData({ type: "SET_TABLE_DATA", tableData: res })
+        updateTableData({ type: "SET_TABLE_DATA", tableData: res.lists })
     }
 
     const handleExport = () => {
-        setAction({ type: "导出", time: new Date() })
+        if (noData(tableData)) {
+            updateAlert({ type: "SHOW_ALERT", data: { type: "error", message: "没有数据！" } })
+        }
+        else {
+            setAction({ type: "导出", time: new Date() })
 
-        const wb = XLSX.utils.book_new();
-        const ws = XLSX.utils.json_to_sheet([]);
+            const wb = XLSX.utils.book_new();
+            const ws = XLSX.utils.json_to_sheet([]);
 
-        // let Heading = [['FirstName', 'Last Name', 'Email']];
+            let headings = [
+                Object.keys(tableData[0])
+                    .map(col_name_ENG => EngToCn(col_name_ENG))
+                    .filter(heading => heading !== undefined)
+            ]
 
-        // XLSX.utils.sheet_add_aoa(ws, Heading);
-        XLSX.utils.sheet_add_json(ws, tableData, { origin: 'A2', skipHeader: true });
-        XLSX.utils.book_append_sheet(wb, ws, activeTab);
+            console.log(headings);
+            XLSX.utils.sheet_add_aoa(ws, headings);
+            const newData = tableData.map(({ inquiry_id, ...rest }) => rest)
 
-        const timestamp = moment(new Date()).format('YYMMDDHHmmss')
-        const filename = children.filter((child) => child.path === activeTab)[0].name
+            XLSX.utils.sheet_add_json(ws, newData, { origin: 'A2', skipHeader: true });
+            XLSX.utils.book_append_sheet(wb, ws);
 
-        XLSX.writeFileXLSX(wb, filename + timestamp + ".xlsx");
-        toggleExportPopup()
+            const timestamp = moment(new Date()).format('YYMMDDHHmmss')
+            const filename = children.filter((child) => child.path === activeTab)[0].name
+
+            XLSX.writeFileXLSX(wb, filename + timestamp + ".xlsx");
+        }
+        // toggleExportPopup()
     }
 
     const handleStartInquiry = async () => {
@@ -223,28 +243,42 @@ export default function Toolbar({ features }) {
         <div className='row toolbar'>
             <div className='row flex-center'>
                 <button to="/new" onClick={handleNew} className={`${features?.includes("new") ? "" : "hidden"}`}>新增</button>
+
                 <button onClick={toggleDeletePopup} className={`${features?.includes("delete") ? "" : "hidden"}`}>删除</button>
                 {openDeletePopup && deletePopup}
+
                 <button onClick={handlePin} className={`${features?.includes("pin") ? "" : "hidden"}`}>置顶</button>
+
                 <button onClick={handleUnpin} className={`${features?.includes("unpin") ? "" : "hidden"}`}>取消置顶</button>
+
                 <button onClick={handleRefresh} className={`${features?.includes("refresh") ? "" : "hidden"}`}>刷新</button>
+
                 <button onClick={toggleImportPopup} className={`${features?.includes("import") ? "" : "hidden"}`}>导入</button>
                 {openImportPopup && importPopup}
+
                 <button onClick={toggleExportPopup} className={`${features?.includes("export") ? "" : "hidden"}`}>导出</button>
                 {openExportPopup && exportPopup}
-                <button onClick={handleSave} className={`${features?.includes("save") ? "" : "hidden"}`}>保存</button>
-                <button onClick={handleStartInquiry} className={`${features?.includes("startInquiry") ? "" : "hidden"}`}>开始询单</button>
 
+                <button onClick={handleSave} className={`${features?.includes("save") ? "" : "hidden"}`}>保存</button>
+
+                <button onClick={handleStartInquiry} className={`${features?.includes("startInquiry") ? "" : "hidden"}`}>开始询单</button>
             </div>
-            <div className={`row flex-center status ${features?.includes("status") ? "" : "hidden"}`}>
-                {action &&
-                    <span>
-                        <strong>{action.type}</strong>
-                        &nbsp;于&nbsp;
-                        <strong>{`${moment(action.time).format('lll')}`}</strong>
-                    </span>
-                }
-            </div>
+            {features.includes("status") &&
+                <div className="row flex-center status">
+                    {action &&
+                        <span>
+                            <strong>{action.type}</strong>
+                            &nbsp;于&nbsp;
+                            <strong>{`${moment(action.time).format('lll')}`}</strong>
+                        </span>
+                    }
+                </div>}
+            {
+                features.includes("visibility") &&
+                <div className="row flex-center status">
+                    <ColVisibility />
+                </div>
+            }
         </div >
     )
 }

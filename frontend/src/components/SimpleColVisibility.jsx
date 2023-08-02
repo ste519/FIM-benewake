@@ -1,32 +1,47 @@
-import React from 'react'
+
+import colNameDict from '../constants/ColNameDict.json'
+import { VISIBILITY_ALL_FALSE, VISIBILITY_ALL_TRUE } from '../constants/Global';
 
 const SimpleColVisibility = ({ visibility, setVisibility }) => {
+
+    const toggleSelectAll = () => {
+        if (Object.values(visibility).includes(false)) {
+            setVisibility(VISIBILITY_ALL_TRUE)
+        }
+        else {
+            setVisibility(VISIBILITY_ALL_FALSE)
+        }
+    }
     const handleChange = (name) => {
         setVisibility({ ...visibility, [name]: !visibility[name] })
     }
 
     return (
-        <div className="col visibility-wrapper">
-            {/* <label>
-                        <input
-                            type="checkbox"
-                            name="visibilityAll"
-                        />
-                        全选
-                    </label> */}
-            {
-                Object.keys(visibility).map(
-                    name =>
-                        <label key={name}>
-                            <input
-                                type='checkbox'
-                                name={name}
-                                checked={visibility[name]}
-                                onChange={() => handleChange(name)}
-                            />
-                            {name}
-                        </label>
-                )}
+        <div className="col simple-visibility-wrapper">
+            <label key="-1">
+                <input
+                    type="checkbox"
+                    name="visibilityAll"
+                    checked={!Object.values(visibility).includes(false)}
+                    onChange={toggleSelectAll}
+                />
+                全选
+            </label>
+            <div className='col-selection'>
+                {
+                    colNameDict.map(
+                        col =>
+                            <label key={col.col_id}>
+                                <input
+                                    type='checkbox'
+                                    name={"visibility" + col.col_id}
+                                    checked={visibility[col.col_name_ENG]}
+                                    onChange={() => handleChange(col.col_name_ENG)}
+                                />
+                                {col.col_name_CN}
+                            </label>
+                    )}
+            </div>
         </div>
     )
 }

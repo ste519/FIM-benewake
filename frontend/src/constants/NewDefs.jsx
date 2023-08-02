@@ -14,9 +14,9 @@ const DataList = ({ index, getValue, id, table, type, searchKey }) => {
     useEffect(() => { setValue(initialValue ?? "") }, [initialValue])
 
     useEffect(() => {
-        console.log({ type, setOptions, searchKey, value });
         const timeout = setTimeout(async () => {
-            console.log(await fetchOptions({ type, setOptions, searchKey, value }))
+            const res = (await fetchOptions(type, searchKey, value))
+            setOptions(res)
         }, 500);
 
         return () => clearTimeout(timeout);
@@ -34,7 +34,7 @@ const DataList = ({ index, getValue, id, table, type, searchKey }) => {
             />
             <datalist id={type}>
                 {options?.map((item) =>
-                    <option key={item} value={item} />)}
+                    <option key={item.id} value={item[searchKey]} />)}
             </datalist >
         </>
     )
@@ -71,8 +71,7 @@ const Input = ({ index, getValue, id, table, readOnly, type }) => {
     )
 }
 
-
-export const newDefs = [
+const newDefs = [
     {
         id: "select",
         header: ({ table }) => (
@@ -111,8 +110,8 @@ export const newDefs = [
                 getValue={getValue}
                 id={id}
                 table={table}
-                type={"item"}
-                searchKey={"itemCode"}
+                type="item"
+                searchKey="itemCode"
             />,
         size: 90
     },
@@ -150,8 +149,8 @@ export const newDefs = [
                 getValue={getValue}
                 id={id}
                 table={table}
-                type={"user"}
-                searchKey={"username"}
+                type="user"
+                searchKey="username"
             />,
         size: 60
     },
@@ -203,17 +202,4 @@ export const newDefs = [
     }
 ]
 
-
-export const newRow = {
-    itemCode: "",
-    itemName: "",
-    saleNum: "",
-    customerName: "",
-    salesmanName: "",
-    itemType: "",
-    customerType: "",
-    expectedTime: "",
-    arrangedTime: "",
-    isLate: "",
-    remark: ""
-}
+export default newDefs;

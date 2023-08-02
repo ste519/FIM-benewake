@@ -3,7 +3,7 @@ import { ReactComponent as AddIcon } from '../assets/icons/add.svg'
 import { ReactComponent as CloseIcon } from '../assets/icons/cross.svg'
 import { ReactComponent as ArrowIcon } from '../assets/icons/arrow-down.svg'
 import { HEADERS, CONDITIONS } from '../constants/FilterConsts'
-import { useQueryContext, useUpdateQueryContext, useUpdateTableDataContext } from '../hooks/useCustomContext'
+import { useQueryContext, useUpdateQueryContext, useUpdateTableDataContext, useUpdateTableStatesContext} from '../hooks/useCustomContext'
 import { fetchData } from '../api/fetch'
 import { useAlertContext } from '../hooks/useCustomContext'
 
@@ -55,6 +55,7 @@ export default function Filters({ filters, setFilters, display }) {
   const query = useQueryContext()
   const updateQuery = useUpdateQueryContext()
   const updateTableData = useUpdateTableDataContext()
+  const updateTableStates = useUpdateTableStatesContext()
 
   const initialFilterValue = {
     colName: headers[0].id, condition: conditions[0].id, value: ""
@@ -70,7 +71,7 @@ export default function Filters({ filters, setFilters, display }) {
     updateQuery({ type: "SET_FILTER_CRITERIAS", filterCriterias: filters })
     updateTableData({ type: "CLEAR_TABLE_DATA" })
     const res = await fetchData({...query, filterCriterias: filters})
-    updateTableData({ type: "SET_TABLE_DATA", tableData: res })
+    updateTableData({ type: "SET_TABLE_DATA", tableData: res.lists })
   }
 
   return (

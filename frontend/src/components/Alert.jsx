@@ -2,8 +2,16 @@ import React from 'react'
 import { useAlertContext } from '../hooks/useCustomContext';
 
 export default function Alert({ type, message, action }) {
+    console.log(action);
     const updateAlert = useAlertContext()
     const closeAlert = () => updateAlert({ type: "CLOSE_ALERT" })
+
+    const handleConfirm = () => {
+        if (action) {
+            action();
+        }
+        closeAlert();
+    }
 
     function getHeading() {
         switch (type) {
@@ -29,12 +37,12 @@ export default function Alert({ type, message, action }) {
                     {action ?
                         <>
                             <button onClick={closeAlert} className='white small'>取消</button>
-                            <button onClick={action} className='blue60 small'>确认</button>
+                            <button onClick={handleConfirm} className='blue60 small'>确认</button>
                         </>
                         : <button onClick={closeAlert} className='white small'>确认</button>
                     }
                 </div>
             </div>
-        </div>
+        </div >
     )
 }

@@ -2,6 +2,7 @@
 import { useLayoutEffect, useEffect, useReducer } from "react";
 import { TableDataContext, TableStatesContext, UpdateTableDataContext, UpdateTableStatesContext } from "../contexts/createContext";
 import { useLocation } from "react-router-dom";
+import { VISIBILITY_ALL_FALSE } from "../constants/Global";
 
 const tableDataReducer = (state, action) => {
     switch (action.type) {
@@ -17,10 +18,12 @@ const tableDataReducer = (state, action) => {
     }
 };
 
+
+
 const tableStatesReducer = (state, action) => {
     switch (action.type) {
         case "RESET_ALL_STATES":
-            return { columnVisibility: {}, rowSelection: {} }
+            return { columnVisibility: VISIBILITY_ALL_FALSE, rowSelection: {} }
         case "RESET_ROW_SELECTION":
             return { ...state, rowSelection: {} }
         case "SET_ROW_SELECTION":
@@ -32,17 +35,19 @@ const tableStatesReducer = (state, action) => {
     }
 }
 
+
 const TableProvider = ({ children }) => {
     const [tableData, updateTableData] = useReducer(tableDataReducer, null);
     const [tableStates, updateTableStates] = useReducer(tableStatesReducer, {
         rowSelection: {},
-        columnVisibility: {}
+        columnVisibility:  VISIBILITY_ALL_FALSE
     })
 
     //Clear states upon route change
     const location = useLocation();
     useLayoutEffect(() => {
         updateTableStates({ type: "RESET_ALL_STATES" });
+        updateTableData({ type: "CLEAR_TABLE_DATA" });
     }, [location]);
     //TODO
     useEffect(() => { console.log("tableStates: ", tableStates); }, [tableStates])
