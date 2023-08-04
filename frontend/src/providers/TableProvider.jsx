@@ -1,8 +1,10 @@
 
-import { useLayoutEffect, useEffect, useReducer } from "react";
-import { TableDataContext, TableStatesContext, UpdateTableDataContext, UpdateTableStatesContext } from "../contexts/createContext";
+import { useLayoutEffect, useState, useEffect, useReducer } from "react";
+import { TableDataContext, TableStatesContext, UpdateTableDataContext, UpdateTableStatesContext, SelectedDataContext } from "../contexts/createContext";
 import { useLocation } from "react-router-dom";
 import { VISIBILITY_ALL_FALSE } from "../constants/Global";
+import routes from "../path/children";
+import { fetchData } from "../api/fetch";
 
 const tableDataReducer = (state, action) => {
     switch (action.type) {
@@ -17,8 +19,6 @@ const tableDataReducer = (state, action) => {
             throw new Error('Unknown action type');
     }
 };
-
-
 
 const tableStatesReducer = (state, action) => {
     switch (action.type) {
@@ -38,26 +38,34 @@ const tableStatesReducer = (state, action) => {
 
 const TableProvider = ({ children }) => {
     const [tableData, updateTableData] = useReducer(tableDataReducer, null);
+    const [selectedData, setSelectedData] = useState();
     const [tableStates, updateTableStates] = useReducer(tableStatesReducer, {
         rowSelection: {},
-        columnVisibility:  VISIBILITY_ALL_FALSE
+        columnVisibility: VISIBILITY_ALL_FALSE
     })
 
-    //Clear states upon route change
     const location = useLocation();
     useLayoutEffect(() => {
-        updateTableStates({ type: "RESET_ALL_STATES" });
-        updateTableData({ type: "CLEAR_TABLE_DATA" });
+        async function fetch() {
+
+            let tableId = routes.find(route => route.path === location.pathname.replace("/", "")).id
+            if (tableId) {
+                const res = await fetchData({ tableId, viewId: 0 })
+                updateTableStates({ type: "SET_COLUMN_VISIBILITY", columnVisibility: res.columnVisibility });
+                updateTableData({ type: "SET_TABLE_DATA", tableData: res.lists });
+            }
+        }
+        fetch()
     }, [location]);
-    //TODO
-    useEffect(() => { console.log("tableStates: ", tableStates); }, [tableStates])
-    useEffect(() => { console.log("tableData: ", tableData); }, [tableData])
+
     return (
         <TableDataContext.Provider value={tableData}>
             <UpdateTableDataContext.Provider value={updateTableData}>
                 <TableStatesContext.Provider value={tableStates}>
                     <UpdateTableStatesContext.Provider value={updateTableStates}>
-                        {children}
+                        <SelectedDataContext.Provider value={{ selectedData, setSelectedData }}>
+                            {children}
+                        </SelectedDataContext.Provider>
                     </UpdateTableStatesContext.Provider>
                 </TableStatesContext.Provider>
             </UpdateTableDataContext.Provider>

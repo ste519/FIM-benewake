@@ -29,7 +29,6 @@ export default function Login() {
     const handleSubmit = async (e) => {
         e.preventDefault()
         const res = await login({ username, password })
-        console.log(res);
         switch (res?.code) {
             case 200:
                 setAuth(res.data)
@@ -57,7 +56,7 @@ export default function Login() {
     }
 
     const handleCreateUser = async () => {
-        console.log(await createUser({ username, password, userType: 1 }))
+        await createUser({ username, password, userType: 1 })
     }
 
 
@@ -96,7 +95,7 @@ export default function Login() {
                 <div>
                     <h1>(测试用)</h1>
                     <button onClick={handleCreateUser}>新建用户</button>
-                    
+
                 </div>
             </div>
 

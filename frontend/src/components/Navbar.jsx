@@ -6,11 +6,8 @@ import { ReactComponent as MenuIcon } from '../assets/icons/menu.svg';
 import { NavLink, useNavigate } from 'react-router-dom';
 
 const Tabs = ({navigate}) => {
-    console.log("Navbar mounted");
-
     const tabs = useTabContext()
     const updateTabs = useUpdateTabContext()
-    console.log(tabs);
     const handleRemoveTab = (event, tab) => {
         event.preventDefault()
         updateTabs({ type: 'REMOVE_TAB', tab })

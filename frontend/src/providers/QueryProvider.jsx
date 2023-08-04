@@ -27,8 +27,6 @@ const QueryProvider = ({ children }) => {
             secTab: null
         }
     )
-    useEffect(() => { console.log(query); }, [query])
-
     return (
         <QueryContext.Provider value={query}>
             <UpdateQueryContext.Provider value={updateQuery}>

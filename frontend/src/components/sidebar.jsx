@@ -4,7 +4,6 @@ import { useUpdateTabContext, useQueryContext, useUpdateQueryContext } from '../
 import {  logout } from '../api/auth';
 
 export default function Sidebar({ showSidebar }) {
-    console.log("Sidebar mounted");
     const updateTabs = useUpdateTabContext()
     const updateQuery = useUpdateQueryContext()
     const navigate = useNavigate()
@@ -26,6 +25,7 @@ export default function Sidebar({ showSidebar }) {
                 {children.map((obj, i) =>
                     obj.name !== "用户主页" &&
                     obj.name !== "新增询单" &&
+                    obj.name !== "修改询单" &&
                     obj.name !== "404" &&
                     <NavLink
                         key={i}

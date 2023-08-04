@@ -10,9 +10,18 @@ const SecTabs = () => {
 
     const handleSecTabClick = async (secTab) => {
         setActiveSecTab(secTab);
-        updateQuery({ type: "SET_SEC_TAB", secTab })
         updateTableData({ type: "CLEAR_TABLE_DATA" })
-        const res = await fetchData({ ...query, secTab })
+        updateQuery({ type: "SET_SEC_TAB", secTab })
+
+        
+        let res;
+        if (query.viewId===null || query.viewId===undefined) {
+            updateQuery({ type: "SET_VIEW_ID", viewId: 0 })
+            res = await fetchData({ ...query, viewId: 0, secTab })
+        }
+        else {
+            res = await fetchData({ ...query, secTab })
+        }
         updateTableData({ type: "SET_TABLE_DATA", tableData: res.lists })
     }
     const secTabs = ['已完成', '未过期未完成', '已过期未完成']

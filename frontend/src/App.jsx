@@ -5,6 +5,7 @@ import { useState } from 'react';
 import QueryProvider from './providers/QueryProvider';
 import RequireAuth from './components/RequireAuth';
 import TableProvider from './providers/TableProvider';
+import SelectedDataProvider from './providers/SelectedDataProvider';
 
 const Layout = ({ children }) => {
     const [showSidebar, setShowSidebar] = useState(true);
@@ -29,9 +30,11 @@ export default function App() {
         <TabProvider>
             <QueryProvider>
                 <TableProvider>
-                    <Layout>
-                        <RequireAuth />
-                    </Layout>
+                    <SelectedDataProvider>
+                        <Layout>
+                            <RequireAuth />
+                        </Layout>
+                    </SelectedDataProvider>
                 </TableProvider>
             </QueryProvider>
         </TabProvider>

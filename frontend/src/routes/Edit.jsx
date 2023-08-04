@@ -1,21 +1,23 @@
 import DatePicker from '../components/DatePicker';
-import NewTable from '../components/NewTable';
-import { useState } from 'react';
+import EditTable from '../components/EditTable';
+import { useState, useEffect } from 'react';
 
-import { NEW_INQUIRY_DATA } from '../constants/Global';
 import { startInquiry } from '../api/inquiry';
-import { rowToInquiry } from '../js/parseData';
+import { parseInquiryObj, rowToInquiry } from '../js/parseData';
 import moment from 'moment';
-import { useAlertContext } from '../hooks/useCustomContext';
+import { useAlertContext, useSelectedDataContext } from '../hooks/useCustomContext';
+import { snakeToCamelCase } from '../js/transformType';
 
-const SimpleToolbar = ({ rows, inquiryType, setInquiryCode }) => {
+const SimpleToolbar = ({ rows }) => {
     const updateAlert = useAlertContext()
     const [action, setAction] = useState(null)
+    const { setSelectedData } = useSelectedDataContext()
 
     const handleClick = async (status) => {
         setAction({ type: status === 1 ? "开始询单" : "保存", time: new Date() })
 
-        const newInquiries = rows.map(row => rowToInquiry(row, inquiryType))
+        const newInquiries = rows.map(row => rowToInquiry(row))
+        console.log(newInquiries);
         const res = await startInquiry(newInquiries, status)
         switch (res.code) {
             case 200:
@@ -25,7 +27,7 @@ const SimpleToolbar = ({ rows, inquiryType, setInquiryCode }) => {
                         message: res.message
                     }
                 })
-                setInquiryCode(res.data.inquiryCode)
+                setSelectedData(rows[0])
                 break
             case 400:
                 updateAlert({
@@ -75,33 +77,28 @@ const SimpleToolbar = ({ rows, inquiryType, setInquiryCode }) => {
 
 }
 
-const New = () => {
-    const [inquiryType, setInquiryType] = useState(null)
-    const [inquiryCode, setInquiryCode] = useState();
+const Edit = () => {
+    const { selectedData } = useSelectedDataContext()
+    let initialData;
+    useEffect(() => {
+        async function fetch() {
+            initialData = await (parseInquiryObj(selectedData))
+            Object.entries(selectedData).forEach(([key, value]) => {
+                const camelCaseKey = snakeToCamelCase(key)
+                initialData[camelCaseKey] = value
+            })
+            setRows([initialData])
+        }
+        fetch()
+    }, [])
+    const [inquiryCode, setInquiryCode] = useState(selectedData?.inquiry_code); //单据编号
     const [currentDate, setCurrentDate] = useState(new Date());
-    const [rows, setRows] = useState([NEW_INQUIRY_DATA])
+    const [rows, setRows] = useState(null)
 
     return (
         <div className='col full-screen invoice-container'>
-            <SimpleToolbar rows={rows} inquiryType={inquiryType} setInquiryCode={setInquiryCode} />
+            <SimpleToolbar rows={rows} />
             <div className='col invoice-info'>
-                <div className='row'>
-                    <h1>订单类型：</h1>
-                    <label htmlFor="yc" className='row flex-center'>
-                        <input
-                            type="radio" id="yc" value="yc"
-                            checked={inquiryType === 4}
-                            onChange={() => setInquiryType(4)} />
-                        销售预测
-                    </label>
-                    <label htmlFor="xd" className='row flex-center'>
-                        <input
-                            type="radio" id="xd" value="xd"
-                            checked={inquiryType === 5}
-                            onChange={() => setInquiryType(5)} />
-                        销售询单
-                    </label>
-                </div>
                 <div className='row'>
                     <h1>单据编号：</h1>
                     <input type="text" disabled name="inquiryCode" value={inquiryCode} onChange={(e) => setInquiryCode(e.target.value)} />
@@ -115,10 +112,10 @@ const New = () => {
                     />
                 </div>
             </div>
-            <NewTable rows={rows} setRows={setRows} />
+            {rows && <EditTable rows={rows} setRows={setRows} />}
         </div >
 
     )
 }
 
-export default New
+export default Edit

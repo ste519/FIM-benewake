@@ -48,8 +48,6 @@ export default function SimpleFilters({ filters, setFilters, headers}) {
         colName: headers[0].id, condition: conditions[0].id, value: ""
     }
 
-    console.log("Filters mounted");
-
     const addFilter = () => {
         setFilters(prev => [...prev, initialFilterValue])
     }

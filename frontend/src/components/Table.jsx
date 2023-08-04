@@ -156,7 +156,6 @@ const DraggableHeader = ({ header, table }) => {
 }
 
 export default function Table({ data, columns, setNewInquiryData }) {
-    console.log("Table Rerendered");
     const states = useTableStatesContext()
     const [rowSelection, setRowSelection] = useState({})
 
@@ -191,8 +190,12 @@ export default function Table({ data, columns, setNewInquiryData }) {
                 rowSelection,
                 columnOrder
             },
-            initialState: columnVisibility,
-
+            initialState: {
+                columnVisibility: columnVisibility,
+                pagination: {
+                    pageSize: 100,
+                },
+            },
             getCoreRowModel: getCoreRowModel(),
             getPaginationRowModel: getPaginationRowModel(),
             getSortedRowModel: getSortedRowModel(),

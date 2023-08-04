@@ -96,9 +96,8 @@ const inquiryMapping = {
 };
 
 export async function fetchData({ tableId, viewId, filterCriterias, secTab }) {
-    console.log("FetchData Started");
     let newCriterias = filterCriterias;
-    let newViewId = viewId
+    let newViewId = tableId > 1 && viewId >0 ? -1 :viewId
     if (secTab) {
         const additionalCriterias = secTabMapping[secTab];
         if (additionalCriterias) {
@@ -109,7 +108,6 @@ export async function fetchData({ tableId, viewId, filterCriterias, secTab }) {
         const additionalCriterias = orderMapping[viewId];
         if (additionalCriterias) {
             newCriterias = [...newCriterias, ...additionalCriterias];
-            newViewId = -1
         }
     }
 
@@ -117,7 +115,6 @@ export async function fetchData({ tableId, viewId, filterCriterias, secTab }) {
         const additionalCriterias = customerMapping[viewId];
         if (additionalCriterias) {
             newCriterias = [...newCriterias, ...additionalCriterias];
-            newViewId = -1
         }
     }
 
@@ -125,7 +122,6 @@ export async function fetchData({ tableId, viewId, filterCriterias, secTab }) {
         const additionalCriterias = itemMapping[viewId];
         if (additionalCriterias) {
             newCriterias = [...newCriterias, ...additionalCriterias];
-            newViewId = -1
         }
     }
 
@@ -133,7 +129,6 @@ export async function fetchData({ tableId, viewId, filterCriterias, secTab }) {
         const additionalCriterias = inquiryMapping[viewId];
         if (additionalCriterias) {
             newCriterias = [...newCriterias, ...additionalCriterias];
-            newViewId = -1
         }
     }
 
@@ -145,10 +140,7 @@ export async function fetchData({ tableId, viewId, filterCriterias, secTab }) {
         const { lists, cols } = res?.data?.data || {};
 
         let columnVisibility = { ...VISIBILITY_ALL_FALSE }
-
-        console.log(lists, cols);
         cols.forEach(col => columnVisibility[col.col_name_ENG] = true);
-        console.log(columnVisibility);
 
         return { lists: lists, columnVisibility: columnVisibility, cols: cols }
     }
@@ -181,18 +173,6 @@ export async function fetchUser(username, userType) {
     }
 }
 
-export async function fetchId({ type, searchKey, searchValue }) {
-    try {
-        const response = await api.post(`/${type}/likeList`, { [searchKey]: "aa" })
-        console.log(response.data);
-        // const options = response.data.data?.map((row) => row[searchKey])
-        // setOptions(options)
-        // return response.data;
-    }
-    catch (err) {
-        console.log(err);
-    }
-}
 
 export async function fetchNewViews(tableId) {
     try {
@@ -203,3 +183,14 @@ export async function fetchNewViews(tableId) {
         console.log(err);
     }
 }
+
+export async function fetchCustomerType(itemId, customerId) {
+    try {
+        const response = await api.post('/customer/type', { itemId: itemId.toString(), customerId: customerId.toString() })
+        return response.data;
+    }
+    catch (err) {
+        console.log(err);
+    }
+}
+

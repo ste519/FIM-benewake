@@ -1,50 +1,23 @@
 import { useState, useEffect, useRef } from 'react'
-import { useUpdateTableDataContext, useUpdateQueryContext, useQueryContext, useUpdateTableStatesContext, useTableStatesContext, useAlertContext } from '../hooks/useCustomContext';
+import { useUpdateTableDataContext, useUpdateQueryContext, useQueryContext, useUpdateTableStatesContext, useTableStatesContext, useTableDataContext, useAlertContext } from '../hooks/useCustomContext';
 import { ReactComponent as AddIcon } from '../assets/icons/add.svg'
 import { ReactComponent as CloseIcon } from '../assets/icons/cross.svg'
 import SimpleColVisibility from './SimpleColVisibility'
-import SimpleFilters from './SimpleFilters'
 import { fetchData, fetchNewViews } from '../api/fetch'
 import Filters from './Filters'
-import colNameDict from '../constants/ColNameDict.json'
 import { postView } from '../api/post';
 import { VISIBILITY_ALL_FALSE } from '../constants/Global';
 import { useLoaderData } from 'react-router-dom';
 import { deleteView } from '../api/delete';
-
-function getColParams(col, seq, filters) {
-    return {
-        colId: col.col_id,
-        colSeq: seq,
-        colValue: filters.find(filter => filter.colName === col.col_name_ENG)?.value,
-        valueOperator: filters.find(filter => filter.colName === col._name_ENG)?.condition
-    }
-}
-
-function VisibilityToCols(visibility) {
-    return Object.entries(visibility)
-        .filter(([key, value]) => value === true)
-        .map(([key, value]) => colNameDict.find(item => item.col_name_ENG === key)
-        );
-}
-
-function ColsToFilters(cols) {
-    return cols
-        .sort((a, b) => a.col_seq - b.col_seq)
-        .filter(item => item.value_operator)
-        .map(item => ({
-            colName: item.col_name_ENG,
-            condition: item.value_operator,
-            value: item.col_value
-        }));
-}
+import { getColParams } from '../js/parseData';
+import { VisibilityToCols, ColsToFilters } from '../js/transformType';
+import { noData } from '../js/valueCheck';
 
 const ViewPopup = ({ closePopup, setNewViews }) => {
 
     const query = useQueryContext()
 
     const [viewName, setViewName] = useState("")
-    const [filters, setFilters] = useState([])
     const [visibility, setVisibility] = useState(VISIBILITY_ALL_FALSE)
 
     const updateAlert = useAlertContext()
@@ -52,8 +25,9 @@ const ViewPopup = ({ closePopup, setNewViews }) => {
     const handleSumbit = async (e) => {
         e.preventDefault();
         let res;
-        const cols = visibleCols.map((col, i) => getColParams(col, i + 1, filters))
-        //Adding sequence logic
+        const cols = visibleCols.map((col, i) => getColParams(col, i + 1, []))
+
+        //TODO, Adding sequence logic
         const params = {
             tableId: query.tableId,
             viewName,
@@ -92,16 +66,6 @@ const ViewPopup = ({ closePopup, setNewViews }) => {
                     <SimpleColVisibility visibility={visibility} setVisibility={setVisibility} />
                 </div>
 
-                <div className='col'>
-                    <h1>显示列筛选条件：</h1>
-                    {(visibleCols.length > 0) &&
-                        <SimpleFilters
-                            filters={filters}
-                            setFilters={setFilters}
-                            headers={visibleCols}
-                        />}
-                </div>
-
                 <div className='row'>
                     <input type="button" name="cancel" onClick={closePopup} value="取消" />
                     <input type="submit" name="submit" className="blue40" value="确定" />
@@ -115,19 +79,22 @@ const View = ({ id, name, isSelected, handleViewClick, handleDelete, editable })
     const [viewName, setViewName] = useState(name)
     useEffect(() => setViewName(name), [name])
 
+    const [readOnly, setReadOnly] = useState(true)
+
     if (editable) {
         const ref = useRef(null);
         return (<div
             className={`view row flex-center 
         ${isSelected ? 'selected' : 'bordered'}`}
-            onClick={() => handleViewClick(id)}
+            onClick={() => handleViewClick(id, name)}
+            onDoubleClick={() => setReadOnly(!readOnly)}
         >
             <input
                 type="text"
                 value={viewName}
                 style={{ width: viewName.length * 12 }}
+                readOnly={readOnly}
                 ref={ref}
-                onClick={e => e.stopPropagation()}
                 onChange={(e) => setViewName(e.target.value)}
             />
             <button
@@ -136,10 +103,11 @@ const View = ({ id, name, isSelected, handleViewClick, handleDelete, editable })
             </button>
         </div>)
     }
+
     else {
         return (<div
             className={`view row flex-center ${isSelected ? 'selected' : 'bordered'}`}
-            onClick={() => handleViewClick(id)}
+            onClick={() => handleViewClick(id, name)}
         >
             {viewName}
         </div>)
@@ -147,21 +115,36 @@ const View = ({ id, name, isSelected, handleViewClick, handleDelete, editable })
 }
 
 const Views = ({ views, editable }) => {
-    console.log("Views mounted");
     const updateTableData = useUpdateTableDataContext()
     const updateTableStates = useUpdateTableStatesContext()
     const updateQuery = useUpdateQueryContext()
     const query = useQueryContext()
-
     const updateAlert = useAlertContext()
-    const [filters, setFilters] = useState([])
+    const states = useTableStatesContext()
+
+    const visibleCols = VisibilityToCols(states.columnVisibility)
+
+    let initialFilters = query.tableId < 6 ? [
+        { colName: "item_code", condition: "like", value: "" },
+        { colName: "item_name", condition: "like", value: "" },
+        { colName: "customer_name", condition: "like", value: "" },
+        { colName: "item_type", condition: "like", value: "" },
+        { colName: "inquiry_type", condition: "like", value: "" }
+    ] : [
+        { colName: "item_code", condition: "like", value: "" },
+        { colName: "item_name", condition: "like", value: "" },
+        { colName: "customer_name", condition: "like", value: "" }
+    ]
+
+    const [filters, setFilters] = useState(initialFilters)
 
     const [open, setOpen] = useState(false)
-    const [selected, setSelected] = useState(null)
-    const [newViews, setNewViews] = useState(useLoaderData()?.data)
+    const [selected, setSelected] = useState(views[0].viewName)
+    const [newViews, setNewViews] = useState(useLoaderData()?.newViews)
 
     const handleAdd = () => setOpen("add")
-    const handleEdit = () => {
+    const handleSave = async () => {
+
         if (query.viewId === null || query.viewId === undefined || query.viewId === "") {
             updateAlert({ type: "SHOW_ALERT", data: { type: "warning", message: "未选择方案！" } })
         }
@@ -169,7 +152,32 @@ const Views = ({ views, editable }) => {
             updateAlert({ type: "SHOW_ALERT", data: { type: "warning", message: "系统方案无法修改！" } })
         }
         else {
-            setOpen("edit")
+            let res;
+            const cols = visibleCols.map((col, i) => getColParams(col, i + 1, filters)) //TODO: Adding sequence logic
+
+            const params = {
+                tableId: query.tableId,
+                viewName: selected,
+                viewId: query.viewId,
+                cols: cols
+            }
+
+            res = await postView(params)
+
+            switch (res?.code) {
+                case 200:
+                    updateAlert({
+                        type: "SHOW_ALERT",
+                        data: { type: "success", message: res.message }
+                    });
+                    break
+                case 400:
+                    updateAlert({
+                        type: "SHOW_ALERT",
+                        data: { type: "error", message: res.message }
+                    });
+                    break
+            }
         }
     }
 
@@ -182,6 +190,8 @@ const Views = ({ views, editable }) => {
                         type: "success", message: res.message
                     }
                 })
+                updateTableData({ type: "CLEAR_TABLE_DATA" })
+                setNewViews(prev => prev.filter(value => value.viewId !== id))
                 break
             case 400:
                 updateAlert({
@@ -191,7 +201,7 @@ const Views = ({ views, editable }) => {
                 })
                 break
         }
-        setNewViews(prev => prev.filter(value => value.viewId !== id))
+
     }
 
     const handleDelete = async (event, id) => {
@@ -207,20 +217,20 @@ const Views = ({ views, editable }) => {
 
     const closePopup = () => setOpen(false)
 
-    const handleViewClick = async (id) => {
-        setSelected(id)
+    const handleViewClick = async (id, name) => {
+        setSelected(name)
         updateQuery({ type: "SET_VIEW_ID", viewId: id })
         updateTableData({ type: "CLEAR_TABLE_DATA" })
 
         const res = await fetchData({ ...query, viewId: id, filterCriterias: [] })
         updateTableData({ type: "SET_TABLE_DATA", tableData: res.lists })
-
-        updateQuery({ type: "SET_FILTER_CRITERIAS", filterCriterias: ColsToFilters(res.cols) })
+        if (id > 0) {
+            setFilters(ColsToFilters(res.cols))
+            updateQuery({ type: "SET_FILTER_CRITERIAS", filterCriterias: ColsToFilters(res.cols) })
+        }
 
         updateTableStates({ type: "SET_COLUMN_VISIBILITY", columnVisibility: res.columnVisibility })
     }
-
-
 
     return (
         <>
@@ -230,7 +240,7 @@ const Views = ({ views, editable }) => {
                         id={item.viewId}
                         name={item.viewName}
                         key={i}
-                        isSelected={selected === item.viewId}
+                        isSelected={selected === item.viewName}
                         handleViewClick={handleViewClick}
                         handleDelete={handleDelete}
                     />
@@ -240,7 +250,7 @@ const Views = ({ views, editable }) => {
                         id={item.viewId}
                         name={item.viewName}
                         key={i}
-                        isSelected={selected === item.viewId}
+                        isSelected={selected === item.viewName}
                         handleViewClick={handleViewClick}
                         handleDelete={handleDelete}
                         editable
@@ -251,7 +261,7 @@ const Views = ({ views, editable }) => {
                         <button className="rounded blue40" onClick={handleAdd}>
                             <AddIcon />新增方案</button>
                         <button className="rounded white"
-                            onClick={handleEdit}>保存方案</button>
+                            onClick={handleSave}>保存方案</button>
                     </div>
                 }
             </div>
@@ -261,11 +271,17 @@ const Views = ({ views, editable }) => {
                     setNewViews={setNewViews}
                 />
             }
-
-            <div className="col flex-center">
-                <Filters filters={filters} setFilters={setFilters} display={true} />
-
-            </div>
+            {
+                visibleCols?.length > 0 ?
+                    <div className="col flex-center">
+                        <Filters
+                            headers={visibleCols}
+                            filters={filters}
+                            setFilters={setFilters}
+                            display={true} />
+                    </div> :
+                    <div className='placeholder'></div>
+            }
         </>
     )
 }

@@ -2,17 +2,15 @@ import { useState, useEffect, useLayoutEffect } from 'react'
 import { ReactComponent as AddIcon } from '../assets/icons/add.svg'
 import { ReactComponent as CloseIcon } from '../assets/icons/cross.svg'
 import { ReactComponent as ArrowIcon } from '../assets/icons/arrow-down.svg'
-import { HEADERS, CONDITIONS } from '../constants/FilterConsts'
-import { useQueryContext, useUpdateQueryContext, useUpdateTableDataContext, useUpdateTableStatesContext} from '../hooks/useCustomContext'
+import { CONDITIONS } from '../constants/FilterConsts'
+import { useQueryContext,  useUpdateQueryContext, useUpdateTableDataContext} from '../hooks/useCustomContext'
 import { fetchData } from '../api/fetch'
-import { useAlertContext } from '../hooks/useCustomContext'
 
-const headers = HEADERS
 const conditions = CONDITIONS
 
-export const Filter = ({ index, initialValues, setFilters }) => {
+export const Filter = ({ index, initialValues, setFilters, headers }) => {
   const [values, setValues] = useState(initialValues)
-  
+
 
   useEffect(() => setValues(initialValues), [initialValues])
 
@@ -35,7 +33,7 @@ export const Filter = ({ index, initialValues, setFilters }) => {
   return (
     <div className='row filter' >
       <select value={values?.colName} onChange={(e) => handleChange("colName", e.target.value)}>
-        {headers.map((header, i) => <option value={header.id} key={i}>{header.name}</option>)}
+        {headers.map((header, i) => <option value={header.col_name_ENG} key={i}>{header.col_name_CN}</option>)}
       </select>
       <select value={values?.condition} onChange={(e) => handleChange("condition", e.target.value)}>
         {conditions.map((condition, i) => <option value={condition.id} key={i}>{condition.name}</option>)}
@@ -48,20 +46,17 @@ export const Filter = ({ index, initialValues, setFilters }) => {
   )
 }
 
-export default function Filters({ filters, setFilters, display }) {
+export default function Filters({ filters, setFilters, display, headers }) {
   const [isVisible, setIsVisible] = useState(display ?? true)
   const toggleVisible = () => setIsVisible(!isVisible)
 
   const query = useQueryContext()
   const updateQuery = useUpdateQueryContext()
   const updateTableData = useUpdateTableDataContext()
-  const updateTableStates = useUpdateTableStatesContext()
 
   const initialFilterValue = {
-    colName: headers[0].id, condition: conditions[0].id, value: ""
+    colName: headers[0].col_name_ENG, condition: conditions[0].id, value: ""
   }
-
-  console.log("Filters mounted");
 
   const addFilter = () => {
     setFilters(prev => [...prev, initialFilterValue])
@@ -70,7 +65,7 @@ export default function Filters({ filters, setFilters, display }) {
   const queryData = async () => {
     updateQuery({ type: "SET_FILTER_CRITERIAS", filterCriterias: filters })
     updateTableData({ type: "CLEAR_TABLE_DATA" })
-    const res = await fetchData({...query, filterCriterias: filters})
+    const res = await fetchData({ ...query, filterCriterias: filters })
     updateTableData({ type: "SET_TABLE_DATA", tableData: res.lists })
   }
 
@@ -87,6 +82,7 @@ export default function Filters({ filters, setFilters, display }) {
                 initialValues={value}
                 filters={filters}
                 setFilters={setFilters}
+                headers={headers}
               />
             )}
             <button onClick={addFilter} className="icon-btn">

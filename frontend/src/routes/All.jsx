@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { memo, useMemo, useState } from 'react';
 import SecTabs from '../components/SecTabs'
 import Table from '../components/Table';
 import Views from '../components/Views';
@@ -6,12 +6,15 @@ import Toolbar from '../components/Toolbar';
 import { useTableDataContext } from '../hooks/useCustomContext';
 import { allViews } from '../constants/Views';
 import AllDefs from '../constants/AllDefs';
+import { useLoaderData } from 'react-router-dom';
+import { noData } from '../js/valueCheck';
 
 // 全部订单
-export default function All() {
+const All = () => {
   const tableData = useTableDataContext()
+  const loaderData = useLoaderData()
   const columns = useMemo(() => AllDefs, [])
-  const features = ["new", "delete", "import", "export", "startInquiry", "refresh", 'visibility']
+  const features = ["new", "delete", "import", "export", "edit", "startInquiry", "refresh", 'visibility']
   const [views, setViews] = useState(allViews)
 
   return (
@@ -25,10 +28,10 @@ export default function All() {
           editable
         />
       </div>
-      {tableData ?
+      {tableData || loaderData ?
         <div className='content-container col'>
           <Table
-            data={tableData}
+            data={noData(tableData) ? loaderData : tableData}
             columns={columns}
           />
         </div> : null
@@ -36,3 +39,5 @@ export default function All() {
     </div>
   )
 }
+
+export default memo(All);

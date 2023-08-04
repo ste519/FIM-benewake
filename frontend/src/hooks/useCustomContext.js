@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { AlertContext, QueryContext, UpdateQueryContext, AuthContext, TabContext, UpdateTabContext, TableDataContext, UpdateTableDataContext, TableStatesContext, UpdateTableStatesContext} from "../contexts/createContext";
+import { AlertContext, QueryContext, UpdateQueryContext, AuthContext, TabContext, UpdateTabContext, TableDataContext, UpdateTableDataContext, TableStatesContext, UpdateTableStatesContext, SelectedDataContext } from "../contexts/createContext";
 
 export const useAlertContext = () => { return useContext(AlertContext); }
 
@@ -18,3 +18,4 @@ export const useUpdateTableDataContext = () => { return useContext(UpdateTableDa
 
 export const useTableStatesContext = () => { return useContext(TableStatesContext); }
 export const useUpdateTableStatesContext = () => { return useContext(UpdateTableStatesContext); }
+export const useSelectedDataContext = () => { return useContext(SelectedDataContext); }

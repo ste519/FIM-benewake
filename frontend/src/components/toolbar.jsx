@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import ExcelUploader from './ExcelUploader';
 import * as XLSX from 'xlsx';
-import { useAlertContext, useQueryContext, useTableDataContext, useTableStatesContext, useUpdateTabContext, useUpdateTableDataContext, useUpdateTableStatesContext } from '../hooks/useCustomContext';;
+import { useAlertContext, useQueryContext, useSelectedDataContext, useTableDataContext, useTableStatesContext, useUpdateTabContext, useUpdateTableDataContext, useUpdateTableStatesContext } from '../hooks/useCustomContext';;
 import { useLocation, useNavigate } from 'react-router-dom';
-import { fetchData, fetchOptions, fetchUser } from '../api/fetch';
+import { fetchData } from '../api/fetch';
 import children from '../path/children';
 import moment from 'moment';
 moment.updateLocale('zh-cn')
@@ -11,71 +11,11 @@ import "moment/dist/locale/zh-cn";
 import { deleteInquiry } from '../api/delete';
 import { startInquiry } from '../api/inquiry';
 import ColVisibility from './ColVisibility';
-import colNameDict from '../constants/ColNameDict.json'
+import { getIndexes, EngToCn, VisibilityToHeadersENG } from '../js/transformType';
+import { noData, isObjectEmpty, noVisibleCols } from '../js/valueCheck';
+import { getVisbleTableData, parseInquiryObj } from '../js/parseData';
 
-function isObjectEmpty(obj) {
-    return Object.keys(obj).length === 0 && obj.constructor === Object;
-}
-function getIndexes(rowSelection) {
-    return Object.keys(rowSelection).map(Number)
-}
-
-function getInquiryTypeInt(str) {
-    switch (str) {
-        case "PO(客户付款)":
-            return 1
-        case "PR(客户提出付款意向)":
-            return 2
-        case "YG(供应链预估)":
-            return 3
-        case "YC(销售预测)":
-            return 4
-        case "XD(意向询单)":
-            return 4
-    }
-}
-
-async function parseInquiryObj(source) {
-    const result = {
-        "inquiryId": source["inquiry_id"],
-        "inquiryCode": source["inquiry_code"],
-        "salesmanId": source["salesman_id"],
-        "itemId": source["item_id"],
-        "customerId": source["customer_id"],
-        "saleNum": source["sale_num"],
-        "expectedTime": moment(source["expected_time"]).format('yyyy/MM/DD'),
-        "inquiryType": getInquiryTypeInt(source["inquiry_type"]),
-        "remark": source["remark"]
-    }
-
-    if (!result.customerId) {
-        const res = await fetchOptions("customer", "customerName", source.customer_name)
-        result.customerId = res?.[0]?.fcustId
-    }
-    if (!result.itemId) {
-        const res = await fetchOptions("item", "itemCode", source.item_code)
-        result.itemId = res?.[0]?.id
-    }
-    if (!result.salesmanId) {
-        const res = await fetchUser(source.salesman_name)
-        result.salesmanId = res?.[0]?.id
-    }
-
-    console.log(result);
-    return result;
-}
-
-function noData(tableData) {
-    return (!tableData || tableData.length <= 0)
-}
-
-function EngToCn(col_name_ENG) {
-    console.log(col_name_ENG);
-    return colNameDict.find(col => col.col_name_ENG === col_name_ENG)?.col_name_CN
-}
 export default function Toolbar({ features }) {
-
-    console.log("Toolbar mounted");
 
     const updateTabs = useUpdateTabContext()
     const updateTableData = useUpdateTableDataContext()
@@ -83,17 +23,14 @@ export default function Toolbar({ features }) {
     const tableData = useTableDataContext()
     const updateAlert = useAlertContext()
     const query = useQueryContext()
+    const states = useTableStatesContext()
+    const { setSelectedData } = useSelectedDataContext()
 
     const { rowSelection } = useTableStatesContext()
     const [openImportPopup, setOpenImportPopup] = useState(false)
-    const [openDeletePopup, setOpenDeletePopup] = useState(false)
-    const [openExportPopup, setOpenExportPopup] = useState(false)
-    const [action, setAction] = useState(null)
     const activeTab = useLocation().pathname.replace("/", "")
 
     const toggleImportPopup = () => setOpenImportPopup(!openImportPopup)
-    const toggleDeletePopup = () => setOpenDeletePopup(!openDeletePopup)
-    const toggleExportPopup = () => setOpenExportPopup(!openExportPopup)
 
     function noRowSelected() {
         if (!tableData || tableData.length === 0 || isObjectEmpty(rowSelection)) {
@@ -107,62 +44,71 @@ export default function Toolbar({ features }) {
     }
 
     const handleDelete = async () => {
-        setAction({ type: "删除", time: new Date() })
-        if (!noRowSelected()) {
-            const orderIds = getIndexes(rowSelection)?.map((index) => tableData[index].inquiry_id);
-            await orderIds?.forEach(orderId => deleteInquiry(orderId))
-            updateAlert({
-                type: "SHOW_ALERT",
-                data: { type: "success", message: "删除成功！", action: null }
-            })
-            updateTableData({ type: "DELETE_ROWS", rowSelection: rowSelection })
-            updateTableStates({ type: "RESET_ROW_SELECTION" })
-        }
-        toggleDeletePopup()
+        if(!noRowSelected())
+        updateAlert({
+            type: "SHOW_ALERT",
+            data: {
+                type: "confirm",
+                message: "确定删除选定的信息？",
+                action: async () => {
+                    if (!noRowSelected()) {
+                        const orderIds = getIndexes(rowSelection)?.map((index) => tableData[index].inquiry_id);
+                        await orderIds?.forEach(orderId => deleteInquiry(orderId))
+                        updateAlert({
+                            type: "SHOW_ALERT",
+                            data: { type: "success", message: "删除成功！", action: null }
+                        })
+                        updateTableData({ type: "DELETE_ROWS", rowSelection: rowSelection })
+                        updateTableStates({ type: "RESET_ROW_SELECTION" })
+                    }
+                }
+            }
+        })
     }
 
     const handleRefresh = async () => {
-        setAction({ type: "刷新", time: new Date() })
         updateTableData({ type: "CLEAR_TABLE_DATA" })
         const res = await fetchData(query)
         updateTableData({ type: "SET_TABLE_DATA", tableData: res.lists })
     }
 
     const handleExport = () => {
-        if (noData(tableData)) {
+        if (noData(tableData) || noVisibleCols(states.columnVisibility)) {
             updateAlert({ type: "SHOW_ALERT", data: { type: "error", message: "没有数据！" } })
         }
         else {
-            setAction({ type: "导出", time: new Date() })
+            updateAlert({
+                type: "SHOW_ALERT", data: {
+                    type: "confirm", message: "确定导出该表单？", action: () => {
+                        setAction({ type: "导出", time: new Date() })
 
-            const wb = XLSX.utils.book_new();
-            const ws = XLSX.utils.json_to_sheet([]);
+                        const wb = XLSX.utils.book_new();
+                        const ws = XLSX.utils.json_to_sheet([]);
 
-            let headings = [
-                Object.keys(tableData[0])
-                    .map(col_name_ENG => EngToCn(col_name_ENG))
-                    .filter(heading => heading !== undefined)
-            ]
+                        const headers_ENG = VisibilityToHeadersENG(states.columnVisibility)
+                        let headers_CN = headers_ENG.map((name) => EngToCn(name)).filter((value) => value !== undefined)
 
-            console.log(headings);
-            XLSX.utils.sheet_add_aoa(ws, headings);
-            const newData = tableData.map(({ inquiry_id, ...rest }) => rest)
+                        XLSX.utils.sheet_add_aoa(ws, [headers_CN]);
+                        const newData = getVisbleTableData(tableData, headers_ENG)
 
-            XLSX.utils.sheet_add_json(ws, newData, { origin: 'A2', skipHeader: true });
-            XLSX.utils.book_append_sheet(wb, ws);
+                        XLSX.utils.sheet_add_json(ws, newData, { origin: 'A2', skipHeader: true });
+                        XLSX.utils.book_append_sheet(wb, ws);
 
-            const timestamp = moment(new Date()).format('YYMMDDHHmmss')
-            const filename = children.filter((child) => child.path === activeTab)[0].name
+                        const timestamp = moment(new Date()).format('YYMMDDHHmmss')
+                        const filename = children.filter((child) => child.path === activeTab)[0].name
 
-            XLSX.writeFileXLSX(wb, filename + timestamp + ".xlsx");
+                        XLSX.writeFileXLSX(wb, filename + timestamp + ".xlsx");
+                    }
+                }
+            })
+
         }
-        // toggleExportPopup()
     }
 
     const handleStartInquiry = async () => {
-        setAction({ type: "开始询单", time: new Date() })
-        //TODO    
         if (!noRowSelected()) {
+
+
             const indexes = getIndexes(rowSelection)
             const inquiries = indexes.map(i => tableData[i])
             let newInquiries = [];
@@ -184,22 +130,30 @@ export default function Toolbar({ features }) {
         }
     }
 
-    const handleSave = () => {
-        setAction({ type: "保存", time: new Date() })
-        //TODO
+    const handleEdit = async() => {
+        if (!noRowSelected()) {
+            if (Object.keys(rowSelection).length > 1) {
+                updateAlert({ type: "SHOW_ALERT", data: { type: "error", message: "至多一条询单进行修改！" } })
+            }
+            else {
+                const newTab = children[11]
+                updateTabs({ type: "ADD_TAB", tab: newTab })
+                const selectedIndex = Number(Object.keys(rowSelection)[0])
+                const selecteData = tableData[selectedIndex]
+                setSelectedData(selecteData)
+                navigate("/edit")
+            }
+        }
     }
 
     const handlePin = () => {
-        setAction({ type: "置顶", time: new Date() })
         const pinnedIndexes = getIndexes(rowSelection)
         const rowData = tabContents[activeTab].filter((_, i) => pinnedIndexes.includes(i));
         setPinnedRows(rowData)
-        console.log(rowData);
         deleteSelectedRows()
     }
 
     const handleUnpin = () => {
-        setAction({ type: "取消置顶", time: new Date() })
         //TODO
     }
 
@@ -211,16 +165,6 @@ export default function Toolbar({ features }) {
         navigate("/new")
     }
 
-    const deletePopup = <div className="popup-container">
-        <div className="popup-wrapper">
-            确定删除选定的信息？
-            <div className="row">
-                <button onClick={toggleDeletePopup}>取消</button>
-                <button onClick={handleDelete}>确认</button>
-            </div>
-        </div>
-    </div>
-
     const importPopup =
         <div className="popup-container">
             <div className="popup-wrapper">
@@ -228,24 +172,13 @@ export default function Toolbar({ features }) {
             </div>
         </div>
 
-    const exportPopup = <div className="popup-container">
-        <div className="popup-wrapper">
-            确定导出该表单？
-            <div className="row">
-                <button onClick={toggleExportPopup}>取消</button>
-                <button onClick={handleExport}>确认</button>
-            </div>
-        </div>
-    </div>
-
 
     return (
-        <div className='row toolbar'>
+        <div className='row toolbar' >
             <div className='row flex-center'>
                 <button to="/new" onClick={handleNew} className={`${features?.includes("new") ? "" : "hidden"}`}>新增</button>
 
-                <button onClick={toggleDeletePopup} className={`${features?.includes("delete") ? "" : "hidden"}`}>删除</button>
-                {openDeletePopup && deletePopup}
+                <button onClick={handleDelete} className={`${features?.includes("delete") ? "" : "hidden"}`}>删除</button>
 
                 <button onClick={handlePin} className={`${features?.includes("pin") ? "" : "hidden"}`}>置顶</button>
 
@@ -256,27 +189,18 @@ export default function Toolbar({ features }) {
                 <button onClick={toggleImportPopup} className={`${features?.includes("import") ? "" : "hidden"}`}>导入</button>
                 {openImportPopup && importPopup}
 
-                <button onClick={toggleExportPopup} className={`${features?.includes("export") ? "" : "hidden"}`}>导出</button>
-                {openExportPopup && exportPopup}
+                <button onClick={handleExport} className={`${features?.includes("export") ? "" : "hidden"}`}>导出</button>
 
-                <button onClick={handleSave} className={`${features?.includes("save") ? "" : "hidden"}`}>保存</button>
+                <button onClick={handleEdit} className={`${features?.includes("edit") ? "" : "hidden"}`}>修改</button>
 
                 <button onClick={handleStartInquiry} className={`${features?.includes("startInquiry") ? "" : "hidden"}`}>开始询单</button>
             </div>
-            {features.includes("status") &&
-                <div className="row flex-center status">
-                    {action &&
-                        <span>
-                            <strong>{action.type}</strong>
-                            &nbsp;于&nbsp;
-                            <strong>{`${moment(action.time).format('lll')}`}</strong>
-                        </span>
-                    }
-                </div>}
             {
-                features.includes("visibility") &&
+                features.includes("visibility")
+                && !noData(tableData)
+                &&
                 <div className="row flex-center status">
-                    <ColVisibility />
+                    <ColVisibility editable={query.viewId > 0} />
                 </div>
             }
         </div >
