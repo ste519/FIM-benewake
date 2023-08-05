@@ -93,8 +93,7 @@ div.read-only>* {
 
 
 .full-screen {
-  flex-grow: 1;
-  height: calc(100vh - 48px);
+  flex: 1 1 auto;
   overflow: hidden;
   padding: 2rem 2rem 0 2rem;
 }
@@ -1222,4 +1221,9 @@ datalist {
 .data-list li{
   cursor: pointer;
   padding:0.5rem 1rem
+}
+
+.full-screen>*{
+  width: 100%;
+  padding: 0;
 }

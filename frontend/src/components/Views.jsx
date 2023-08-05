@@ -7,11 +7,9 @@ import { fetchData, fetchNewViews } from '../api/fetch'
 import Filters from './Filters'
 import { postView } from '../api/post';
 import { VISIBILITY_ALL_FALSE } from '../constants/Global';
-import { useLoaderData } from 'react-router-dom';
 import { deleteView } from '../api/delete';
 import { getColParams } from '../js/parseData';
 import { VisibilityToCols, ColsToFilters } from '../js/transformType';
-import { noData } from '../js/valueCheck';
 
 const ViewPopup = ({ closePopup, setNewViews }) => {
 
@@ -121,26 +119,19 @@ const Views = ({ views, editable }) => {
     const query = useQueryContext()
     const updateAlert = useAlertContext()
     const states = useTableStatesContext()
+    const [newViews, setNewViews] = useState()
 
+    useEffect(() => {
+        async function fetch() {
+            const viewRes = await fetchNewViews("1")
+            setNewViews(viewRes.data)
+        }
+        fetch()
+    }, [])
     const visibleCols = VisibilityToCols(states.columnVisibility)
-
-    let initialFilters = query.tableId < 6 ? [
-        { colName: "item_code", condition: "like", value: "" },
-        { colName: "item_name", condition: "like", value: "" },
-        { colName: "customer_name", condition: "like", value: "" },
-        { colName: "item_type", condition: "like", value: "" },
-        { colName: "inquiry_type", condition: "like", value: "" }
-    ] : [
-        { colName: "item_code", condition: "like", value: "" },
-        { colName: "item_name", condition: "like", value: "" },
-        { colName: "customer_name", condition: "like", value: "" }
-    ]
-
-    const [filters, setFilters] = useState(initialFilters)
 
     const [open, setOpen] = useState(false)
     const [selected, setSelected] = useState(views[0].viewName)
-    const [newViews, setNewViews] = useState(useLoaderData()?.newViews)
 
     const handleAdd = () => setOpen("add")
     const handleSave = async () => {
@@ -153,7 +144,7 @@ const Views = ({ views, editable }) => {
         }
         else {
             let res;
-            const cols = visibleCols.map((col, i) => getColParams(col, i + 1, filters)) //TODO: Adding sequence logic
+            const cols = visibleCols.map((col, i) => getColParams(col, i + 1, query.filterCriterias)) //TODO: Adding sequence logic
 
             const params = {
                 tableId: query.tableId,
@@ -225,7 +216,6 @@ const Views = ({ views, editable }) => {
         const res = await fetchData({ ...query, viewId: id, filterCriterias: [] })
         updateTableData({ type: "SET_TABLE_DATA", tableData: res.lists })
         if (id > 0) {
-            setFilters(ColsToFilters(res.cols))
             updateQuery({ type: "SET_FILTER_CRITERIAS", filterCriterias: ColsToFilters(res.cols) })
         }
 
@@ -245,7 +235,7 @@ const Views = ({ views, editable }) => {
                         handleDelete={handleDelete}
                     />
                 )}
-                {newViews?.map((item, i) =>
+                {editable && newViews?.map((item, i) =>
                     <View
                         id={item.viewId}
                         name={item.viewName}
@@ -276,8 +266,6 @@ const Views = ({ views, editable }) => {
                     <div className="col flex-center">
                         <Filters
                             headers={visibleCols}
-                            filters={filters}
-                            setFilters={setFilters}
                             display={true} />
                     </div> :
                     <div className='placeholder'></div>

@@ -3,7 +3,7 @@ import { ReactComponent as AddIcon } from '../assets/icons/add.svg'
 import { ReactComponent as CloseIcon } from '../assets/icons/cross.svg'
 import { ReactComponent as ArrowIcon } from '../assets/icons/arrow-down.svg'
 import { CONDITIONS } from '../constants/FilterConsts'
-import { useQueryContext,  useUpdateQueryContext, useUpdateTableDataContext} from '../hooks/useCustomContext'
+import { useQueryContext, useUpdateQueryContext, useUpdateTableDataContext } from '../hooks/useCustomContext'
 import { fetchData } from '../api/fetch'
 
 const conditions = CONDITIONS
@@ -46,11 +46,34 @@ export const Filter = ({ index, initialValues, setFilters, headers }) => {
   )
 }
 
-export default function Filters({ filters, setFilters, display, headers }) {
+export default function Filters({ display, headers }) {
+
   const [isVisible, setIsVisible] = useState(display ?? true)
   const toggleVisible = () => setIsVisible(!isVisible)
 
   const query = useQueryContext()
+
+  let initialFilters = query.tableId < 6 ? [
+    { colName: "item_code", condition: "like", value: "" },
+    { colName: "item_name", condition: "like", value: "" },
+    { colName: "customer_name", condition: "like", value: "" },
+    { colName: "item_type", condition: "like", value: "" },
+    { colName: "inquiry_type", condition: "like", value: "" }
+  ] : [
+    { colName: "item_code", condition: "like", value: "" },
+    { colName: "item_name", condition: "like", value: "" },
+    { colName: "customer_name", condition: "like", value: "" }
+  ]
+  const [filters, setFilters] = useState(query.filterCriterias ? query.filterCriterias : initialFilters)
+
+  useEffect(() => {
+    console.log(query.filterCriterias);
+    if (query.filterCriterias)
+      setFilters(query.filterCriterias)
+  },
+    [query.filterCriterias]
+  )
+
   const updateQuery = useUpdateQueryContext()
   const updateTableData = useUpdateTableDataContext()
 

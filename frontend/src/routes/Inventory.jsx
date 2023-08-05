@@ -7,10 +7,9 @@ import {useTabContext} from '../hooks/useCustomContext';;
 
 // 库存占用情况
 export default function Inventory() {
-
+  console.log("inventory rerender");
   return (
     <div className='col full-screen'>
-      <Toolbar features={['pin', 'unpin', 'refresh', 'export']} />
     </div>
   )
 }

@@ -7,6 +7,7 @@ import { parseInquiryObj, rowToInquiry } from '../js/parseData';
 import moment from 'moment';
 import { useAlertContext, useSelectedDataContext } from '../hooks/useCustomContext';
 import { snakeToCamelCase } from '../js/transformType';
+import { noData } from '../js/valueCheck';
 
 const SimpleToolbar = ({ rows }) => {
     const updateAlert = useAlertContext()
@@ -79,43 +80,44 @@ const SimpleToolbar = ({ rows }) => {
 
 const Edit = () => {
     const { selectedData } = useSelectedDataContext()
-    let initialData;
-    useEffect(() => {
-        async function fetch() {
-            initialData = await (parseInquiryObj(selectedData))
-            Object.entries(selectedData).forEach(([key, value]) => {
-                const camelCaseKey = snakeToCamelCase(key)
-                initialData[camelCaseKey] = value
-            })
-            setRows([initialData])
-        }
-        fetch()
-    }, [])
-    const [inquiryCode, setInquiryCode] = useState(selectedData?.inquiry_code); //单据编号
-    const [currentDate, setCurrentDate] = useState(new Date());
-    const [rows, setRows] = useState(null)
+    if (!noData(selectedData)) {
+        let initialData;
+        useEffect(() => {
+            async function fetch() {
+                initialData = await (parseInquiryObj(selectedData))
+                Object.entries(selectedData).forEach(([key, value]) => {
+                    const camelCaseKey = snakeToCamelCase(key)
+                    initialData[camelCaseKey] = value
+                })
+                setRows([initialData])
+            }
+            fetch()
+        }, [])
+        const [inquiryCode, setInquiryCode] = useState(selectedData?.inquiry_code); //单据编号
+        const [currentDate, setCurrentDate] = useState(new Date());
+        const [rows, setRows] = useState(null)
 
-    return (
-        <div className='col full-screen invoice-container'>
-            <SimpleToolbar rows={rows} />
-            <div className='col invoice-info'>
-                <div className='row'>
-                    <h1>单据编号：</h1>
-                    <input type="text" disabled name="inquiryCode" value={inquiryCode} onChange={(e) => setInquiryCode(e.target.value)} />
+        return (
+            < div className='col full-screen invoice-container' >
+                <SimpleToolbar rows={rows} />
+                <div className='col invoice-info'>
+                    <div className='row'>
+                        <h1>单据编号：</h1>
+                        <input type="text" disabled name="inquiryCode" value={inquiryCode} onChange={(e) => setInquiryCode(e.target.value)} />
+                    </div>
+                    <div className="react-datepicker-container">
+                        单据日期：
+                        <DatePicker
+                            selected={currentDate}
+                            onChange={(date) => setCurrentDate(date)
+                            }
+                        />
+                    </div>
                 </div>
-                <div className="react-datepicker-container">
-                    单据日期：
-                    <DatePicker
-                        selected={currentDate}
-                        onChange={(date) => setCurrentDate(date)
-                        }
-                    />
-                </div>
-            </div>
-            {rows && <EditTable rows={rows} setRows={setRows} />}
-        </div >
-
-    )
+                {rows && <EditTable rows={rows} setRows={setRows} />}
+            </div >
+        )
+    }
 }
 
 export default Edit

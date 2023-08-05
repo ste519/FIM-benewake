@@ -23,7 +23,7 @@ const QueryProvider = ({ children }) => {
         {
             tableId: null,
             viewId: null,
-            filterCriterias: [],
+            filterCriterias: null,
             secTab: null
         }
     )
