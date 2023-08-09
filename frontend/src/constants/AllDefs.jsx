@@ -30,12 +30,10 @@ const allDefs =
             accessorKey: item.col_name_ENG,
             accessorFn: (row, index) => {
                 return (item.col_name_ENG === "expected_time" || item.col_name_ENG === "arranged_time")
-                    ? moment(row[item.col_name_ENG]).format("YYYY/MM/DD")
+                    ? (row[item.col_name_ENG] ? moment(row[item.col_name_ENG]).format("YYYY/MM/DD") : null)
                     : row[item.col_name_ENG]
             },
             size: item.size
         }))
-
-
     ]
 export default allDefs

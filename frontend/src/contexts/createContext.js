@@ -4,9 +4,6 @@ export const TabContext = createContext(null)
 export const UpdateTabContext = createContext(null)
 export const AuthContext = createContext(null)
 
-export const QueryContext = createContext(null)
-export const UpdateQueryContext = createContext(null)
-
 export const AlertContext = createContext(null)
 
 export const TableDataContext = createContext(null)

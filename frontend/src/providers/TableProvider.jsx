@@ -1,10 +1,11 @@
 
-import { useLayoutEffect, useState, useEffect, useReducer } from "react";
-import { TableDataContext, TableStatesContext, UpdateTableDataContext, UpdateTableStatesContext, SelectedDataContext } from "../contexts/createContext";
+import { useLayoutEffect, useReducer } from "react";
+import { TableDataContext, TableStatesContext, UpdateTableDataContext, UpdateTableStatesContext } from "../contexts/createContext";
 import { useLocation } from "react-router-dom";
 import { VISIBILITY_ALL_FALSE } from "../constants/Global";
-import routes from "../path/children";
 import { fetchData } from "../api/fetch";
+import { useSelectedDataContext } from "../hooks/useCustomContext";
+import { getTableId } from '../js/getData'
 
 const tableDataReducer = (state, action) => {
     switch (action.type) {
@@ -38,19 +39,19 @@ const tableStatesReducer = (state, action) => {
 
 const TableProvider = ({ children }) => {
     const [tableData, updateTableData] = useReducer(tableDataReducer, null);
-    const [selectedData, setSelectedData] = useState();
     const [tableStates, updateTableStates] = useReducer(tableStatesReducer, {
         rowSelection: {},
         columnVisibility: VISIBILITY_ALL_FALSE
     })
 
+    const { selectedQuery } = useSelectedDataContext()
     const location = useLocation();
+
     useLayoutEffect(() => {
         async function fetch() {
-
-            let tableId = routes.find(route => route.path === location.pathname.replace("/", "")).id
+            const tableId = getTableId(location)
             if (tableId) {
-                const res = await fetchData({ tableId, viewId: 0 })
+                const res = await fetchData(selectedQuery[tableId])
                 updateTableStates({ type: "SET_COLUMN_VISIBILITY", columnVisibility: res.columnVisibility });
                 updateTableData({ type: "SET_TABLE_DATA", tableData: res.lists });
             }
@@ -63,9 +64,7 @@ const TableProvider = ({ children }) => {
             <UpdateTableDataContext.Provider value={updateTableData}>
                 <TableStatesContext.Provider value={tableStates}>
                     <UpdateTableStatesContext.Provider value={updateTableStates}>
-                        <SelectedDataContext.Provider value={{ selectedData, setSelectedData }}>
-                            {children}
-                        </SelectedDataContext.Provider>
+                        {children}
                     </UpdateTableStatesContext.Provider>
                 </TableStatesContext.Provider>
             </UpdateTableDataContext.Provider>

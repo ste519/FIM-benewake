@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import ExcelUploader from './ExcelUploader';
 import * as XLSX from 'xlsx';
-import { useAlertContext, useQueryContext, useSelectedDataContext, useTableDataContext, useTableStatesContext, useUpdateTabContext, useUpdateTableDataContext, useUpdateTableStatesContext } from '../hooks/useCustomContext';;
+import { useAlertContext, useSelectedDataContext, useTableDataContext, useTableStatesContext, useUpdateTabContext, useUpdateTableDataContext, useUpdateTableStatesContext } from '../hooks/useCustomContext';;
 import { useLocation, useNavigate } from 'react-router-dom';
 import { fetchData } from '../api/fetch';
 import children from '../path/children';
@@ -13,18 +13,24 @@ import { startInquiry } from '../api/inquiry';
 import ColVisibility from './ColVisibility';
 import { getIndexes, EngToCn, VisibilityToHeadersENG } from '../js/transformType';
 import { noData, isObjectEmpty, noVisibleCols } from '../js/valueCheck';
-import { getVisbleTableData, parseInquiryObj } from '../js/parseData';
+import { getVisbleTableData } from '../js/parseData';
+import { getTableId } from '../js/getData';
+import { EDIT_INQUIRY_TAB, NEW_INQUIRY_TAB } from '../constants/Global';
 
 export default function Toolbar({ features }) {
 
     const updateTabs = useUpdateTabContext()
     const updateTableData = useUpdateTableDataContext()
     const updateTableStates = useUpdateTableStatesContext()
+
     const tableData = useTableDataContext()
     const updateAlert = useAlertContext()
-    const query = useQueryContext()
+
+    const { selectedQuery, setSelectedData } = useSelectedDataContext()
+    const location = useLocation()
+    const tableId = getTableId(location)
+    const defaultSelection = selectedQuery[tableId]
     const states = useTableStatesContext()
-    const { setSelectedData } = useSelectedDataContext()
 
     const { rowSelection } = useTableStatesContext()
     const [openImportPopup, setOpenImportPopup] = useState(false)
@@ -44,31 +50,32 @@ export default function Toolbar({ features }) {
     }
 
     const handleDelete = async () => {
-        if(!noRowSelected())
-        updateAlert({
-            type: "SHOW_ALERT",
-            data: {
-                type: "confirm",
-                message: "确定删除选定的信息？",
-                action: async () => {
-                    if (!noRowSelected()) {
-                        const orderIds = getIndexes(rowSelection)?.map((index) => tableData[index].inquiry_id);
-                        await orderIds?.forEach(orderId => deleteInquiry(orderId))
-                        updateAlert({
-                            type: "SHOW_ALERT",
-                            data: { type: "success", message: "删除成功！", action: null }
-                        })
-                        updateTableData({ type: "DELETE_ROWS", rowSelection: rowSelection })
-                        updateTableStates({ type: "RESET_ROW_SELECTION" })
+        if (!noRowSelected())
+            updateAlert({
+                type: "SHOW_ALERT",
+                data: {
+                    type: "confirm",
+                    message: "确定删除选定的信息？",
+                    action: async () => {
+                        if (!noRowSelected()) {
+                            const orderIds = getIndexes(rowSelection)?.map((index) => tableData[index].inquiry_id);
+                            await orderIds?.forEach(orderId => deleteInquiry(orderId))
+                            updateAlert({
+                                type: "SHOW_ALERT",
+                                data: { type: "success", message: "删除成功！", action: null }
+                            })
+                            updateTableData({ type: "DELETE_ROWS", rowSelection: rowSelection })
+                            updateTableStates({ type: "RESET_ROW_SELECTION" })
+                        }
                     }
                 }
-            }
-        })
+            })
     }
 
     const handleRefresh = async () => {
         updateTableData({ type: "CLEAR_TABLE_DATA" })
-        const res = await fetchData(query)
+
+        const res = await fetchData(selectedQuery[tableId])
         updateTableData({ type: "SET_TABLE_DATA", tableData: res.lists })
     }
 
@@ -80,7 +87,6 @@ export default function Toolbar({ features }) {
             updateAlert({
                 type: "SHOW_ALERT", data: {
                     type: "confirm", message: "确定导出该表单？", action: () => {
-                        setAction({ type: "导出", time: new Date() })
 
                         const wb = XLSX.utils.book_new();
                         const ws = XLSX.utils.json_to_sheet([]);
@@ -107,21 +113,20 @@ export default function Toolbar({ features }) {
 
     const handleStartInquiry = async () => {
         if (!noRowSelected()) {
-
-
             const indexes = getIndexes(rowSelection)
             const inquiries = indexes.map(i => tableData[i])
-            let newInquiries = [];
-            for (const obj of inquiries) {
-                newInquiries.push(await parseInquiryObj(obj));
-            }
+            let newInquiries = inquiries.map(obj => ({ "inquiryId": obj.inquiry_id }));
+
             const res = await startInquiry(newInquiries, 1)
             switch (res.code) {
                 case 200:
                     updateAlert({ type: "SHOW_ALERT", data: { type: "success", message: res.message } })
-                    updateTableStates({ type: "RESET_ROW_SELECTION" })
+                    handleRefresh()
                     break
                 case 400:
+                    updateAlert({ type: "SHOW_ALERT", data: { type: "error", message: res.message } })
+                    break
+                case 1:
                     updateAlert({ type: "SHOW_ALERT", data: { type: "error", message: res.message } })
                     break
                 default:
@@ -130,13 +135,13 @@ export default function Toolbar({ features }) {
         }
     }
 
-    const handleEdit = async() => {
+    const handleEdit = async () => {
         if (!noRowSelected()) {
             if (Object.keys(rowSelection).length > 1) {
                 updateAlert({ type: "SHOW_ALERT", data: { type: "error", message: "至多一条询单进行修改！" } })
             }
             else {
-                const newTab = children[11]
+                const newTab = EDIT_INQUIRY_TAB
                 updateTabs({ type: "ADD_TAB", tab: newTab })
                 const selectedIndex = Number(Object.keys(rowSelection)[0])
                 const selecteData = tableData[selectedIndex]
@@ -160,16 +165,14 @@ export default function Toolbar({ features }) {
     const navigate = useNavigate()
 
     const handleNew = () => {
-        const newTab = children[10]
+        const newTab = NEW_INQUIRY_TAB
         updateTabs({ type: "ADD_TAB", tab: newTab })
         navigate("/new")
     }
 
     const importPopup =
-        <div className="popup-container">
-            <div className="popup-wrapper">
-                <ExcelUploader close={toggleImportPopup} updateAlert={updateAlert} />
-            </div>
+        <div className="popup-container flex-center">
+            <ExcelUploader close={toggleImportPopup} updateAlert={updateAlert} />
         </div>
 
 
@@ -200,7 +203,7 @@ export default function Toolbar({ features }) {
                 && !noData(tableData)
                 &&
                 <div className="row flex-center status">
-                    <ColVisibility editable={query.viewId > 0} />
+                    <ColVisibility editable={tableId === 1 && defaultSelection.viewId > 0} />
                 </div>
             }
         </div >

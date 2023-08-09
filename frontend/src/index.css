@@ -23,7 +23,9 @@ body {
   font-family: "Microsoft Yahei", "PingFang SC", 微软雅黑;
 }
 
-body button {
+body button,
+input[type="button"],
+input[type="submit"] {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -31,7 +33,70 @@ body button {
   cursor: pointer;
 }
 
-input[type="text"] {
+button.small,
+input[type="button"].small,
+input[type="submit"].small {
+  display: flex;
+  padding: 0 2rem;
+  height: 2rem;
+}
+
+
+button.rounded,
+input[type="button"].rounded,
+input[type="submit"].rounded {
+  display: flex;
+  height: 3rem;
+  padding: 1rem 1.25rem;
+  justify-content: space-around;
+  align-items: center;
+  gap: 5px;
+  border-radius: 1.5rem;
+  font-weight: 600;
+}
+
+button.blue60,
+input[type="button"].blue60,
+input[type="submit"].blue60 {
+  background-color: var(--blue60);
+  color: white
+}
+
+button.blue40,
+input[type="button"].blue40,
+input[type="submit"].blue40 {
+  background-color: var(--blue40);
+  color: white
+}
+
+button.blue5,
+input[type="button"].blue5,
+input[type="submit"].blue5 {
+  background-color: var(--blue5);
+  color: var(--blue60);
+}
+
+button.rounded svg,
+input[type="button"].rounded svg,
+input[type="submit"].rounded svg {
+  height: 1rem;
+}
+
+button.white,
+input[type="button"].white,
+input[type="submit"].white {
+  background-color: white;
+  color: var(--blue60)
+}
+
+button.transparent,
+input[type="button"].transparent,
+input[type="submit"].transparent {
+  background: none;
+  color: var(--blue60)
+}
+
+input-container {
   width: 20rem;
   padding: 0 1rem;
   height: 3rem;
@@ -49,20 +114,6 @@ input[type="radio"] {
 
 input[type="radio"]:checked::before {
   transform: scale(1);
-}
-
-select {
-  display: flex;
-  padding: 0 2.2rem 0 1rem;
-  height: 3rem;
-  background-color: white;
-  border: 1px solid var(--blue30);
-  align-items: center;
-  position: relative;
-  background-image: url('../src/assets/icons/arrow-down.svg');
-  background-repeat: no-repeat, repeat;
-  background-position: right 0.7rem top 50%, 0 0;
-  background-size: 0.7rem auto, 100%;
 }
 
 input::placeholder {
@@ -101,6 +152,22 @@ div.read-only>* {
 
 .hidden {
   display: none;
+}
+
+.mb1 {
+  margin-bottom: 1rem;
+}
+
+.mr1 {
+  margin-right: 1rem;
+}
+
+.g1 {
+  gap: 1rem;
+}
+
+.g2 {
+  gap: 2rem;
 }
 
 .sidebar.hidden {
@@ -258,6 +325,11 @@ svg {
   color: white;
 }
 
+.tab:hover {
+  background-color: var(--blue40);
+  color: white;
+}
+
 .sidebar-item:hover {
   color: white;
   background-color: var(--blue40);
@@ -328,7 +400,7 @@ button svg {
 .close-btn {
   right: 3px;
   background: none;
-  color: var(--blue30);
+  color: var(--blue10);
   visibility: hidden;
 }
 
@@ -340,15 +412,28 @@ button svg {
 }
 
 .secondary-tab.active {
-  background-color: var(--blue40);
+  background-color: var(--blue60);
   color: white;
 }
 
 .td,
 .th {
-  padding: 10px;
   flex: 1 1 auto;
   white-space: nowrap;
+}
+
+.td {
+  padding: 10px;
+}
+
+.th button {
+  padding: 10px;
+  width: 100%;
+}
+
+.table-wrapper .td:first-child,
+.table-wrapper .th:first-child {
+  width: 3rem;
 }
 
 .table {
@@ -363,7 +448,7 @@ button svg {
   display: table-header-group;
   position: sticky;
   top: 0;
-  z-index: 1;
+  z-index: 2;
 }
 
 .table .td {
@@ -373,6 +458,7 @@ button svg {
   overflow: hidden;
   text-overflow: ellipsis;
   display: table-cell;
+  text-align: center;
 }
 
 .table .th {
@@ -381,6 +467,9 @@ button svg {
   border-right: 1px solid;
   border-color: var(--blue30);
   background-color: var(--blue10);
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .table .tr {
@@ -397,11 +486,9 @@ button svg {
   display: table-row-group;
 }
 
-.table .tr.selected  .td {
-  z-index: 1;
-  outline:1px solid var(--blue20)
+.tr.selected {
+  background-color: var(--blue5);
 }
-
 
 .table-wrapper {
   flex: 1 1 1px;
@@ -438,70 +525,34 @@ button svg {
   box-shadow: var(--shadow);
 }
 
-input[type="file"] {
-  outline: none;
-  padding: 4px;
-  margin: -4px;
-}
 
-input[type="file"]:focus-within::file-selector-button,
-input[type="file"]:focus::file-selector-button {
-  outline: 2px solid #0964b0;
-  outline-offset: 2px;
-}
-
-/* ------- From Step 2 ------- */
-
-input[type="file"] {
-  position: relative;
-}
-
-input[type="file"]::file-selector-button {
-  width: 220px;
-  color: transparent;
-  display: flex;
-}
-
-/* Faked label styles and icon */
-input[type="file"]::after {
-  position: absolute;
-  pointer-events: none;
-  top: 12px;
-  left: 40px;
-  color: #0964b0;
-  content: "上传文件(.xlsx, .xls, .csv)";
-  ;
-}
-
-input[type="file"]::before {
-  position: absolute;
-  pointer-events: none;
-  top: 14px;
-  left: 10.5rem;
-  height: 20px;
-  width: 20px;
-  content: "";
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%230964B0'%3E%3Cpath d='M18 15v3H6v-3H4v3c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2v-3h-2zM7 9l1.41 1.41L11 7.83V16h2V7.83l2.59 2.58L17 9l-5-5-5 5z'/%3E%3C/svg%3E");
-}
-
-input[type="file"]::file-selector-button {
+.excel-uploader-container label {
+  width: 100%;
   border-radius: 4px;
-  height: 40px;
+  display: flex;
+  height: 100%;
   background-color: white;
-  border: 1px solid var(--blue10);
-  box-shadow: var(--shadow);
-  margin-right: 10.5rem;
-  transition: background-color 200ms;
+  color: var(--blue60);
+  font-weight: 600;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: 1px dashed;
 }
 
-/* file upload button hover state */
-input[type="file"]::file-selector-button:hover {
-  background-color: #f3f4f6;
+.excel-uploader-container label:hover {
+  background-color: var(--blue5);
 }
 
-/* file upload button active state */
-input[type="file"]::file-selector-button:active {
-  background-color: #e5e7eb;
+.excel-uploader-container {
+  gap: 1rem;
+  border-left: 0.5rem solid;
+  border-radius: 5px;
+  width: 40rem;
+  height: 14rem;
+  background-color: white;
+  border-color: var(--blue40);
+  padding: 2rem;
 }
 
 .filter {
@@ -510,10 +561,13 @@ input[type="file"]::file-selector-button:active {
 }
 
 .filter>input,
-.filter>div {
+.filter>.data-list,
+.filter>.react-datepicker-wrapper {
   padding: 0.5rem;
   background-color: white;
   border: 1px solid var(--blue30);
+  height: 36px;
+  flex: 1 1 auto;
 }
 
 .filter .select-wrapper {
@@ -534,10 +588,23 @@ input[type="file"]::file-selector-button:active {
   content: url(./assets/icons/arrow-down.svg);
 }
 
-.filter input {
+.filter .data-list {
+  display: flex;
   flex: 2 1 auto;
   width: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
 }
+
+.filter .data-list-dropdown {
+  top: 30px;
+}
+
+.filter .data-list input {
+  width: 100%;
+  height: 100%;
+}
+
 
 .filter button {
   cursor: pointer;
@@ -551,7 +618,6 @@ input[type="file"]::file-selector-button:active {
   flex: 1 1 auto;
   padding: 1rem 0 1rem 2rem;
   gap: 10px;
-  overflow-x: auto;
 }
 
 .filter-container {
@@ -561,6 +627,7 @@ input[type="file"]::file-selector-button:active {
   border-left: 1px solid;
   border-bottom: 1px solid;
   border-color: var(--blue30);
+
 }
 
 .arrow-icon {
@@ -671,6 +738,7 @@ tr:focus {
   text-align: center;
   border-radius: 20px;
   margin: 0 5px;
+  padding: 0 0.5rem;
 }
 
 .toolbar {
@@ -683,12 +751,19 @@ tr:focus {
 .new-table-controls {
   width: 100%;
   background: var(--blue5);
-  height: 3rem;
+  height: 4rem;
 }
 
-.toolbar>div button,
+.toolbar>div>button,
 .new-table-controls button {
   padding: 1rem 2rem;
+  height: 100%;
+}
+
+.toolbar>div>button:hover,
+.new-table-controls button:hover {
+  background-color: var(--blue40);
+  color: white
 }
 
 .logo-wrapper {
@@ -792,18 +867,29 @@ tr:focus {
   justify-content: end;
 }
 
+.view-popup {
+  gap: 1rem
+}
+
 .view {
   background-color: white;
   padding: 0.5rem 1rem;
+  height: 3rem
 }
 
 .view.selected {
-  background-color: var(--blue40);
+  background-color: var(--blue60);
   color: white
 }
 
 .view button {
   visibility: hidden;
+  color: var(--blue10);
+}
+
+.view.editable {
+  padding-right: 0.5rem;
+  padding-left: 2rem
 }
 
 .view:hover button,
@@ -823,45 +909,6 @@ tr:focus {
   border-bottom: 1px solid white;
 }
 
-button.rounded {
-  display: flex;
-  height: 3rem;
-  padding: 1rem 1.25rem;
-  justify-content: space-around;
-  align-items: center;
-  gap: 5px;
-  border-radius: 1.5rem;
-  font-weight: 600;
-}
-
-button.blue60 {
-  background-color: var(--blue60);
-  color: white
-}
-
-button.blue40 {
-  background-color: var(--blue40);
-  color: white
-}
-
-button.blue5 {
-  background-color: var(--blue5);
-  color: var(--blue60);
-}
-
-button.rounded svg {
-  height: 1rem;
-}
-
-button.white {
-  background-color: white;
-  color: var(--blue60)
-}
-
-button.transparent {
-  background: none;
-  color: var(--blue60)
-}
 
 .visibility-container {
   position: absolute;
@@ -891,7 +938,8 @@ button.transparent {
   align-self: flex-end;
 }
 
-.visibility-container label {
+.visibility-container label,
+.simple-visibility-wrapper label {
   display: flex;
   align-items: center;
   gap: 5px;
@@ -931,6 +979,13 @@ button.transparent {
   font-weight: 700;
   margin: 0 0.5rem;
   border-radius: 0.75rem;
+  padding: 0 0.5rem;
+  text-align: center;
+}
+
+.page-size-controller strong {
+  margin: 0 4px;
+  color: var(--blue60);
 }
 
 .bordered {
@@ -996,10 +1051,18 @@ td.select {
 
 .filter-container .controls {
   width: 100px;
+  margin-right: 1rem;
 }
 
 .filter select {
-  flex: 1 1 auto
+  height: 100%;
+  position: absolute;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  left: 0;
+  z-index: 1;
+  padding-left: 1rem;
 }
 
 .icon-btn {
@@ -1031,42 +1094,29 @@ td.select {
   color: var(--blue60)
 }
 
-.invoice-info {
+.inquiry-info {
   gap: 1rem;
   background-color: var(--blue5);
   padding: 2rem;
+}
+
+.inquiry-info .input-wrapper>input,
+.inquiry-info .input-wrapper>.react-datepicker-wrapper {
+  height: 3rem;
+  width: 14rem;
+  border: 1px solid var(--blue30)
 }
 
 .invoice-container {
   gap: 2rem
 }
 
-.invoice-info>div {
+.inquiry-info>div {
   min-height: 2rem;
   display: flex;
   align-items: center;
   gap: 1rem;
   width: fit-content;
-}
-
-.react-datepicker-container {
-  position: relative;
-}
-
-.custom-input svg {
-  height: 1rem;
-  width: 1rem;
-  color: var(--blue40);
-  position: absolute;
-  right: 1rem;
-}
-
-
-.custom-input {
-  cursor: pointer;
-  position: relative;
-  display: flex;
-  align-items: center;
 }
 
 strong {
@@ -1109,7 +1159,6 @@ strong {
   color: black
 }
 
-
 .alert-container.warning {
   background-color: var(--warning-light);
   border-color: var(--warning-dark);
@@ -1146,11 +1195,7 @@ strong {
   color: var(--confirm-dark)
 }
 
-button.small {
-  display: flex;
-  padding: 0 2rem;
-  height: 2rem;
-}
+
 
 th input[type="text"] {
   display: none;
@@ -1198,13 +1243,14 @@ datalist {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding:10px;
+  padding: 10px;
   flex: 0 0 auto
 }
 
 .data-list {
   position: relative;
 }
+
 .data-list-dropdown {
   position: absolute;
   left: 0;
@@ -1216,10 +1262,109 @@ datalist {
   text-align: left;
   border-radius: 0.5rem;
   padding: 0.5rem 0;
-  z-index: 2;
+  z-index: 3;
 }
 
-.data-list li{
+.data-list li {
   cursor: pointer;
-  padding:0.5rem 1rem
+  padding: 1rem 1.5rem
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+.view-popup .row {
+  align-items: center;
+}
+
+
+.filter .react-datepicker-popper {
+  z-index: 4;
+}
+
+.search-wrapper {
+  position: absolute;
+  background-color: white;
+  z-index: 4;
+  padding: 1rem;
+  box-shadow: var(--shadow);
+  border-radius: 10px;
+}
+
+.search-wrapper input {
+  border: 1px solid var(--blue30);
+  height: 3rem;
+}
+
+
+.react-datepicker__input-container {
+  height: 100%;
+}
+
+.react-datepicker-popper {
+  z-index: 5 !important;
+}
+
+.custom-input svg {
+  height: 1rem;
+  width: 1rem;
+  color: var(--blue40);
+  margin-top: 1px;
+}
+
+
+.custom-input {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  width: 100%;
+  justify-content: space-between;
+  background-color: white;
+  height: 100%;
+}
+
+.new-table-container .custom-input input {
+  padding: 0;
+  border: none;
+  height: 100%;
+}
+
+
+.inquiry-info .inquiry-code {
+  background-color: var(--gray20);
+  padding: 10px;
+}
+
+.filter-select-wrapper {
+  position: relative;
+  cursor: pointer;
+  display: flex;
+  padding: 0 2.2rem 0 1rem;
+  height: 3rem;
+  background-color: white;
+  border: 1px solid var(--blue30);
+  align-items: center;
+  flex: 1 0 10rem
+}
+
+.filter-select-wrapper svg {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  top: 14px;
+  right: 1rem;
+  color: var(--blue30);
+}
+
+.data-list-dropdown li.row {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
 }

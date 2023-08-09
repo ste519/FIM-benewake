@@ -6,6 +6,17 @@ import { useNavigate } from 'react-router-dom';
 import { createUser, login, logout } from '../api/auth';
 import { useAuthContext, useAlertContext } from '../hooks/useCustomContext';
 
+function setCookie(name, value, days) {
+    let expires = "";
+    if (days) {
+        const date = new Date();
+        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+        expires = "; expires=" + date.toUTCString();
+    }
+    document.cookie = name + "=" + (value || "") + expires + "; path=/";
+}
+
+
 
 export default function Login() {
 
@@ -16,7 +27,9 @@ export default function Login() {
 
     useEffect(() => {
         if (document.cookie !== "") {
-            setAuth({ auth: true })
+            const cookies = document.cookie.split('; ');
+            const value = cookies?.[1]?.split('=')?.[1]
+            setAuth({ username: value })
             navigate("/user")
         }
     }, [])
@@ -33,10 +46,12 @@ export default function Login() {
             case 200:
                 setAuth(res.data)
                 navigate('/user')
+                setCookie("username", res.data.username, 7)
                 break;
 
             case 202:
-                showAlert({ type: "warning", message: res.message })
+
+                // showAlert({ type: "warning", message: res.message })
                 // setAuth({ username: username })
                 // navigate('/user')
                 break;

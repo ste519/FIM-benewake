@@ -15,9 +15,7 @@ const SimpleToolbar = ({ rows }) => {
 
     const handleClick = async (status) => {
         setAction({ type: status === 1 ? "开始询单" : "保存", time: new Date() })
-
-        const newInquiries = rows.map(row => rowToInquiry(row))
-        console.log(newInquiries);
+        const newInquiries = rows.map(row => rowToInquiry(row, null, status))
         const res = await startInquiry(newInquiries, status)
         switch (res.code) {
             case 200:
@@ -91,19 +89,19 @@ const Edit = () => {
         }
         fetch()
     }, [])
-    const [inquiryCode, setInquiryCode] = useState(selectedData?.inquiry_code); //单据编号
+
     const [currentDate, setCurrentDate] = useState(new Date());
     const [rows, setRows] = useState(null)
 
     return (
         <div className='col full-screen invoice-container'>
             <SimpleToolbar rows={rows} />
-            <div className='col invoice-info'>
-                <div className='row'>
+            <div className='col inquiry-info'>
+                <div className='row input-wrapper'>
                     <h1>单据编号：</h1>
-                    <input type="text" disabled name="inquiryCode" value={inquiryCode} onChange={(e) => setInquiryCode(e.target.value)} />
+                    <input type="text" readOnly name="inquiryCode" value={selectedData?.inquiry_code ?? ""} className='inquiry-code' />
                 </div>
-                <div className="react-datepicker-container">
+                <div className="react-datepicker-container input-wrapper">
                     单据日期：
                     <DatePicker
                         selected={currentDate}

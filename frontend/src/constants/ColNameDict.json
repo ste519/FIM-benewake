@@ -21,13 +21,13 @@
         "col_id": 25,
         "col_name_CN": "创建人",
         "col_name_ENG": "created_user_name",
-        "size": 125
+        "size": 60
     },
     {
         "col_id": 26,
         "col_name_CN": "产品类型",
         "col_name_ENG": "item_type",
-        "size": 70
+        "size": 140
     },
     {
         "col_id": 27,
@@ -99,19 +99,19 @@
         "col_id": 38,
         "col_name_CN": "运输单号",
         "col_name_ENG": "delivery_code",
-        "size": 70
+        "size": 120
     },
     {
         "col_id": 39,
         "col_name_CN": "签收时间",
         "col_name_ENG": "receive_time",
-        "size": 70
+        "size": 100
     },
     {
         "col_id": 40,
         "col_name_CN": "最新状态",
         "col_name_ENG": "delivery_state",
-        "size": 70
+        "size": 200
     },
     {
         "col_id": 41,

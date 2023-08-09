@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import SecTabs from '../components/SecTabs'
 import Table from '../components/Table';
 import Views from '../components/Views';
@@ -6,6 +6,7 @@ import Toolbar from '../components/Toolbar';
 import { useTableDataContext } from '../hooks/useCustomContext';
 import { deliveryViews } from '../constants/Views'
 import AllDefs from '../constants/AllDefs';
+import { fetchDeliveryUpdates } from '../api/fetch';
 
 // 全部订单
 export default function Delivery() {
@@ -13,7 +14,9 @@ export default function Delivery() {
   const columns = useMemo(() => AllDefs, [])
   const features = ["delete", "export", "refresh", 'visibility']
   const [views, setViews] = useState(deliveryViews)
-
+  useEffect(() => {
+    fetchDeliveryUpdates()
+   }, [])
   return (
     <div className='col full-screen'>
       <div className="tab-contents">

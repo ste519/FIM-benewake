@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import {
     flexRender,
     useReactTable,
@@ -17,62 +17,60 @@ import { DndProvider, useDrag, useDrop } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
 import { useTableStatesContext, useUpdateTableStatesContext } from '../hooks/useCustomContext';
 
-function DebouncedInput({
-    value: initialValue,
-    onChange,
-    debounce = 500,
-    ...props
-}) {
-    const [value, setValue] = useState(initialValue)
+const Search = ({ column, closeSearch }) => {
+    const [inputValue, setInputValue] = useState('');
 
-    useEffect(() => {
-        setValue(initialValue)
-    }, [initialValue])
-
-    useEffect(() => {
-        const timeout = setTimeout(() => {
-            onChange(value)
-        }, debounce)
-
-        return () => clearTimeout(timeout)
-    }, [value])
-
-    return (
-        <input {...props} value={value} onChange={e => setValue(e.target.value)} />
-    )
-}
-
-function Filter({ column }) {
-    const columnFilterValue = column.getFilterValue()
-
-    const sortedUniqueValues = useMemo(
+    const allOptions = useMemo(
         () => Array.from(column.getFacetedUniqueValues().keys()).sort(),
         [column.getFacetedUniqueValues()]
     )
 
+    const options = useMemo(() => {
+        return inputValue
+            ? allOptions.filter(option => option.toLowerCase().includes(inputValue.toLowerCase()))
+            : allOptions;
+    }, [inputValue, allOptions]);
+
+    const handleInputChange = (value) => {
+        setInputValue(value);
+    };
+
+    const handleOptionClick = (uniqueValue) => {
+        setInputValue(uniqueValue);
+        column.setFilterValue(uniqueValue);
+        closeSearch()
+    };
+
     return (
-        <>
-            <datalist id={column.id + 'list'}>
-                {sortedUniqueValues.map((uniqueValue) => (
-                    <option value={uniqueValue} key={uniqueValue} />
-                ))}
-            </datalist>
-            <DebouncedInput
+        <div className="search-wrapper">
+            <input
                 type="text"
-                value={columnFilterValue ?? ''}
-                onChange={value => column.setFilterValue(value)}
+                value={inputValue}
+                onChange={e => handleInputChange(e.target.value)}
                 placeholder={`搜索 (${column.getFacetedUniqueValues().size})`}
-                list={column.id + 'list'}
                 name={column.id}
             />
-        </>
-    )
+            {inputValue &&
+                <ul>
+                    {options.map((uniqueValue) => (
+                        <li
+                            key={uniqueValue}
+                            onClick={() => handleOptionClick(uniqueValue)}
+                        >
+                            {uniqueValue}
+                        </li>
+                    ))}
+                </ul>
+            }
+        </div>
+    );
 }
 
 const DraggableHeader = ({ header, table }) => {
     const { getState, setColumnOrder } = table
     const { columnOrder } = getState()
     const { column } = header
+    const [showSearch, setShowSearch] = useState(false)
 
     const reorderColumn = (
         draggedColumnId,
@@ -119,20 +117,24 @@ const DraggableHeader = ({ header, table }) => {
             id={header.id}
             colSpan={header.colSpan}
         >
-            <div ref={previewRef} className='row flex-center header-controls'>
-                <button ref={dragRef} >🟰</button>
-                {header.isPlaceholder
-                    ? null
-                    : flexRender(header.column.columnDef.header, header.getContext())}
-                <button onClick={header.column.getToggleSortingHandler()}>
-                    {
+            <div ref={previewRef} className='row flex-center'>
+                <button onClick={header.column.getToggleSortingHandler()} ref={dragRef} >
+                    {header.isPlaceholder
+                        ? null
+                        : flexRender(header.column.columnDef.header, header.getContext())}
+
+                    <span className='sort-icon'>
                         {
-                            asc: '🔼',
-                            desc: <ArrowIcon className="header-icon icon__small" />,
-                            false: <FilterIcon className="header-icon icon__small" />
-                        }[header.column.getIsSorted() ?? 'false']
-                    }
+                            {
+                                asc: <ArrowIcon className="header-icon rotate180" />,
+                                desc: <ArrowIcon className="header-icon icon__small" />,
+                                false: ""
+                            }[header.column.getIsSorted() ?? 'false']
+                        }
+                    </span>
+
                 </button>
+                {/* <button onClick={() => setShowSearch(!showSearch)}><ArrowIcon className="header-icon icon__small" /></button> */}
             </div>
 
             {/* resizer */}
@@ -146,11 +148,10 @@ const DraggableHeader = ({ header, table }) => {
             }
 
             {/* filter */}
-            {/* {header.column.getCanFilter() ? (
-                <div>
-                    <Filter column={header.column} table={table} />
-                </div>
-            ) : null} */}
+
+            {/* {header.column.getCanFilter() && showSearch && (
+                <Search column={header.column} closeSearch={() => setShowSearch(false)} />
+            )} */}
         </div>
     )
 }

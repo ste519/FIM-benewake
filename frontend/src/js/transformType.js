@@ -39,3 +39,13 @@ export function snakeToCamelCase(snakeCaseString) {
         return letter.toUpperCase();
     });
 }
+
+export function camelToSnakeCase(camelCaseString) {
+    return camelCaseString.replace(/([a-z0-9])([A-Z])/g, function (match, p1, p2) {
+        return p1 + '_' + p2.toLowerCase();
+    });
+}
+
+export function EngToSize(col_name_ENG) {
+    return colNameDict.find(col => col.col_name_ENG === col_name_ENG)?.size
+}

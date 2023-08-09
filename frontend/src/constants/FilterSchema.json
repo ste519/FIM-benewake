@@ -1,0 +1,129 @@
+{
+    "inquiry_code": {
+        "header": "单据编号",
+        "identifier": "inquiry_code",
+        "element": "datalist",
+        "url": "/order/inquiryCodeList",
+        "searchKey": "inquiryCode"
+    },
+    "inquiry_init_type": {
+        "header": "单据类型",
+        "identifier": "inquiry_init_type",
+        "element": "datalist"
+    },
+    "state": {
+        "header": "单据状态",
+        "identifier": "state",
+        "element": "datalist"
+    },
+    "created_user_name": {
+        "header": "创建人",
+        "identifier": "created_user_name",
+        "element": "datalist",
+        "url": "/user/likeList",
+        "searchKey": "username"
+    },
+    "item_type": {
+        "header": "产品类型",
+        "identifier": "item_type",
+        "element": "datalist",
+        "url": "/item/itemTypeList",
+        "searchKey": "itemType"
+    },
+    "inquiry_type": {
+        "header": "订单状态 *",
+        "identifier": "inquiry_type",
+        "element": "datalist",
+        "url": "/order/inquiryTypeList",
+        "searchKey": "inquiryType"
+    },
+    "item_code": {
+        "header": "物料编码 *",
+        "identifier": "item_code",
+        "element": "datalist",
+        "url": "/item/likeList",
+        "searchKey": "itemCode"
+    },
+    "item_name": {
+        "header": "物料名称",
+        "identifier": "item_name",
+        "element": "datalist",
+        "url": "/item/itemNameList",
+        "searchKey": "itemName"
+    },
+    "customer_name": {
+        "header": "客户名称 *",
+        "identifier": "customer_name",
+        "element": "datalist",
+        "url": "/customer/likeList",
+        "searchKey": "customerName"
+    },
+    "salesman_name": {
+        "header": "销售员 *",
+        "identifier": "salesman_name",
+        "element": "datalist",
+        "url": "/user/likeList",
+        "searchKey": "username"
+    },
+    "sale_num": {
+        "header": "数量 *",
+        "identifier": "sale_num",
+        "element": "number"
+    },
+    "expected_time": {
+        "header": "期望发货日期 *",
+        "identifier": "expected_time",
+        "element": "datepicker"
+    },
+    "arranged_time": {
+        "header": "计划反馈日期",
+        "identifier": "arranged_time",
+        "element": "datepicker"
+    },
+    "delay": {
+        "header": "是否延期",
+        "identifier": "delay",
+        "element": "datalist"
+    },
+    "customer_type": {
+        "header": "客户类型",
+        "identifier": "customer_type",
+        "element": "datalist",
+        "url": "/customer/typeList",
+        "searchKey": "customerType"
+    },
+    "order_delivery_progress": {
+        "header": "订单交付进度",
+        "identifier": "order_delivery_progress",
+        "element": "datalist"
+    },
+    "delivery_code": {
+        "header": "运输单号",
+        "identifier": "delivery_code",
+        "element": "datalist",
+        "url": "/delivery/deliveryCodeList",
+        "searchKey": "deliveryCode"
+    },
+    "receive_time": {
+        "header": "签收时间",
+        "identifier": "receive_time",
+        "element": "datepicker"
+    },
+    "delivery_state": {
+        "header": "最新状态",
+        "identifier": "delivery_state",
+        "element": "datalist",
+        "url": "/delivery/deliveryStateList",
+        "searchKey": "deliveryState"
+    },
+    "customize": {
+        "header": "是否定制",
+        "identifier": "customize",
+        "element": "datalist"
+    },
+    "remark": {
+        "header": "备注",
+        "identifier": "remark",
+        "element": "text"
+    }
+}

@@ -1,22 +1,23 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 import children from '../path/children';
-import { useUpdateTabContext, useQueryContext, useUpdateQueryContext } from '../hooks/useCustomContext';
-import {  logout } from '../api/auth';
+import { useAuthContext, useUpdateTabContext } from '../hooks/useCustomContext';
+import { ReactComponent as LogoutIcon } from '../assets/icons/logout.svg'
+import { logout } from '../api/auth';
+
 
 export default function Sidebar({ showSidebar }) {
     const updateTabs = useUpdateTabContext()
-    const updateQuery = useUpdateQueryContext()
     const navigate = useNavigate()
+    const { auth } = useAuthContext()
 
     const handleClick = (newTab, event) => {
         event.stopPropagation();
         updateTabs({ type: "ADD_TAB", tab: newTab })
-        updateQuery({ type: "SET_TABLE_ID", tableId: newTab.id })
     }
 
-    const handleLogout = async() => {
+    const handleLogout = async () => {
         await logout()
-        document.cookie.split(";").forEach(function(c) { document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); });
+        document.cookie.split(";").forEach(function (c) { document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); });
         navigate("/login")
     }
     return (
@@ -36,7 +37,12 @@ export default function Sidebar({ showSidebar }) {
                         {obj.name}
                     </NavLink>)}
             </nav >
-            <button onClick={handleLogout}>退出登录</button>
+            <div className='row flex-center mb1'>
+                <h1>用户：{auth?.username ?? ""}</h1>
+                <button className='transparent' onClick={handleLogout}>
+                    <LogoutIcon />
+                </button>
+            </div>
         </div>
     )
 }

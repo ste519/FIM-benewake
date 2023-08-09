@@ -21,12 +21,12 @@ export const orderViews =
 export const customerViews =
     [
         { "viewId": 0, "viewName": "我的" },
-        { "viewId": 1, "viewName": "ND" },
-        { "viewId": 2, "viewName": "YD" },
-        { "viewId": 3, "viewName": "RC" },
-        { "viewId": 4, "viewName": "DLS" },
-        { "viewId": 5, "viewName": "XZ" },
-        { "viewId": 6, "viewName": "LS" }
+        { "viewId": 1, "viewName": "年度" },
+        { "viewId": 2, "viewName": "月度" },
+        { "viewId": 3, "viewName": "日常" },
+        { "viewId": 4, "viewName": "代理商" },
+        { "viewId": 5, "viewName": "新增" },
+        { "viewId": 6, "viewName": "临时" }
     ]
 
 export const itemViews =

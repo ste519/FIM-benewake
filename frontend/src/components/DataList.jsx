@@ -3,6 +3,14 @@ import { fetchOptions } from '../api/fetch';
 
 const inquiryTypeOptions = [{ inquiryType: "PO(客户付款)" }, { inquiryType: "PR(客户提出付款意向)" }, { inquiryType: "YG(供应链预估)" }, { inquiryType: "YC(销售预测)" }, { inquiryType: "XD(意向询单)" }]
 
+const getOptionName = (type, option) => {
+    switch (type) {
+        case "customer":
+            return option.fname
+        default:
+            return option[searchKey]
+    }
+}
 const DataList = memo(function DataList({ type, searchKey, initialValue, handleChange, identifier }) {
     const [options, setOptions] = useState(null)
     const [showDropdown, setShowDropdown] = useState(false);
@@ -63,34 +71,42 @@ const DataList = memo(function DataList({ type, searchKey, initialValue, handleC
     }
 
     return (
-        <div className="data-list"
-        >
+        <div className="data-list" >
             <input
                 type="text"
                 value={value}
                 onChange={onChange}
                 onFocus={() => setShowDropdown(true)}
-                
             />
-            {showDropdown && (
-                <ul className="data-list-dropdown" onMouseLeave={clearData} >
-                    {options &&
-                        (options.length > 0
+            {
+                showDropdown && options &&
+                <ul
+                    className="data-list-dropdown"
+                    onMouseLeave={clearData} >
+                    {
+                        identifier === "itemCode" &&
+                        < li className='row sticky' >
+                            <div>物料编码</div><div>物料名称</div>
+                        </li>
+                    }
+                    {
+                        options.length > 0
                             ? options.map((option, i) =>
-                                <li key={i}
-                                    onClick={() => handleSelect(option)}>
-                                    {type === "customer"
-                                        ? option.fname
-                                        : option[searchKey]}
-                                </li>)
-                            :
-                            <li onClick={clearData} >
-                                无匹配结果
-                            </li>
-                        )
+                                identifier !== "itemCode"
+                                    ? <li key={i}
+                                        onClick={() => handleSelect(option)}>
+                                        {getOptionName(type, option)}
+                                    </li>
+                                    : <li className='row' key={i}
+                                        onClick={() => handleSelect(option)}>
+                                        <div>{option.itemCode}</div>
+                                        <div>{option.itemName}</div>
+                                    </li>
+                            )
+                            : <li onClick={clearData} >无匹配结果</li>
                     }
                 </ul>
-            )}
+            }
         </div >
     );
 })

@@ -1,7 +1,7 @@
 import moment from 'moment';
 import { fetchOptions, fetchUser } from '../api/fetch';
 
-function getInquiryTypeInt(str) {
+export function getInquiryTypeInt(str) {
     switch (str) {
         case "PO(客户付款)":
             return 1
@@ -14,6 +14,15 @@ function getInquiryTypeInt(str) {
         case "XD(意向询单)":
             return 5
     }
+}
+
+export function getStateStr(num) {
+    if (num == 0)
+        return "保存"
+    else if (num == -1)
+        return "无效"
+    else
+        return `询单${num}次`
 }
 
 export function getVisbleTableData(tableData, headers_ENG) {
@@ -39,36 +48,36 @@ export function getColParams(col, seq, filters) {
 
 export async function parseInquiryObj(source) {
     const result = {
-        "inquiryId": source["inquiry_id"],
-        "inquiryCode": source["inquiry_code"],
-        "salesmanId": source["salesman_id"],
-        "itemId": source["item_id"],
-        "customerId": source["customer_id"],
-        "saleNum": source["sale_num"],
+        "inquiryId": source["inquiry_id"]?.toString(),
+        "inquiryCode": source["inquiry_code"]?.toString(),
+        "salesmanId": source["salesman_id"]?.toString(),
+        "itemId": source["item_id"]?.toString(),
+        "state": "0",
+        "customerId": source["customer_id"]?.toString(),
+        "saleNum": source["sale_num"]?.toString(),
         "expectedTime": moment(source["expected_time"]).format('yyyy/MM/DD'),
-        "inquiryType": getInquiryTypeInt(source["inquiry_type"]),
+        "inquiryType": getInquiryTypeInt(source["inquiry_type"])?.toString(),
         "remark": source["remark"]
     }
 
     if (!result.customerId) {
         const res = await fetchOptions("customer", "customerName", source.customer_name)
-        result.customerId = res?.[0]?.fcustId
+        result.customerId = res?.[0]?.fcustId?.toString()
     }
     if (!result.itemId) {
         const res = await fetchOptions("item", "itemCode", source.item_code)
-        result.itemId = res?.[0]?.id
+        result.itemId = res?.[0]?.id?.toString()
     }
     if (!result.salesmanId) {
         const res = await fetchUser(source.salesman_name)
-        result.salesmanId = res?.[0]?.id
+        result.salesmanId = res?.[0]?.id?.toString()
     }
 
     return result;
 }
 
-export function rowToInquiry(row, inquiryType) {
+export function rowToInquiry(row, inquiryType, state) {
     let param;
-    console.log(row);
     if (inquiryType) {
         const { salesmanId, itemId, customerId, saleNum, expectedTime, remark } = row
         param = {
@@ -76,7 +85,7 @@ export function rowToInquiry(row, inquiryType) {
             itemId: itemId?.toString(),
             customerId: customerId?.toString(),
             saleNum: saleNum?.toString(),
-            expectedTime: moment(expectedTime).format("YYYY/MM/DD"),
+            expectedTime: expectedTime ? moment(expectedTime).format("YYYY/MM/DD") : null,
             inquiryType: inquiryType?.toString(),
             remark
         }
@@ -90,8 +99,8 @@ export function rowToInquiry(row, inquiryType) {
             itemId: itemId?.toString(),
             customerId: customerId?.toString(),
             saleNum: saleNum?.toString(),
-            expectedTime: moment(expectedTime).format("YYYY/MM/DD"),
-            inquiryType: getInquiryTypeInt(inquiryType).toString(),
+            expectedTime: expectedTime ? moment(expectedTime).format("YYYY/MM/DD") : null,
+            inquiryType: getInquiryTypeInt(inquiryType)?.toString(),
             remark
         }
     }

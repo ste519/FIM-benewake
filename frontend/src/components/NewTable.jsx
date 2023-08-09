@@ -5,7 +5,8 @@ import { NEW_INQUIRY_DATA, NEW_INQUIRY_HEADERS } from '../constants/Global';
 import ResizableHeader from './ResizableHeader';
 import DataList from './DataList'
 import { fetchCustomerType } from '../api/fetch';
-
+import { EngToSize, camelToSnakeCase } from '../js/transformType';
+import { useAuthContext } from '../hooks/useCustomContext';
 
 const Input = ({ type, name, value, readOnly, onChange }) => {
     return (
@@ -19,6 +20,132 @@ const Input = ({ type, name, value, readOnly, onChange }) => {
         />
     );
 }
+
+const schema = [
+    {
+        header: "物料编码 *",
+        identifier: "itemCode",
+        element:
+            (data, handleChange) =>
+                <DataList
+                    type="item"
+                    searchKey="itemCode"
+                    initialValue={data.itemCode}
+                    handleChange={handleChange}
+                    identifier="itemCode"
+                />
+    },
+    {
+        header: "物料名称",
+        identifier: "itemName",
+        element:
+            (data) =>
+                <Input
+                    name="itemName"
+                    value={data.itemName}
+                    readOnly
+                />
+    },
+    {
+        header: "数量 *",
+        identifier: "saleNum",
+        element:
+            (data, handleChange) =>
+                <Input
+                    type="number"
+                    name="saleNum"
+                    value={data.saleNum}
+                    onChange={(e) => handleChange(["saleNum"], [e.target.value])}
+                />
+    },
+    {
+        header: "客户名称 *",
+        identifier: "customerName",
+        element:
+            (data, handleChange) =>
+                <DataList
+                    type="customer"
+                    searchKey="customerName"
+                    initialValue={data.customerName}
+                    handleChange={handleChange}
+                    identifier="customerName"
+                />
+    },
+    {
+        header: "销售员 *",
+        identifier: "salesmanName",
+        element:
+            (data, handleChange) =>
+                <DataList
+                    type="user"
+                    searchKey="username"
+                    initialValue={data.salesmanName}
+                    handleChange={handleChange}
+                    identifier="salesmanName"
+                />
+    },
+    {
+        header: "产品类型",
+        identifier: "itemType",
+        element:
+            (data) =>
+                <Input
+                    name="itemType"
+                    value={data.itemType}
+                    readOnly
+                />
+    },
+    {
+        header: "客户类型",
+        identifier: "customerType",
+        element:
+            (data) =>
+                <Input
+                    name="customerType"
+                    value={data.customerType}
+                    readOnly
+                />
+    },
+    {
+        header: "期望发货日期 *",
+        identifier: "expectedTime",
+        element:
+            (data, handleChange) =>
+                <DatePicker selected={data.expectedTime}
+                    onChange={(date) => handleChange(["expectedTime"], [date])}
+                />
+    },
+    {
+        header: "计划反馈日期",
+        identifier: "arrangedTime",
+        element:
+            (data) => <Input
+                name="arrangedTime"
+                value={data.arrangedTime}
+                readOnly
+            />
+    },
+    {
+        header: "是否延期",
+        identifier: "isLate",
+        element:
+            (data) => <Input
+                name="isLate"
+                value={data.isLate}
+                readOnly
+            />
+    },
+    {
+        header: "备注",
+        identifier: "remark",
+        element:
+            (data, handleChange) => <Input
+                name="remark"
+                value={data.remark}
+                onChange={(e) => handleChange(["remark"], [e.target.value])}
+            />
+    }
+]
 
 const Row = ({ rowIndex, data, updateCells, addRow, removeRow, colWidths, isSelected }) => {
 
@@ -39,123 +166,7 @@ const Row = ({ rowIndex, data, updateCells, addRow, removeRow, colWidths, isSele
 
     }, [data.customerId, data.itemId])
 
-    const schema = [
-        {
-            header: "物料编码 *",
-            identifier: "itemCode",
-            element:
-                <DataList
-                    type="item"
-                    searchKey="itemCode"
-                    initialValue={data.itemCode}
-                    handleChange={handleChange}
-                    identifier="itemCode"
-                />
-        },
-        {
-            header: "物料名称",
-            identifier: "itemName",
-            element:
-                <Input
-                    name="itemName"
-                    value={data.itemName}
-                    readOnly
-                />
-        },
-        {
-            header: "数量 *",
-            identifier: "saleNum",
-            element:
-                <Input
-                    type="number"
-                    name="saleNum"
-                    value={data.saleNum}
-                    onChange={(e) => handleChange(["saleNum"], [e.target.value])}
-                />
-        },
-        {
-            header: "客户名称 *",
-            identifier: "customerName",
-            element:
-                <DataList
-                    type="customer"
-                    searchKey="customerName"
-                    initialValue={data.customerName}
-                    handleChange={handleChange}
-                    identifier="customerName"
-                />
-        },
-        {
-            header: "销售员 *",
-            identifier: "salesmanName",
-            element:
-                <DataList
-                    type="user"
-                    searchKey="username"
-                    initialValue={data.salesmanName}
-                    handleChange={handleChange}
-                    identifier="salesmanName"
-                />
-        },
-        {
-            header: "产品类型",
-            identifier: "itemType",
-            element:
-                <Input
-                    name="itemType"
-                    value={data.itemType}
-                    readOnly
-                />
-        },
-        {
-            header: "客户类型",
-            identifier: "customerType",
-            element:
-                <Input
-                    name="customerType"
-                    value={data.customerType}
-                    readOnly
-                />
-        },
-        {
-            header: "期望发货日期 *",
-            identifier: "expectedTime",
-            element:
-                <DatePicker selected={data.expectedTime}
-                    onChange={(date) => handleChange(["expectedTime"], [date])}
-                />
-        },
-        {
-            header: "计划反馈日期",
-            identifier: "arrangedTime",
-            element:
-                <Input
-                    name="arrangedTime"
-                    value={data.arrangedTime}
-                    readOnly
-                />
-        },
-        {
-            header: "是否延期",
-            identifier: "isLate",
-            element:
-                <Input
-                    name="isLate"
-                    value={data.isLate}
-                    readOnly
-                />
-        },
-        {
-            header: "备注",
-            identifier: "remark",
-            element:
-                <Input
-                    name="remark"
-                    value={data.remark}
-                    onChange={(e) => handleChange(["remark"], [e.target.value])}
-                />
-        }
-    ]
+    console.log(data);
 
     return (
         <div className={`tr${isSelected ? " selected" : ""}`}>
@@ -169,7 +180,7 @@ const Row = ({ rowIndex, data, updateCells, addRow, removeRow, colWidths, isSele
                     style={{ width: colWidths?.[i] ?? 70 }}
                     className='td'
                     key={cell.identifier}>
-                    {cell.element}
+                    {cell.element(data, handleChange)}
                 </div>
             )}
         </div>
@@ -178,6 +189,7 @@ const Row = ({ rowIndex, data, updateCells, addRow, removeRow, colWidths, isSele
 
 const NewTable = ({ rows, setRows }) => {
     const headers = NEW_INQUIRY_HEADERS;
+    const { auth } = useAuthContext()
 
     const [selectedRows, setSelectedRows] = useState([])
     const addSelectedRow = (rowIndex) => setSelectedRows([...selectedRows, rowIndex])
@@ -185,8 +197,8 @@ const NewTable = ({ rows, setRows }) => {
     const removeSelectedRow = (rowIndex) => setSelectedRows(selectedRows.filter((index) => index !== rowIndex))
     const removeAllRows = () => { setSelectedRows([]) }
 
-
-    const handleAddRow = () => setRows([...rows, NEW_INQUIRY_DATA])
+    const new_inquiry_data = { ...NEW_INQUIRY_DATA, salesmanName: auth.username }
+    const handleAddRow = () => setRows([...rows, new_inquiry_data])
     const handleDuplicateRow = () => {
         let selectedRowData = selectedRows.map((id) => rows[id])
         setRows([...rows, ...selectedRowData])
@@ -196,7 +208,12 @@ const NewTable = ({ rows, setRows }) => {
         setSelectedRows([])
     }
 
-    const [colWidths, setColWidths] = useState([90, 200, 50, 140, 70, 70, 70, 100, 100])
+    const [colWidths, setColWidths] = useState(
+        schema.map(
+            (item) => EngToSize(camelToSnakeCase(item.identifier))
+        )
+    )
+
     const handleResize = (index, newSize) => {
         setColWidths(prev => {
             const newWidths = [...prev];

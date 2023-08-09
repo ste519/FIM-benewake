@@ -4,6 +4,7 @@ import ResizableHeader from './ResizableHeader';
 import DataList from './DataList'
 import { fetchCustomerType } from '../api/fetch';
 import moment from 'moment';
+import { EngToSize, camelToSnakeCase } from '../js/transformType';
 
 const schema = [
     {
@@ -187,7 +188,11 @@ const Row = ({ rowIndex, data, updateCells, colWidths }) => {
 }
 
 const EditTable = ({ rows, setRows }) => {
-    const [colWidths, setColWidths] = useState([90, 50, 140, 80, 100, 70, 180, 70, 70, 100, 70, 200])
+    const [colWidths, setColWidths] = useState(
+        schema.map(
+            (item) => EngToSize(camelToSnakeCase(item.identifier))
+        )
+    )
 
     const handleResize = (index, newSize) => {
         setColWidths(prev => {

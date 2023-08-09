@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { ReactComponent as DownIcon } from '../assets/icons/arrow-down.svg';
-import { useTableStatesContext, useUpdateTableStatesContext, useQueryContext } from '../hooks/useCustomContext';
+import { useTableStatesContext, useUpdateTableStatesContext } from '../hooks/useCustomContext';
 import colNameDict from '../constants/ColNameDict.json'
 import { VISIBILITY_ALL_FALSE, VISIBILITY_ALL_TRUE } from '../constants/Global';
 

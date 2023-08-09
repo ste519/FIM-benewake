@@ -1,6 +1,7 @@
 import api from "./axios";
 import moment from 'moment';
 import { VISIBILITY_ALL_FALSE } from "../constants/Global";
+import { getInquiryTypeInt } from '../js/parseData'
 
 const inquiryTypeObject = value => ({
     colName: "inquiry_type",
@@ -87,17 +88,19 @@ const itemMapping = {
 const inquiryMapping = {
     1: [inquiryTypeObject("XD")],//现有询单
     2: [inquiryTypeObject("YC")],//现有预测
-    3: [inquiryTypeObject("XD"), stateObject("-1")],//删除询单
-    4: [inquiryTypeObject("YC"), stateObject("-1")],//删除预测
-    5: [inquiryInitTypeObject("XD"), inquiryTypeObject("PR")],//XD已变PR询单
-    6: [inquiryInitTypeObject("YC"), inquiryTypeObject("PR")],//YC已变PR询单
-    7: [inquiryInitTypeObject("XD"), inquiryTypeObject("PO")],//XD已变PO询单
-    8: [inquiryInitTypeObject("YC"), inquiryTypeObject("PO")]//YC已变PO询单
+    3: [inquiryInitTypeObject(getInquiryTypeInt("XD(意向询单)")),
+    stateObject("-1")],//删除询单
+    4: [inquiryInitTypeObject(getInquiryTypeInt("YC(销售预测)")),
+    stateObject("-1")],//删除预测
+    5: [inquiryInitTypeObject(getInquiryTypeInt("XD(意向询单)")), inquiryTypeObject("PR")],//XD已变PR询单
+    6: [inquiryInitTypeObject(getInquiryTypeInt("YC(销售预测)")), inquiryTypeObject("PR")],//YC已变PR询单
+    7: [inquiryInitTypeObject(getInquiryTypeInt("XD(意向询单)")), inquiryTypeObject("PO")],//XD已变PO询单
+    8: [inquiryInitTypeObject(getInquiryTypeInt("YC(销售预测)")), inquiryTypeObject("PO")]//YC已变PO询单
 };
 
 export async function fetchData({ tableId, viewId, filterCriterias, secTab }) {
     let newCriterias = filterCriterias;
-    let newViewId = tableId > 1 && viewId >0 ? -1 :viewId
+    let newViewId = tableId > 1 && viewId > 0 ? -1 : viewId
     if (secTab) {
         const additionalCriterias = secTabMapping[secTab];
         if (additionalCriterias) {
@@ -154,8 +157,6 @@ export async function fetchData({ tableId, viewId, filterCriterias, secTab }) {
 export async function fetchOptions(type, searchKey, searchValue) {
     try {
         const response = await api.post(`/${type}/likeList`, { [searchKey]: searchValue })
-        // const options = response.data.data?.map((row) => row[searchKey])
-        // setOptions(options)
         return response.data.data;
     }
     catch (err) {
@@ -172,7 +173,6 @@ export async function fetchUser(username, userType) {
         console.log(err);
     }
 }
-
 
 export async function fetchNewViews(tableId) {
     try {
@@ -194,3 +194,23 @@ export async function fetchCustomerType(itemId, customerId) {
     }
 }
 
+export async function fetchDeliveryUpdates() {
+    try {
+        const response = await api.get('/delivery/update')
+        console.log(response);
+        return response.data;
+    }
+    catch (err) {
+        console.log(err);
+    }
+}
+
+export async function fetchStateNums(){
+    try {
+        const response = await api.get('/order/stateList')
+        return response.data;
+    }
+    catch (err) {
+        console.log(err);
+    }
+}

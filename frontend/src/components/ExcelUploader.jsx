@@ -38,10 +38,14 @@ export default function ExcelUploader({ close, updateAlert }) {
     }
 
     return (
-        <div>
-            <input name="excel-uploader" type="file" accept=".xlsx,.xls" onChange={handleFile} />
-            <button onClick={addData}>导入</button>
-            <button onClick={close}>取消</button>
+        <div className='excel-uploader-container col flex-center '>
+            <input id="excel-uploader" type="file" accept=".xlsx,.xls" onChange={handleFile} className='hidden' />
+            <label htmlFor="excel-uploader">选择文件(.xls, .xlsx)</label>
+            <h1>{file?.name}</h1>
+            <div className='row flex-center g1'>
+                <button onClick={close} className='white small bordered'>取消</button>
+                <button onClick={addData} className='blue40 small'>导入</button>
+            </div>
         </div>
     );
 };

@@ -6,16 +6,17 @@ import { NEW_INQUIRY_DATA } from '../constants/Global';
 import { startInquiry } from '../api/inquiry';
 import { rowToInquiry } from '../js/parseData';
 import moment from 'moment';
-import { useAlertContext } from '../hooks/useCustomContext';
+import { useAlertContext, useAuthContext } from '../hooks/useCustomContext';
 
-const SimpleToolbar = ({ rows, inquiryType, setInquiryCode }) => {
+const SimpleToolbar = ({ rows, inquiryType }) => {
     const updateAlert = useAlertContext()
     const [action, setAction] = useState(null)
 
     const handleClick = async (status) => {
         setAction({ type: status === 1 ? "开始询单" : "保存", time: new Date() })
 
-        const newInquiries = rows.map(row => rowToInquiry(row, inquiryType))
+        const newInquiries = rows.map(row => rowToInquiry(row, inquiryType, status))
+        console.log(newInquiries);
         const res = await startInquiry(newInquiries, status)
         switch (res.code) {
             case 200:
@@ -25,7 +26,6 @@ const SimpleToolbar = ({ rows, inquiryType, setInquiryCode }) => {
                         message: res.message
                     }
                 })
-                setInquiryCode(res.data.inquiryCode)
                 break
             case 400:
                 updateAlert({
@@ -77,14 +77,15 @@ const SimpleToolbar = ({ rows, inquiryType, setInquiryCode }) => {
 
 const New = () => {
     const [inquiryType, setInquiryType] = useState(null)
-    const [inquiryCode, setInquiryCode] = useState();
     const [currentDate, setCurrentDate] = useState(new Date());
-    const [rows, setRows] = useState([NEW_INQUIRY_DATA])
+    const { auth } = useAuthContext()
+    const new_inquiry_data = { ...NEW_INQUIRY_DATA, salesmanName: auth.username }
+    const [rows, setRows] = useState([new_inquiry_data])
 
     return (
         <div className='col full-screen invoice-container'>
-            <SimpleToolbar rows={rows} inquiryType={inquiryType} setInquiryCode={setInquiryCode} />
-            <div className='col invoice-info'>
+            <SimpleToolbar rows={rows} inquiryType={inquiryType} />
+            <div className='col inquiry-info'>
                 <div className='row'>
                     <h1>订单类型：</h1>
                     <label htmlFor="yc" className='row flex-center'>
@@ -102,11 +103,7 @@ const New = () => {
                         销售询单
                     </label>
                 </div>
-                <div className='row'>
-                    <h1>单据编号：</h1>
-                    <input type="text" disabled name="inquiryCode" value={inquiryCode} onChange={(e) => setInquiryCode(e.target.value)} />
-                </div>
-                <div className="react-datepicker-container">
+                <div className="react-datepicker-container input-wrapper">
                     单据日期：
                     <DatePicker
                         selected={currentDate}

@@ -1,21 +1,21 @@
 import { useState, useEffect, useRef } from 'react'
-import { useUpdateTableDataContext, useUpdateQueryContext, useQueryContext, useUpdateTableStatesContext, useTableStatesContext, useTableDataContext, useAlertContext } from '../hooks/useCustomContext';
+import { useUpdateTableDataContext, useUpdateTableStatesContext, useTableStatesContext, useAlertContext, useSelectedDataContext } from '../hooks/useCustomContext';
 import { ReactComponent as AddIcon } from '../assets/icons/add.svg'
 import { ReactComponent as CloseIcon } from '../assets/icons/cross.svg'
+import { ReactComponent as SaveIcon } from '../assets/icons/save.svg'
 import SimpleColVisibility from './SimpleColVisibility'
 import { fetchData, fetchNewViews } from '../api/fetch'
 import Filters from './Filters'
 import { postView } from '../api/post';
 import { VISIBILITY_ALL_FALSE } from '../constants/Global';
-import { useLoaderData } from 'react-router-dom';
+import { useLoaderData, useLocation } from 'react-router-dom';
 import { deleteView } from '../api/delete';
 import { getColParams } from '../js/parseData';
 import { VisibilityToCols, ColsToFilters } from '../js/transformType';
-import { noData } from '../js/valueCheck';
+import { getTableId } from '../js/getData'
+import AutoWidthInput from './AutoWidthInput';
 
 const ViewPopup = ({ closePopup, setNewViews }) => {
-
-    const query = useQueryContext()
 
     const [viewName, setViewName] = useState("")
     const [visibility, setVisibility] = useState(VISIBILITY_ALL_FALSE)
@@ -29,7 +29,7 @@ const ViewPopup = ({ closePopup, setNewViews }) => {
 
         //TODO, Adding sequence logic
         const params = {
-            tableId: query.tableId,
+            tableId: tableId,
             viewName,
             cols: cols
         }
@@ -55,47 +55,41 @@ const ViewPopup = ({ closePopup, setNewViews }) => {
     }
     return (
         <div className='popup-container'>
-            <form className='popup-wrapper view-popup' onSubmit={handleSumbit}>
+            <form className='popup-wrapper g2' onSubmit={handleSumbit}>
                 <label htmlFor="view__name" className='row'>当前方案：
                     <input value={viewName} onChange={(e) => setViewName(e.target.value)}
                         type="text" id="view__name" placeholder="请输入方案名"
                     />
                 </label>
                 <div className='col'>
-                    <h1>默认显示列：</h1>
                     <SimpleColVisibility visibility={visibility} setVisibility={setVisibility} />
                 </div>
 
-                <div className='row'>
-                    <input type="button" name="cancel" onClick={closePopup} value="取消" />
-                    <input type="submit" name="submit" className="blue40" value="确定" />
+                <div className='row  g1 flex-center'>
+                    <input type="button" name="cancel" className="white small bordered" onClick={closePopup} value="取消" />
+                    <input type="submit" name="submit" className="blue40 small" value="确定" />
                 </div>
             </form>
         </div>
     )
 }
 
-const View = ({ id, name, isSelected, handleViewClick, handleDelete, editable }) => {
-    const [viewName, setViewName] = useState(name)
-    useEffect(() => setViewName(name), [name])
-
-    const [readOnly, setReadOnly] = useState(true)
+const View = ({ id, name, isSelected, handleViewClick, handleDelete, editable,  handleChange }) => {
 
     if (editable) {
-        const ref = useRef(null);
+        const [readOnly, setReadOnly] = useState(true)
+
         return (<div
-            className={`view row flex-center 
+            className={`view row flex-center editable
         ${isSelected ? 'selected' : 'bordered'}`}
             onClick={() => handleViewClick(id, name)}
-            onDoubleClick={() => setReadOnly(!readOnly)}
+            onDoubleClick={(e) => { e.stopPropagation(); setReadOnly(!readOnly) }}
         >
-            <input
-                type="text"
-                value={viewName}
-                style={{ width: viewName.length * 12 }}
+            <AutoWidthInput
+                value={name}
+                name={id}
+                onChange={(e) => handleChange(e.target.value, id)}
                 readOnly={readOnly}
-                ref={ref}
-                onChange={(e) => setViewName(e.target.value)}
             />
             <button
                 onClick={async (e) => await handleDelete(e, id)}>
@@ -105,9 +99,13 @@ const View = ({ id, name, isSelected, handleViewClick, handleDelete, editable })
     }
 
     else {
+        const [viewName, setViewName] = useState(name)
+        useEffect(() => setViewName(name), [name])
+
+
         return (<div
             className={`view row flex-center ${isSelected ? 'selected' : 'bordered'}`}
-            onClick={() => handleViewClick(id, name)}
+            onClick={() => handleViewClick(id)}
         >
             {viewName}
         </div>)
@@ -117,48 +115,39 @@ const View = ({ id, name, isSelected, handleViewClick, handleDelete, editable })
 const Views = ({ views, editable }) => {
     const updateTableData = useUpdateTableDataContext()
     const updateTableStates = useUpdateTableStatesContext()
-    const updateQuery = useUpdateQueryContext()
-    const query = useQueryContext()
     const updateAlert = useAlertContext()
     const states = useTableStatesContext()
+    const { selectedQuery, updateSelectedQuery, resetSelectedQuery } = useSelectedDataContext()
 
+    const location = useLocation()
+    const tableId = getTableId(location)
+
+    const defaultSelection = selectedQuery[tableId]
     const visibleCols = VisibilityToCols(states.columnVisibility)
 
-    let initialFilters = query.tableId < 6 ? [
-        { colName: "item_code", condition: "like", value: "" },
-        { colName: "item_name", condition: "like", value: "" },
-        { colName: "customer_name", condition: "like", value: "" },
-        { colName: "item_type", condition: "like", value: "" },
-        { colName: "inquiry_type", condition: "like", value: "" }
-    ] : [
-        { colName: "item_code", condition: "like", value: "" },
-        { colName: "item_name", condition: "like", value: "" },
-        { colName: "customer_name", condition: "like", value: "" }
-    ]
-
-    const [filters, setFilters] = useState(initialFilters)
-
     const [open, setOpen] = useState(false)
-    const [selected, setSelected] = useState(views[0].viewName)
+    const [selected, setSelected] = useState(defaultSelection.viewId)
     const [newViews, setNewViews] = useState(useLoaderData()?.newViews)
+
+    useEffect(() => console.log(newViews), [newViews])
 
     const handleAdd = () => setOpen("add")
     const handleSave = async () => {
 
-        if (query.viewId === null || query.viewId === undefined || query.viewId === "") {
+        if (defaultSelection.viewId === null || defaultSelection.viewId === undefined || defaultSelection.viewId === "") {
             updateAlert({ type: "SHOW_ALERT", data: { type: "warning", message: "未选择方案！" } })
         }
-        else if (query.viewId <= 0) {
+        else if (defaultSelection.viewId <= 0) {
             updateAlert({ type: "SHOW_ALERT", data: { type: "warning", message: "系统方案无法修改！" } })
         }
         else {
             let res;
-            const cols = visibleCols.map((col, i) => getColParams(col, i + 1, filters)) //TODO: Adding sequence logic
+            const cols = visibleCols.map((col, i) => getColParams(col, i + 1, defaultSelection.filterCriterias)) //TODO: Adding sequence logic
 
             const params = {
-                tableId: query.tableId,
-                viewName: selected,
-                viewId: query.viewId,
+                tableId: defaultSelection.tableId,
+                viewName: newViews.find(view => view.viewId === defaultSelection.viewId).viewName,
+                viewId: defaultSelection.viewId,
                 cols: cols
             }
 
@@ -217,19 +206,27 @@ const Views = ({ views, editable }) => {
 
     const closePopup = () => setOpen(false)
 
-    const handleViewClick = async (id, name) => {
-        setSelected(name)
-        updateQuery({ type: "SET_VIEW_ID", viewId: id })
+    const handleViewClick = async (id) => {
+        setSelected(id)
+        updateSelectedQuery(tableId, "viewId", id)
         updateTableData({ type: "CLEAR_TABLE_DATA" })
-
-        const res = await fetchData({ ...query, viewId: id, filterCriterias: [] })
+        const res = await fetchData({ ...defaultSelection, viewId: id })
         updateTableData({ type: "SET_TABLE_DATA", tableData: res.lists })
-        if (id > 0) {
-            setFilters(ColsToFilters(res.cols))
-            updateQuery({ type: "SET_FILTER_CRITERIAS", filterCriterias: ColsToFilters(res.cols) })
+
+        //新增视图
+        if (tableId === 1) {
+            if (id > 0)
+                updateSelectedQuery(1, "filterCriterias", ColsToFilters(res.cols))
+            else {
+                resetSelectedQuery(1, "filterCriterias")
+            }
         }
 
         updateTableStates({ type: "SET_COLUMN_VISIBILITY", columnVisibility: res.columnVisibility })
+    }
+
+    const handleViewNameChange = (newName, viewId) => {
+        setNewViews(prev => [...prev.filter(view => view.viewId !== viewId), { viewId, viewName: newName }])
     }
 
     return (
@@ -240,7 +237,7 @@ const Views = ({ views, editable }) => {
                         id={item.viewId}
                         name={item.viewName}
                         key={i}
-                        isSelected={selected === item.viewName}
+                        isSelected={selected === item.viewId}
                         handleViewClick={handleViewClick}
                         handleDelete={handleDelete}
                     />
@@ -250,18 +247,22 @@ const Views = ({ views, editable }) => {
                         id={item.viewId}
                         name={item.viewName}
                         key={i}
-                        isSelected={selected === item.viewName}
+                        isSelected={selected === item.viewId}
                         handleViewClick={handleViewClick}
                         handleDelete={handleDelete}
                         editable
+                        handleChange={handleViewNameChange}
                     />
                 )}
                 {editable &&
-                    <div className='controls row'>
+                    <div className='controls row g1'>
                         <button className="rounded blue40" onClick={handleAdd}>
-                            <AddIcon />新增方案</button>
+                            <AddIcon />新增方案
+                        </button>
                         <button className="rounded white"
-                            onClick={handleSave}>保存方案</button>
+                            onClick={handleSave}>
+                            <SaveIcon />保存方案
+                        </button>
                     </div>
                 }
             </div>
@@ -276,8 +277,6 @@ const Views = ({ views, editable }) => {
                     <div className="col flex-center">
                         <Filters
                             headers={visibleCols}
-                            filters={filters}
-                            setFilters={setFilters}
                             display={true} />
                     </div> :
                     <div className='placeholder'></div>

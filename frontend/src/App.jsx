@@ -2,7 +2,6 @@ import Sidebar from './components/Sidebar';
 import TabProvider from './providers/TabProvider';
 import Navbar from './components/Navbar';
 import { useState } from 'react';
-import QueryProvider from './providers/QueryProvider';
 import RequireAuth from './components/RequireAuth';
 import TableProvider from './providers/TableProvider';
 import SelectedDataProvider from './providers/SelectedDataProvider';
@@ -28,15 +27,13 @@ export default function App() {
 
     return (
         <TabProvider>
-            <QueryProvider>
-                <TableProvider>
-                    <SelectedDataProvider>
+                <SelectedDataProvider>
+                    <TableProvider>
                         <Layout>
                             <RequireAuth />
                         </Layout>
-                    </SelectedDataProvider>
-                </TableProvider>
-            </QueryProvider>
+                    </TableProvider>
+                </SelectedDataProvider>
         </TabProvider>
     )
 }

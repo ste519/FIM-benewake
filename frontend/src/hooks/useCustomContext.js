@@ -1,10 +1,8 @@
 import { useContext } from "react";
-import { AlertContext, QueryContext, UpdateQueryContext, AuthContext, TabContext, UpdateTabContext, TableDataContext, UpdateTableDataContext, TableStatesContext, UpdateTableStatesContext, SelectedDataContext } from "../contexts/createContext";
+import { AlertContext, AuthContext, TabContext, UpdateTabContext, TableDataContext, UpdateTableDataContext, TableStatesContext, UpdateTableStatesContext, SelectedDataContext } from "../contexts/createContext";
 
 export const useAlertContext = () => { return useContext(AlertContext); }
 
-export const useQueryContext = () => { return useContext(QueryContext); }
-export const useUpdateQueryContext = () => { return useContext(UpdateQueryContext); }
 
 export const useAuthContext = () => { return useContext(AuthContext); }
 

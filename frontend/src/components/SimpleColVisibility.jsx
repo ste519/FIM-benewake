@@ -18,15 +18,18 @@ const SimpleColVisibility = ({ visibility, setVisibility }) => {
 
     return (
         <div className="col simple-visibility-wrapper">
-            <label key="-1">
-                <input
-                    type="checkbox"
-                    name="visibilityAll"
-                    checked={!Object.values(visibility).includes(false)}
-                    onChange={toggleSelectAll}
-                />
-                全选
-            </label>
+            <div className='row mb1' >
+                <h1>默认显示列：</h1>
+                <label key="-1">
+                    <input
+                        type="checkbox"
+                        name="visibilityAll"
+                        checked={!Object.values(visibility).includes(false)}
+                        onChange={toggleSelectAll}
+                    />
+                    全选
+                </label>
+            </div>
             <div className='col-selection'>
                 {
                     colNameDict.map(
