@@ -166,8 +166,6 @@ const Row = ({ rowIndex, data, updateCells, addRow, removeRow, colWidths, isSele
 
     }, [data.customerId, data.itemId])
 
-    console.log(data);
-
     return (
         <div className={`tr${isSelected ? " selected" : ""}`}>
             <div className='td fixed'>

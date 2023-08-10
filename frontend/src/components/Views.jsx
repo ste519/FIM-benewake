@@ -129,8 +129,6 @@ const Views = ({ views, editable }) => {
     const [selected, setSelected] = useState(defaultSelection.viewId)
     const [newViews, setNewViews] = useState(useLoaderData()?.newViews)
 
-    useEffect(() => console.log(newViews), [newViews])
-
     const handleAdd = () => setOpen("add")
     const handleSave = async () => {
 

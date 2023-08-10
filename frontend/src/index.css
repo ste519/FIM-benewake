@@ -116,8 +116,8 @@ input[type="radio"]:checked::before {
   transform: scale(1);
 }
 
-input::placeholder {
-  color: var(--blue40)
+input::placeholder, textarea::placeholder {
+  color: var(--blue30)
 }
 
 input:disabled {
@@ -830,6 +830,12 @@ tr:focus {
   height: 4rem;
 }
 
+
+.navbar .toggle-btn:hover {
+  background-color: var(--blue40);
+  color: white
+}
+
 .navbar .logo {
   width: 40px;
   margin-left: 2rem;
@@ -952,6 +958,16 @@ tr:focus {
 
 .flex-center {
   justify-content: center;
+  align-items: center;
+}
+
+.flex-start {
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.flex-end {
+  justify-content: flex-end;
   align-items: center;
 }
 
@@ -1149,6 +1165,9 @@ strong {
   font-weight: 600;
 }
 
+.alert-container p {
+  white-space: pre-line
+}
 
 .alert-container .btn-wrapper {
   margin-left: auto;
@@ -1261,7 +1280,6 @@ datalist {
   box-shadow: var(--shadow);
   text-align: left;
   border-radius: 0.5rem;
-  padding: 0.5rem 0;
   z-index: 3;
 }
 
@@ -1367,4 +1385,39 @@ input[type=number] {
 .data-list-dropdown li.row {
   display: grid;
   grid-template-columns: 1fr 2fr;
+}
+
+.data-list-dropdown .sticky {
+  position: sticky;
+  top: 0;
+  background-color: var(--blue5);
+  z-index: 6;
+}
+
+.sidebar .user-info-container {
+  color: var(--blue40)
+}
+
+.sidebar .user-info-container h1 {
+  margin-bottom: 1px;
+}
+
+
+.post-message-container textarea {
+  height: 20rem;
+  width: 100%;
+  border-radius: 4px;
+  padding: 2rem;
+  box-shadow: var(--shadow);
+  background: white;
+}
+ 
+.post-message-wrapper {
+  background: var(--blue5);
+  padding: 2rem;
+  gap: 2rem;
+}
+
+.post-message-container label {
+  white-space: nowrap;
 }

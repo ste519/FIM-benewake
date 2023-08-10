@@ -1,10 +1,8 @@
 import { useLocation, Outlet, Navigate } from "react-router-dom";
-import { useAuthContext, useTabContext } from "../hooks/useCustomContext";
-
+import { useAuthContext } from "../hooks/useCustomContext";
 
 const RequireAuth = () => {
     const { auth } = useAuthContext()
-    const tabs = useTabContext()
     const location = useLocation()
 
     return (

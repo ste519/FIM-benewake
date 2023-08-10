@@ -3,17 +3,20 @@ import children from '../path/children';
 import { useAuthContext, useUpdateTabContext } from '../hooks/useCustomContext';
 import { ReactComponent as LogoutIcon } from '../assets/icons/logout.svg'
 import { logout } from '../api/auth';
+import adminChildren from '../path/adminChildren';
 
 
 export default function Sidebar({ showSidebar }) {
     const updateTabs = useUpdateTabContext()
     const navigate = useNavigate()
     const { auth } = useAuthContext()
+    console.log(auth);
 
     const handleClick = (newTab, event) => {
         event.stopPropagation();
         updateTabs({ type: "ADD_TAB", tab: newTab })
     }
+
 
     const handleLogout = async () => {
         await logout()
@@ -30,16 +33,28 @@ export default function Sidebar({ showSidebar }) {
                     obj.name !== "404" &&
                     <NavLink
                         key={i}
-                        to={obj.path}
+                        to={"/" + obj.path}
                         className="sidebar-item"
                         onClick={(e) => handleClick(obj, e)}
                     >
                         {obj.name}
                     </NavLink>)}
+                {
+                    auth?.userType == 2 &&
+                    adminChildren.map((obj, i) =>
+                        <NavLink
+                            key={i}
+                            to={"/admin/" + obj.path}
+                            className="sidebar-item"
+                            onClick={(e) => handleClick(obj, e)}
+                        >
+                            {obj.name}
+                        </NavLink>)
+                }
             </nav >
-            <div className='row flex-center mb1'>
+            <div className='row flex-center mb1 user-info-container'>
                 <h1>用户：{auth?.username ?? ""}</h1>
-                <button className='transparent' onClick={handleLogout}>
+                <button onClick={handleLogout} >
                     <LogoutIcon />
                 </button>
             </div>

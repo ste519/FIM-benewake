@@ -5,7 +5,7 @@ import { ReactComponent as LogoIcon } from '../assets/logos/logo.svg'
 import { ReactComponent as MenuIcon } from '../assets/icons/menu.svg';
 import { NavLink, useNavigate } from 'react-router-dom';
 
-const Tabs = ({navigate}) => {
+const Tabs = ({ navigate }) => {
     const tabs = useTabContext()
     const updateTabs = useUpdateTabContext()
     const handleRemoveTab = (event, tab) => {
@@ -20,7 +20,7 @@ const Tabs = ({navigate}) => {
                 tab && tab.name !== "用户主页" &&
                 <NavLink
                     key={i}
-                    to={tab.path}
+                    to={tab?.type === "admin" ? "/admin/" + tab.path : "/" + tab.path}
                     className="tab"
                 >
                     {tab.name}
@@ -42,12 +42,12 @@ export const Navbar = ({ showSidebar, setShowSidebar }) => {
             <div className="brand row">
                 <LogoIcon className="logo" onClick={() => navigate("/user")} />
                 <button
-                    className={`toggle-btn ${showSidebar ? 'blue40' : 'transparent'}`}
+                    className={`toggle-btn transparent ${showSidebar ? "active" : ""}`}
                     onClick={() => setShowSidebar(!showSidebar)}>
                     <MenuIcon />
                 </button>
             </div>
-            <Tabs navigate={navigate}/>
+            <Tabs navigate={navigate} />
         </div>
     )
 }

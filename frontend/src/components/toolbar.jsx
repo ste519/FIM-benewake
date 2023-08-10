@@ -120,7 +120,7 @@ export default function Toolbar({ features }) {
             const res = await startInquiry(newInquiries, 1)
             switch (res.code) {
                 case 200:
-                    updateAlert({ type: "SHOW_ALERT", data: { type: "success", message: res.message } })
+                    updateAlert({ type: "SHOW_ALERT", data: { type: "warning", message: res.message } })
                     handleRefresh()
                     break
                 case 400:

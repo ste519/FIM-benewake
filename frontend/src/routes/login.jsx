@@ -3,8 +3,8 @@ import { ReactComponent as AppIcon } from '../assets/logos/App.svg'
 
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { createUser, login, logout } from '../api/auth';
-import { useAuthContext, useAlertContext } from '../hooks/useCustomContext';
+import { createUser, login } from '../api/auth';
+import { useAlertContext, useAuthContext } from '../hooks/useCustomContext';
 
 function setCookie(name, value, days) {
     let expires = "";
@@ -16,20 +16,19 @@ function setCookie(name, value, days) {
     document.cookie = name + "=" + (value || "") + expires + "; path=/";
 }
 
-
-
 export default function Login() {
 
-
-    const { showAlert } = useAlertContext();
+    const updateAlert = useAlertContext()
     const { setAuth } = useAuthContext();
     const navigate = useNavigate()
 
     useEffect(() => {
         if (document.cookie !== "") {
             const cookies = document.cookie.split('; ');
-            const value = cookies?.[1]?.split('=')?.[1]
-            setAuth({ username: value })
+            setAuth({
+                username: cookies?.[1]?.split('=')?.[1],
+                userType: cookies?.[2]?.split('=')?.[1]
+            })
             navigate("/user")
         }
     }, [])
@@ -47,19 +46,11 @@ export default function Login() {
                 setAuth(res.data)
                 navigate('/user')
                 setCookie("username", res.data.username, 7)
+                setCookie("userType", res.data.userType, 7)
                 break;
-
-            case 202:
-
-                // showAlert({ type: "warning", message: res.message })
-                // setAuth({ username: username })
-                // navigate('/user')
-                break;
-
             case 400:
                 showAlert({ type: "warning", message: res.message })
                 break;
-
             default:
                 showAlert({ type: "error", message: "未知错误，请联系飞书管理员!" })
                 break;
@@ -67,14 +58,12 @@ export default function Login() {
     };
 
     const handleForgetPassword = () => {
-        showAlert({ type: "warning", message: "请联系飞书管理员!" })
+        updateAlert({ type: "SHOW_ALERT", data: { type: "warning", message: "请联系飞书管理员!" } })
     }
 
     const handleCreateUser = async () => {
         await createUser({ username, password, userType: 1 })
     }
-
-
 
     return (
         <div id="login-page" className="container">
@@ -107,11 +96,6 @@ export default function Login() {
                     </div>
                     <button className="login-btn" type="submit">登录</button>
                 </form>
-                <div>
-                    <h1>(测试用)</h1>
-                    <button onClick={handleCreateUser}>新建用户</button>
-
-                </div>
             </div>
 
         </div>

@@ -8,16 +8,16 @@ import { rowToInquiry } from '../js/parseData';
 import moment from 'moment';
 import { useAlertContext, useAuthContext } from '../hooks/useCustomContext';
 
-const SimpleToolbar = ({ rows, inquiryType }) => {
+const SimpleToolbar = ({ rows, inquiryType, ids, setIds }) => {
     const updateAlert = useAlertContext()
     const [action, setAction] = useState(null)
 
-    const handleClick = async (status) => {
-        setAction({ type: status === 1 ? "开始询单" : "保存", time: new Date() })
+    const handleSaveClick = async () => {
+        setAction({ type: "保存", time: new Date() })
 
-        const newInquiries = rows.map(row => rowToInquiry(row, inquiryType, status))
-        console.log(newInquiries);
-        const res = await startInquiry(newInquiries, status)
+        const newInquiries = await Promise.all(rows.map(row => rowToInquiry(row, inquiryType)));
+
+        const res = await startInquiry(newInquiries, 0)
         switch (res.code) {
             case 200:
                 updateAlert({
@@ -26,6 +26,53 @@ const SimpleToolbar = ({ rows, inquiryType }) => {
                         message: res.message
                     }
                 })
+                setIds(res.data.ids)
+                break
+            case 400:
+                updateAlert({
+                    type: "SHOW_ALERT", data: {
+                        type: "error",
+                        message: res.message
+                    }
+                })
+                break
+            case 1:
+                updateAlert({
+                    type: "SHOW_ALERT", data: {
+                        type: "error",
+                        message: res.message
+                    }
+                })
+                break
+            default:
+                updateAlert({
+                    type: "SHOW_ALERT", data: {
+                        type: "error",
+                        message: "未知错误"
+                    }
+                })
+                break
+        }
+    }
+
+    const handleStartClick = async () => {
+        setAction({ type: "开始询单", time: new Date() })
+
+        console.log(ids);
+        let newInquiries;
+        if (ids) { newInquiries = ids.map((id) => ({ "inquiryId": id })) }
+        else { newInquiries = await Promise.all(rows.map(row => rowToInquiry(row, inquiryType))) }
+
+        const res = await startInquiry(newInquiries, 1)
+        switch (res.code) {
+            case 200:
+                updateAlert({
+                    type: "SHOW_ALERT", data: {
+                        type: "warning",
+                        message: res.message
+                    }
+                })
+                if (!ids) setIds(res.data.ids)
                 break
             case 400:
                 updateAlert({
@@ -58,8 +105,8 @@ const SimpleToolbar = ({ rows, inquiryType }) => {
     return (
         <div className='row toolbar' >
             <div className='row flex-center'>
-                <button onClick={() => handleClick(0)} >保存</button>
-                <button onClick={() => handleClick(1)}>开始询单</button>
+                <button onClick={handleSaveClick} >保存</button>
+                <button onClick={handleStartClick}>开始询单</button>
             </div>
             <div className="row flex-center status">
                 {action &&
@@ -78,13 +125,14 @@ const SimpleToolbar = ({ rows, inquiryType }) => {
 const New = () => {
     const [inquiryType, setInquiryType] = useState(null)
     const [currentDate, setCurrentDate] = useState(new Date());
+    const [ids, setIds] = useState(null)
     const { auth } = useAuthContext()
     const new_inquiry_data = { ...NEW_INQUIRY_DATA, salesmanName: auth.username }
     const [rows, setRows] = useState([new_inquiry_data])
 
     return (
         <div className='col full-screen invoice-container'>
-            <SimpleToolbar rows={rows} inquiryType={inquiryType} />
+            <SimpleToolbar rows={rows} inquiryType={inquiryType} ids={ids} setIds={setIds} />
             <div className='col inquiry-info'>
                 <div className='row'>
                     <h1>订单类型：</h1>

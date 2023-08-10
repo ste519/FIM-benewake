@@ -25,6 +25,25 @@ export function getStateStr(num) {
         return `询单${num}次`
 }
 
+export function getStateNum(str) {
+    if (!str)
+        return null
+    if (str === "保存")
+        return "0"
+    else if (str === "无效")
+        return "-1"
+    else {
+        const regex = /询单(\d+)次/;
+        const match = str.match(regex);
+        if (match) {
+            return match[1];
+        } else {
+            return null;
+        }
+    }
+}
+
+
 export function getVisbleTableData(tableData, headers_ENG) {
     return tableData.map(row => {
         let newData = {};
@@ -76,12 +95,20 @@ export async function parseInquiryObj(source) {
     return result;
 }
 
-export function rowToInquiry(row, inquiryType, state) {
+export async function rowToInquiry(row, inquiryType) {
     let param;
+    let salesmanId = null;
     if (inquiryType) {
-        const { salesmanId, itemId, customerId, saleNum, expectedTime, remark } = row
+        if (!row?.salesmanId) {
+            const res = await fetchUser(row.salesmanName)
+            salesmanId = res?.[0]?.id?.toString()
+        }
+        else {
+            salesmanId = row.salesmanId.toString()
+        }
+        const { itemId, customerId, saleNum, expectedTime, remark } = row
         param = {
-            salesmanId: salesmanId?.toString(),
+            salesmanId,
             itemId: itemId?.toString(),
             customerId: customerId?.toString(),
             saleNum: saleNum?.toString(),
@@ -91,7 +118,7 @@ export function rowToInquiry(row, inquiryType, state) {
         }
     }
     else {
-        const { inquiryId, inquiryCode, inquiryType, salesmanId, itemId, customerId, saleNum, expectedTime, remark } = row
+        const { inquiryId, inquiryCode, inquiryType, salesmanId, itemId, customerId, saleNum, expectedTime, remark, state } = row
         param = {
             inquiryId: inquiryId?.toString(),
             inquiryCode,
@@ -101,6 +128,7 @@ export function rowToInquiry(row, inquiryType, state) {
             saleNum: saleNum?.toString(),
             expectedTime: expectedTime ? moment(expectedTime).format("YYYY/MM/DD") : null,
             inquiryType: getInquiryTypeInt(inquiryType)?.toString(),
+            state: getStateNum(state),
             remark
         }
     }

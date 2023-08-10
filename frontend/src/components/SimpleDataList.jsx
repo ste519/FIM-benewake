@@ -61,7 +61,6 @@ const SimpleDataList = ({ name, initialValue, initialOptions, handleChange, sear
                 const allOptions = name === "state" ? stateOptions : localOptions[name]
                 const fuzzyMatchResults = getFuzzyMatchResult(e.target.value, allOptions)
 
-                console.log(fuzzyMatchResults);
                 setOptions(fuzzyMatchResults)
             }
             else {
@@ -101,13 +100,13 @@ const SimpleDataList = ({ name, initialValue, initialOptions, handleChange, sear
                 name={name}
                 onFocus={() => setShowDropdown(true)}
             />
-              {
+            {
                 showDropdown && options &&
                 <ul
                     className="data-list-dropdown"
                     onMouseLeave={clearData} >
                     {
-                        name === "item_code" &&
+                        name === "item_code" &&  options.length > 0 &&
                         < li className='row sticky' >
                             <div>物料编码</div><div>物料名称</div>
                         </li>

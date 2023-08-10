@@ -33,7 +33,6 @@ export default function Line1() {
             top: "0%"
         }
     };
-    console.log(testdata);
     return (
         <div className='line1 span4'>
             <h1>测试数据</h1>

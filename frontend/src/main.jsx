@@ -11,6 +11,7 @@ import children from './path/children';
 import Login from './routes/Login';
 import AuthProvider from './providers/AuthProvider'
 import AlertProvider from './providers/AlertProvider';
+import adminChildren from './path/adminChildren';
 
 
 const router = createBrowserRouter([
@@ -23,6 +24,11 @@ const router = createBrowserRouter([
     element: <App />,
     children: children
   },
+  {
+    path: "/admin",
+    element: <App />,
+    children: adminChildren
+  }
 
 ]);
 
