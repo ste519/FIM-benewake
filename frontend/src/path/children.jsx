@@ -15,6 +15,7 @@ import Sales from '../routes/Sales';
 import Edit from '../routes/Edit';
 import { fetchNewViews } from '../api/fetch';
 import { findMessages } from '../api/message'
+import Test from '../routes/Test';
 
 const children = [
     {
@@ -45,7 +46,8 @@ const children = [
     },
     { name: "新增询单", path: "new", element: <New /> },
     { name: "修改询单", path: "edit", element: <Edit /> },
-    { name: "404", path: "*", element: <NotFound /> }
+    { name: "404", path: "*", element: <NotFound /> },
+    { name: "测试用", path: "test", element: <Test/> }
 ]
 
 export default children;
