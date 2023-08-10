@@ -14,6 +14,7 @@ import Inventory from '../routes/Inventory';
 import Sales from '../routes/Sales';
 import Edit from '../routes/Edit';
 import { fetchNewViews } from '../api/fetch';
+import { findMessages } from '../api/message'
 
 const children = [
     {
@@ -36,7 +37,12 @@ const children = [
     // { name: "生产计划", path: "production", element: <Production /> },
     // { name: "仪表盘", path: "charts", element: <Charts /> },
     // { name: "销售计划", path: "sales", element: <Sales /> },
-    { name: "用户主页", path: "user", element: <User /> },
+    {
+        name: "用户主页", path: "user", element: <User />, loader: async () => {
+            const res = await findMessages()
+            return res.data
+        }
+    },
     { name: "新增询单", path: "new", element: <New /> },
     { name: "修改询单", path: "edit", element: <Edit /> },
     { name: "404", path: "*", element: <NotFound /> }

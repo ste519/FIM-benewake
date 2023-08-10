@@ -197,7 +197,6 @@ export async function fetchCustomerType(itemId, customerId) {
 export async function fetchDeliveryUpdates() {
     try {
         const response = await api.get('/delivery/update')
-        console.log(response);
         return response.data;
     }
     catch (err) {

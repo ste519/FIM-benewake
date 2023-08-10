@@ -49,10 +49,10 @@ export default function Login() {
                 setCookie("userType", res.data.userType, 7)
                 break;
             case 400:
-                showAlert({ type: "warning", message: res.message })
+                updateAlert({ type: "SHOW_ALERT", data: { type: "warning", message: res.message } })
                 break;
             default:
-                showAlert({ type: "error", message: "未知错误，请联系飞书管理员!" })
+                updateAlert({ type: "SHOW_ALERT", data: { type: "error", message: "未知错误，请联系飞书管理员!" } })
                 break;
         }
     };

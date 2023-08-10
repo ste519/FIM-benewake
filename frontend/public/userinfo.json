@@ -1,7 +1,0 @@
-{
-    "username": "默认用户名",
-    "uid": 1,
-    "views": {
-        "all": [{"name":"我的","uid":1},{"name":"全部","uid":2},{"name":"新增","uid":3}]
-    }
-}

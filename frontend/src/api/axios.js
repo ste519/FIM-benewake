@@ -1,10 +1,10 @@
 import axios from "axios";
-
+const baseURL = 'http://10.0.0.201:9527/benewake'
 
 const api = axios.create({
-    baseURL: 'http://localhost:8080/benewake',
+    baseURL,
     withCredentials: true
 });
 api.defaults.withCredentials = true;
 
-export default api;
+export default api

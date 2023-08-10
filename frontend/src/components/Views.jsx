@@ -15,7 +15,7 @@ import { VisibilityToCols, ColsToFilters } from '../js/transformType';
 import { getTableId } from '../js/getData'
 import AutoWidthInput from './AutoWidthInput';
 
-const ViewPopup = ({ closePopup, setNewViews }) => {
+const ViewPopup = ({ closePopup, setNewViews, tableId }) => {
 
     const [viewName, setViewName] = useState("")
     const [visibility, setVisibility] = useState(VISIBILITY_ALL_FALSE)
@@ -74,7 +74,7 @@ const ViewPopup = ({ closePopup, setNewViews }) => {
     )
 }
 
-const View = ({ id, name, isSelected, handleViewClick, handleDelete, editable,  handleChange }) => {
+const View = ({ id, name, isSelected, handleViewClick, handleDelete, editable, handleChange }) => {
 
     if (editable) {
         const [readOnly, setReadOnly] = useState(true)
@@ -208,7 +208,7 @@ const Views = ({ views, editable }) => {
         setSelected(id)
         updateSelectedQuery(tableId, "viewId", id)
         updateTableData({ type: "CLEAR_TABLE_DATA" })
-        const res = await fetchData({ ...defaultSelection, viewId: id })
+        const res = await fetchData({ tableId, viewId: id, filterCriterias: [], secTab: defaultSelection.secTab })
         updateTableData({ type: "SET_TABLE_DATA", tableData: res.lists })
 
         //新增视图
@@ -236,7 +236,7 @@ const Views = ({ views, editable }) => {
                         name={item.viewName}
                         key={i}
                         isSelected={selected === item.viewId}
-                        handleViewClick={handleViewClick}
+                        handleViewClick={() => handleViewClick(item.viewId)}
                         handleDelete={handleDelete}
                     />
                 )}
@@ -246,7 +246,7 @@ const Views = ({ views, editable }) => {
                         name={item.viewName}
                         key={i}
                         isSelected={selected === item.viewId}
-                        handleViewClick={handleViewClick}
+                        handleViewClick={() => handleViewClick(item.viewId)}
                         handleDelete={handleDelete}
                         editable
                         handleChange={handleViewNameChange}
@@ -268,6 +268,7 @@ const Views = ({ views, editable }) => {
                 <ViewPopup
                     closePopup={closePopup}
                     setNewViews={setNewViews}
+                    tableId={tableId}
                 />
             }
             {

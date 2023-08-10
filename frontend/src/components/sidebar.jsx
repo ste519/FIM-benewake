@@ -4,13 +4,12 @@ import { useAuthContext, useUpdateTabContext } from '../hooks/useCustomContext';
 import { ReactComponent as LogoutIcon } from '../assets/icons/logout.svg'
 import { logout } from '../api/auth';
 import adminChildren from '../path/adminChildren';
-
+import {ADMIN_USER} from '../constants/Global'
 
 export default function Sidebar({ showSidebar }) {
     const updateTabs = useUpdateTabContext()
     const navigate = useNavigate()
     const { auth } = useAuthContext()
-    console.log(auth);
 
     const handleClick = (newTab, event) => {
         event.stopPropagation();
@@ -40,7 +39,7 @@ export default function Sidebar({ showSidebar }) {
                         {obj.name}
                     </NavLink>)}
                 {
-                    auth?.userType == 2 &&
+                    auth?.userType == ADMIN_USER &&
                     adminChildren.map((obj, i) =>
                         <NavLink
                             key={i}

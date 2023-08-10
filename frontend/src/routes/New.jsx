@@ -58,7 +58,6 @@ const SimpleToolbar = ({ rows, inquiryType, ids, setIds }) => {
     const handleStartClick = async () => {
         setAction({ type: "开始询单", time: new Date() })
 
-        console.log(ids);
         let newInquiries;
         if (ids) { newInquiries = ids.map((id) => ({ "inquiryId": id })) }
         else { newInquiries = await Promise.all(rows.map(row => rowToInquiry(row, inquiryType))) }
