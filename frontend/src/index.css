@@ -6,6 +6,7 @@
   --blue20: #0CF2F2;
   --blue10: #D9E9F8;
   --blue5: #F1F4F6;
+  --bluegray: #e5ebf1;
   --gray20: #EAEAEA;
   --error-light: #FFD8D8;
   --error-dark: #E93D3D;
@@ -301,6 +302,7 @@ svg {
   max-width: 200px;
   transition: 0.2s;
   justify-content: space-between;
+  display: block;
 }
 
 .dropdown ul {
@@ -368,6 +370,9 @@ button svg {
 .tab-labels {
   height: 100%;
   display: flex;
+  flex: 1 1 auto;
+  width: 100%;
+  overflow: hidden;
 }
 
 .tab {
@@ -377,6 +382,16 @@ button svg {
   align-items: center;
   padding: 0.5rem;
   padding-left: 2rem;
+  flex: 0 1 auto;
+  overflow: hidden;
+}
+
+.tab>h1 {
+  flex: 1 1 auto;
+  min-width: 20px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .secondary-tab {
@@ -822,7 +837,9 @@ tr:focus {
 
 .navbar {
   height: 48px;
+  width: 100%;
   align-items: center;
+  overflow: hidden;
   background-color: var(--blue5);
 }
 
@@ -832,6 +849,7 @@ tr:focus {
   justify-content: space-between;
   align-items: center;
   cursor: pointer;
+  flex: 0 0 132px;
 }
 
 .navbar .toggle-btn {
@@ -991,6 +1009,7 @@ tr:focus {
   justify-content: space-between;
   align-items: center;
 }
+
 
 .page-number {
   padding: 5px;
@@ -1415,8 +1434,24 @@ input[type=number] {
   z-index: 6;
 }
 
+.sidebar>div {
+  height: 100%;
+}
+
+div.sidebar-item {
+  white-space: nowrap;
+}
+
+div.sidebar-item svg {
+  width: 10px;
+  height: 10px;
+  color: var(--blue30);
+  margin-top: 2px;
+}
+
 .sidebar .user-info-container {
-  color: var(--blue40)
+  color: var(--blue40);
+  width: 132px;
 }
 
 .sidebar .user-info-container h1 {
@@ -1441,6 +1476,13 @@ input[type=number] {
   padding: 2rem;
   gap: 2rem;
   flex: 1 1;
+}
+
+.popup-container .post-message-wrapper{
+  width: 40rem;
+  flex: 0 1 auto;
+  border-radius: 0.5rem;
+  box-shadow: var(--shadow);
 }
 
 .post-message-container label {
@@ -1488,4 +1530,15 @@ input[type=number] {
 .post-message-container .scroll {
   overflow: auto;
   flex: 1 1 1px;
+}
+
+.sec-sidebar {
+  background-color: var(--bluegray);
+  width: 150px;
+  max-width: 150px;
+  transition: 0.2s;
+}
+
+.sec-sidebar .sidebar-item {
+  width: 150px;
 }

@@ -20,10 +20,10 @@ const Tabs = ({ navigate }) => {
                 tab && tab.name !== "用户主页" &&
                 <NavLink
                     key={i}
-                    to={tab?.type === "admin" ? "/admin/" + tab.path : "/" + tab.path}
+                    to={tab.path}
                     className="tab"
                 >
-                    {tab.name}
+                    <h1>{tab.name}</h1>
                     <button
                         className="close-btn"
                         onClick={(event) => handleRemoveTab(event, tab)}>

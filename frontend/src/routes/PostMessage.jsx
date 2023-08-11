@@ -1,23 +1,69 @@
 import { useState } from 'react'
-import { findMessages, postMessage } from '../api/message'
+import { findMessages, postMessage, updateMessage } from '../api/message'
 import { useLoaderData } from 'react-router-dom'
 import { useAlertContext } from '../hooks/useCustomContext'
 import Message from '../components/Message'
 
+
+
+const Popup = ({ msgObj, closePopup, handleSubmit }) => {
+    const [value, setValue] = useState(msgObj.message)
+    const [messageType, setMessageType] = useState(msgObj.type)
+
+    const handleUpdateSubmit = async () => {
+        await handleSubmit("update", value, messageType, msgObj.id)
+        closePopup()
+    }
+    return (
+        <div className='popup-container flex-center' >
+            <div className='col post-message-wrapper'>
+                <div className='row flex-start g1'>
+                    <h1>通知类型：</h1>
+                    <label htmlFor="normal1" className='row flex-center'>
+                        <input
+                            type="radio" id="normal1" value="0"
+                            checked={messageType == "0"}
+                            onChange={() => setMessageType("0")} />
+                        普通通知
+                    </label>
+                    <label htmlFor="abnormal1" className='row flex-center'>
+                        <input
+                            type="radio" id="abnormal1" value="1"
+                            checked={messageType == "1"}
+                            onChange={() => setMessageType("1")} />
+                        异常通知
+                    </label>
+                </div>
+                <textarea
+                    value={value}
+                    onChange={
+                        (e) => setValue(e.target.value)} placeholder="请输入文字......"
+                />
+                <button className='rounded blue60' onClick={handleUpdateSubmit}>发布</button>
+            </div>
+        </div >
+    )
+}
+
 const PostMessage = () => {
     const [value, setValue] = useState("")
     const [messageType, setMessageType] = useState("0")
-
     const [pastMessages, setPastMessages] = useState(useLoaderData() ?? [])
+    const [showPopup, setShowPopup] = useState(false)
+    const [clickedMessage, setClickedMessage] = useState(null)
 
     const updateAlert = useAlertContext()
 
-    const handleSubmit = async () => {
+    const handleSubmit = async (type, value, messageType, id) => {
         updateAlert({
             type: "SHOW_ALERT", data: {
-                type: "confirm", message: "确认发布消息？",
+                type: "confirm", message: type === "publish" ? "确认发布消息？" : "确认修改消息并发布？",
                 action: async () => {
-                    const res = await postMessage(value, messageType)
+
+                    const res = type === "publish"
+                    ?await postMessage(value, messageType)
+                    :await updateMessage(id, value, messageType)
+
                     switch (res.code) {
                         case 200:
                             updateAlert({ type: "SHOW_ALERT", data: { type: "success", message: "发布成功！" } })
@@ -38,6 +84,10 @@ const PostMessage = () => {
         })
     }
 
+    const handleMessageClick = (msgObj) => {
+        setShowPopup(true)
+        setClickedMessage(msgObj)
+    }
 
 
     return (
@@ -65,16 +115,31 @@ const PostMessage = () => {
                     onChange={
                         (e) => setValue(e.target.value)} placeholder="请输入文字......"
                 />
-                <button className='rounded blue60' onClick={handleSubmit}>发布</button>
+                <button className='rounded blue60'
+                    onClick={async () => await handleSubmit("publish", value, messageType)}>
+                    发布
+                </button>
             </div>
             <div className='col post-message-wrapper'>
                 <h1>已发布列表</h1>
                 <div className='col g1 scroll'>
                     {pastMessages?.map((message) =>
-                        <Message message={message} key={message.id} setMessages={setPastMessages} deletable/>
+                        <Message
+                            message={message}
+                            key={message.id}
+                            setMessages={setPastMessages}
+                            handleMessageClick={() => handleMessageClick(message)}
+                            editable />
                     )}
                 </div>
             </div >
+            {showPopup &&
+                <Popup
+                    msgObj={clickedMessage}
+                    closePopup={() => setShowPopup(false)}
+                    handleSubmit={handleSubmit}
+                />
+            }
         </div >
     )
 }

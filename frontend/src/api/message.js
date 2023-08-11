@@ -21,6 +21,17 @@ export async function deleteMessages(ids) {
     }
 }
 
+export async function updateMessage(id, message, type) {
+    try {
+        const response = await api.post('/notice/update', { id, message, type })
+        return response.data;
+    }
+    catch (err) {
+        console.log(err);
+    }
+}
+
+
 export async function findMessages(createUsername) {
     try {
         const response = await api.post('/notice/find', { createUsername })

@@ -28,6 +28,7 @@ export async function logout() {
 
     try {
         const response = await axios.get('/logout')
+        document.cookie.split(";").forEach(function (c) { document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); });
         return response.data;
     }
     catch (err) {

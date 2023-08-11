@@ -39,15 +39,16 @@ const children = [
     // { name: "仪表盘", path: "charts", element: <Charts /> },
     // { name: "销售计划", path: "sales", element: <Sales /> },
     {
-        name: "用户主页", path: "user", element: <User />, loader: async () => {
+        name: "用户主页", path: "user", element: <User />, type: "hidden",
+        loader: async () => {
             const res = await findMessages()
             return res.data
         }
     },
-    { name: "新增询单", path: "new", element: <New /> },
-    { name: "修改询单", path: "edit", element: <Edit /> },
-    { name: "404", path: "*", element: <NotFound /> },
-    { name: "测试用", path: "test", element: <Test/> }
+    { name: "新增询单", path: "new", element: <New />, type: "hidden" },
+    { name: "修改询单", path: "edit", element: <Edit />, type: "hidden" },
+    { name: "404", path: "*", element: <NotFound />, type: "hidden" },
+    { name: "测试用", path: "test", element: <Test />, type: "hidden" }
 ]
 
 export default children;
