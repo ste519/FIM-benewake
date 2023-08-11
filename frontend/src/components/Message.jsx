@@ -1,53 +1,50 @@
-import { useState } from 'react'
 import { ReactComponent as CloseIcon } from '../assets/icons/cross.svg'
-import { ReactComponent as EditIcon } from '../assets/icons/menu.svg'
+import { ReactComponent as EditIcon } from '../assets/icons/edit.svg'
 import { useAlertContext } from '../hooks/useCustomContext'
 import { deleteMessages, findMessages, updateMessage } from '../api/message'
 import moment from 'moment'
 
 
 const Message = ({ message, setMessages, editable, handleMessageClick }) => {
-    const updateAlert = useAlertContext()
+    const { alertWarning, alertError, alertSuccess, alertConfirm } = useAlertContext()
 
     const handleDelete = async () => {
-        updateAlert({
-            type: "SHOW_ALERT", data: {
-                type: "confirm", message: "确认删除消息？",
-                action: async () => {
-                    const res = await deleteMessages([message.id])
-                    switch (res.code) {
-                        case 200:
-                            updateAlert({ type: "SHOW_ALERT", data: { type: "success", message: "删除成功！" } })
-                            const res = await findMessages()
-                            setMessages(res.data)
-                            break
-                        case 400:
-                            updateAlert({ type: "SHOW_ALERT", data: { type: "error", message: res.message } })
-                            break
-                        case 1:
-                            updateAlert({ type: "SHOW_ALERT", data: { type: "error", message: res.message } })
-                            break
-                        default:
-                            throw new Error("Unknown inquiry problem")
-                    }
+        alertConfirm(
+            "确认删除消息？",
+            async () => {
+                const res = await deleteMessages([message.id])
+                switch (res.code) {
+                    case 200:
+                        alertSuccess(res.message)
+                        const res = await findMessages()
+                        setMessages(res.data)
+                        break
+                    case 400:
+                        alertError(res.message)
+                        break
+                    case 1:
+                        alertError(res.message)
+                        break
+                    default:
+                        throw new Error("Unknown inquiry problem")
                 }
             }
-        })
+        )
     }
 
     const handleEdit = async () => {
         const res = await updateMessage(message.id, message.message, message.type)
         switch (res.code) {
             case 200:
-                updateAlert({ type: "SHOW_ALERT", data: { type: "success", message: "修改成功！" } })
+                alertSuccess("修改成功！")
                 const res = await findMessages()
                 setMessages(res.data)
                 break
             case 400:
-                updateAlert({ type: "SHOW_ALERT", data: { type: "error", message: res.message } })
+                alertError(res.message)
                 break
             case 1:
-                updateAlert({ type: "SHOW_ALERT", data: { type: "error", message: res.message } })
+                alertError(res.message)
                 break
             default:
                 throw new Error("Unknown inquiry problem")

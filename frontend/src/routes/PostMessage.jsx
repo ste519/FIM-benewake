@@ -4,8 +4,6 @@ import { useLoaderData } from 'react-router-dom'
 import { useAlertContext } from '../hooks/useCustomContext'
 import Message from '../components/Message'
 
-
-
 const Popup = ({ msgObj, closePopup, handleSubmit }) => {
     const [value, setValue] = useState(msgObj.message)
     const [messageType, setMessageType] = useState(msgObj.type)
@@ -16,7 +14,7 @@ const Popup = ({ msgObj, closePopup, handleSubmit }) => {
     }
     return (
         <div className='popup-container flex-center' >
-            <div className='col post-message-wrapper'>
+            <div className='col popup-wrapper post-message-wrapper'>
                 <div className='row flex-start g1'>
                     <h1>通知类型：</h1>
                     <label htmlFor="normal1" className='row flex-center'>
@@ -52,36 +50,33 @@ const PostMessage = () => {
     const [showPopup, setShowPopup] = useState(false)
     const [clickedMessage, setClickedMessage] = useState(null)
 
-    const updateAlert = useAlertContext()
+    const { alertWarning, alertError, alertSuccess, alertConfirm } = useAlertContext()
 
     const handleSubmit = async (type, value, messageType, id) => {
-        updateAlert({
-            type: "SHOW_ALERT", data: {
-                type: "confirm", message: type === "publish" ? "确认发布消息？" : "确认修改消息并发布？",
-                action: async () => {
+        alertConfirm(type === "publish" ? "确认发布消息？" : "确认修改消息并发布？",
+            async () => {
 
-                    const res = type === "publish"
-                    ?await postMessage(value, messageType)
-                    :await updateMessage(id, value, messageType)
+                const res = type === "publish"
+                    ? await postMessage(value, messageType)
+                    : await updateMessage(id, value, messageType)
 
-                    switch (res.code) {
-                        case 200:
-                            updateAlert({ type: "SHOW_ALERT", data: { type: "success", message: "发布成功！" } })
-                            const res = await findMessages()
-                            setPastMessages(res.data)
-                            break
-                        case 400:
-                            updateAlert({ type: "SHOW_ALERT", data: { type: "error", message: res.message } })
-                            break
-                        case 1:
-                            updateAlert({ type: "SHOW_ALERT", data: { type: "error", message: res.message } })
-                            break
-                        default:
-                            throw new Error("Unknown inquiry problem")
-                    }
+                switch (res.code) {
+                    case 200:
+                        alertSuccess("发布成功！")
+                        const res = await findMessages()
+                        setPastMessages(res.data)
+                        break
+                    case 400:
+                        alertError(res.message)
+                        break
+                    case 1:
+                        alertError(res.message)
+                        break
+                    default:
+                        throw new Error("Unknown inquiry problem")
                 }
             }
-        })
+        )
     }
 
     const handleMessageClick = (msgObj) => {

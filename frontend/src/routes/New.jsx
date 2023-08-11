@@ -9,7 +9,7 @@ import moment from 'moment';
 import { useAlertContext, useAuthContext } from '../hooks/useCustomContext';
 
 const SimpleToolbar = ({ rows, inquiryType, ids, setIds }) => {
-    const updateAlert = useAlertContext()
+    const { alertWarning, alertError, alertSuccess, alertConfirm } = useAlertContext()
     const [action, setAction] = useState(null)
 
     const handleSaveClick = async () => {
@@ -20,37 +20,17 @@ const SimpleToolbar = ({ rows, inquiryType, ids, setIds }) => {
         const res = await startInquiry(newInquiries, 0)
         switch (res.code) {
             case 200:
-                updateAlert({
-                    type: "SHOW_ALERT", data: {
-                        type: "success",
-                        message: res.message
-                    }
-                })
+                alertSuccess(res.message)
                 setIds(res.data.ids)
                 break
             case 400:
-                updateAlert({
-                    type: "SHOW_ALERT", data: {
-                        type: "error",
-                        message: res.message
-                    }
-                })
+                alertError(res.message)
                 break
             case 1:
-                updateAlert({
-                    type: "SHOW_ALERT", data: {
-                        type: "error",
-                        message: res.message
-                    }
-                })
+                alertError(res.message)
                 break
             default:
-                updateAlert({
-                    type: "SHOW_ALERT", data: {
-                        type: "error",
-                        message: "未知错误"
-                    }
-                })
+                alertError("未知错误")
                 break
         }
     }
@@ -65,37 +45,17 @@ const SimpleToolbar = ({ rows, inquiryType, ids, setIds }) => {
         const res = await startInquiry(newInquiries, 1)
         switch (res.code) {
             case 200:
-                updateAlert({
-                    type: "SHOW_ALERT", data: {
-                        type: "warning",
-                        message: res.message
-                    }
-                })
+                alertWarning(res.message)
                 if (!ids) setIds(res.data.ids)
                 break
             case 400:
-                updateAlert({
-                    type: "SHOW_ALERT", data: {
-                        type: "error",
-                        message: res.message
-                    }
-                })
+                alertError(res.message)
                 break
             case 1:
-                updateAlert({
-                    type: "SHOW_ALERT", data: {
-                        type: "error",
-                        message: res.message
-                    }
-                })
+                alertError(res.message)
                 break
             default:
-                updateAlert({
-                    type: "SHOW_ALERT", data: {
-                        type: "error",
-                        message: "未知错误"
-                    }
-                })
+                alertError("未知错误")
                 break
         }
 

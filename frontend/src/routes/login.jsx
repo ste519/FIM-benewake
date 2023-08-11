@@ -18,7 +18,7 @@ function setCookie(name, value, days) {
 
 export default function Login() {
 
-    const updateAlert = useAlertContext()
+    const { alertWarning, alertError, alertSuccess, alertConfirm } = useAlertContext()
     const { setAuth } = useAuthContext();
     const navigate = useNavigate()
 
@@ -49,16 +49,16 @@ export default function Login() {
                 setCookie("userType", res.data.userType, 7)
                 break;
             case 400:
-                updateAlert({ type: "SHOW_ALERT", data: { type: "warning", message: res.message } })
+                alertWarning(res.message)
                 break;
             default:
-                updateAlert({ type: "SHOW_ALERT", data: { type: "error", message: "未知错误，请联系飞书管理员!" } })
+                alertError("未知错误，请联系飞书管理员!")
                 break;
         }
     };
 
     const handleForgetPassword = () => {
-        updateAlert({ type: "SHOW_ALERT", data: { type: "warning", message: "请联系飞书管理员!" } })
+        alertWarning("请联系飞书管理员!")
     }
 
     const handleCreateUser = async () => {

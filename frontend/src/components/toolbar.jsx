@@ -24,7 +24,7 @@ export default function Toolbar({ features }) {
     const updateTableStates = useUpdateTableStatesContext()
 
     const tableData = useTableDataContext()
-    const updateAlert = useAlertContext()
+    const { alertWarning, alertError, alertSuccess, alertConfirm } = useAlertContext()
 
     const { selectedQuery, setSelectedData } = useSelectedDataContext()
     const location = useLocation()
@@ -40,10 +40,7 @@ export default function Toolbar({ features }) {
 
     function noRowSelected() {
         if (!tableData || tableData.length === 0 || isObjectEmpty(rowSelection)) {
-            updateAlert({
-                type: "SHOW_ALERT",
-                data: { type: "warning", message: "未选择数据！", action: null }
-            })
+            alertWarning("未选择数据！")
             return true
         }
         else { return false }
@@ -51,25 +48,17 @@ export default function Toolbar({ features }) {
 
     const handleDelete = async () => {
         if (!noRowSelected())
-            updateAlert({
-                type: "SHOW_ALERT",
-                data: {
-                    type: "confirm",
-                    message: "确定删除选定的信息？",
-                    action: async () => {
-                        if (!noRowSelected()) {
-                            const orderIds = getIndexes(rowSelection)?.map((index) => tableData[index].inquiry_id);
-                            await orderIds?.forEach(orderId => deleteInquiry(orderId))
-                            updateAlert({
-                                type: "SHOW_ALERT",
-                                data: { type: "success", message: "删除成功！", action: null }
-                            })
-                            updateTableData({ type: "DELETE_ROWS", rowSelection: rowSelection })
-                            updateTableStates({ type: "RESET_ROW_SELECTION" })
-                        }
+            alertConfirm("确定删除选定的信息？",
+                async () => {
+                    if (!noRowSelected()) {
+                        const orderIds = getIndexes(rowSelection)?.map((index) => tableData[index].inquiry_id);
+                        await orderIds?.forEach(orderId => deleteInquiry(orderId))
+                        alertSuccess("删除成功！")
+                        updateTableData({ type: "DELETE_ROWS", rowSelection: rowSelection })
+                        updateTableStates({ type: "RESET_ROW_SELECTION" })
                     }
                 }
-            })
+            )
     }
 
     const handleRefresh = async () => {
@@ -81,33 +70,28 @@ export default function Toolbar({ features }) {
 
     const handleExport = () => {
         if (noData(tableData) || noVisibleCols(states.columnVisibility)) {
-            updateAlert({ type: "SHOW_ALERT", data: { type: "error", message: "没有数据！" } })
+            alertError("没有数据！")
         }
         else {
-            updateAlert({
-                type: "SHOW_ALERT", data: {
-                    type: "confirm", message: "确定导出该表单？", action: () => {
+            alertConfirm("确定导出该表单？", () => {
 
-                        const wb = XLSX.utils.book_new();
-                        const ws = XLSX.utils.json_to_sheet([]);
+                const wb = XLSX.utils.book_new();
+                const ws = XLSX.utils.json_to_sheet([]);
 
-                        const headers_ENG = VisibilityToHeadersENG(states.columnVisibility)
-                        let headers_CN = headers_ENG.map((name) => EngToCn(name)).filter((value) => value !== undefined)
+                const headers_ENG = VisibilityToHeadersENG(states.columnVisibility)
+                let headers_CN = headers_ENG.map((name) => EngToCn(name)).filter((value) => value !== undefined)
 
-                        XLSX.utils.sheet_add_aoa(ws, [headers_CN]);
-                        const newData = getVisbleTableData(tableData, headers_ENG)
+                XLSX.utils.sheet_add_aoa(ws, [headers_CN]);
+                const newData = getVisbleTableData(tableData, headers_ENG)
 
-                        XLSX.utils.sheet_add_json(ws, newData, { origin: 'A2', skipHeader: true });
-                        XLSX.utils.book_append_sheet(wb, ws);
+                XLSX.utils.sheet_add_json(ws, newData, { origin: 'A2', skipHeader: true });
+                XLSX.utils.book_append_sheet(wb, ws);
 
-                        const timestamp = moment(new Date()).format('YYMMDDHHmmss')
-                        const filename = children.filter((child) => child.path === activeTab)[0].name
+                const timestamp = moment(new Date()).format('YYMMDDHHmmss')
+                const filename = children.filter((child) => child.path === activeTab)[0].name
 
-                        XLSX.writeFileXLSX(wb, filename + timestamp + ".xlsx");
-                    }
-                }
+                XLSX.writeFileXLSX(wb, filename + timestamp + ".xlsx");
             })
-
         }
     }
 
@@ -120,14 +104,14 @@ export default function Toolbar({ features }) {
             const res = await startInquiry(newInquiries, 1)
             switch (res.code) {
                 case 200:
-                    updateAlert({ type: "SHOW_ALERT", data: { type: "warning", message: res.message } })
+                    alertWarning(res.message)
                     handleRefresh()
                     break
                 case 400:
-                    updateAlert({ type: "SHOW_ALERT", data: { type: "error", message: res.message } })
+                    alertError(res.message)
                     break
                 case 1:
-                    updateAlert({ type: "SHOW_ALERT", data: { type: "error", message: res.message } })
+                    alertError(res.message)
                     break
                 default:
                     throw new Error("Unknown inquiry problem")
@@ -138,7 +122,7 @@ export default function Toolbar({ features }) {
     const handleEdit = async () => {
         if (!noRowSelected()) {
             if (Object.keys(rowSelection).length > 1) {
-                updateAlert({ type: "SHOW_ALERT", data: { type: "error", message: "至多一条询单进行修改！" } })
+                alertError("至多一条询单进行修改！")
             }
             else {
                 const newTab = EDIT_INQUIRY_TAB
@@ -172,7 +156,7 @@ export default function Toolbar({ features }) {
 
     const importPopup =
         <div className="popup-container flex-center">
-            <ExcelUploader close={toggleImportPopup} updateAlert={updateAlert} />
+            <ExcelUploader close={toggleImportPopup} />
         </div>
 
 

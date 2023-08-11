@@ -1,22 +1,10 @@
 import { useState } from 'react';
 import { postExcelFile } from '../api/post';
+import { useAlertContext } from '../hooks/useCustomContext';
 
-function getAlertInfo(code, message) {
-    switch (code) {
-        case 400:
-            return { type: "error", message: message }
-        case 200:
-            //TODO
-            break
-        default:
-            throw new Error("Unknown status")
-    }
-}
-
-
-export default function ExcelUploader({ close, updateAlert }) {
+export default function ExcelUploader({ close }) {
     const [file, setFile] = useState(null);
-
+    const { alertWarning, alertError, alertSuccess, alertConfirm } = useAlertContext()
 
     const handleFile = (event) => {
         setFile(event.target.files[0])
@@ -24,26 +12,30 @@ export default function ExcelUploader({ close, updateAlert }) {
 
     const addData = async () => {
         if (!file)
-            updateAlert({
-                type: "SHOW_ALERT", data: {
-                    type: "warning", message: "未选择文件！"
-                }
-            })
+            alertWarning("未选择文件！")
         else {
             const res = await postExcelFile(file)
-            const alertInfo = getAlertInfo(res.code, res.message)
-            updateAlert({ type: "SHOW_ALERT", data: alertInfo })
+            switch (res.code) {
+                case 400:
+                    alertError(res.message)
+                    break
+                case 200:
+                    alertSuccess(res.message)
+                    break
+                default:
+                    throw new Error("Unknown status")
+            }
         }
         close();
     }
 
     return (
-        <div className='excel-uploader-container col flex-center '>
+        <div className='excel-uploader-container popup-wrapper col flex-center '>
             <input id="excel-uploader" type="file" accept=".xlsx,.xls" onChange={handleFile} className='hidden' />
             <label htmlFor="excel-uploader">选择文件(.xls, .xlsx)</label>
             <h1>{file?.name}</h1>
             <div className='row flex-center g1'>
-                <button onClick={close} className='white small bordered'>取消</button>
+                <button onClick={close} className='white small'>取消</button>
                 <button onClick={addData} className='blue40 small'>导入</button>
             </div>
         </div>

@@ -1,19 +1,23 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 import children from '../path/children';
-import { useAuthContext, useUpdateTabContext } from '../hooks/useCustomContext';
-import { ReactComponent as LogoutIcon } from '../assets/icons/logout.svg'
+import { useAlertContext, useAuthContext, useUpdateTabContext } from '../hooks/useCustomContext';
+import { ReactComponent as UserIcon } from '../assets/icons/user.svg'
 import { ReactComponent as ArrowIcon } from '../assets/icons/arrow-right.svg'
 import { logout } from '../api/auth';
 import adminChildren from '../path/adminChildren';
 import { ADMIN_USER } from '../constants/Global'
 import { useState } from 'react';
+import UpdatePassword from './updatePassword';
 
 export default function Sidebar({ showSidebar }) {
     const updateTabs = useUpdateTabContext()
     const navigate = useNavigate()
     const { auth } = useAuthContext()
+    const { alertWarning, alertError, alertSuccess, alertConfirm } = useAlertContext()
 
     const [showSecSidebar, setShowSecSidebar] = useState(false)
+    const [showUserFeatures, setShowUserFeatures] = useState(false)
+    const [showPwdPopup, setShowPwdPopup] = useState(false)
 
     const handleClick = (newTab, path, event) => {
         event.stopPropagation();
@@ -26,9 +30,14 @@ export default function Sidebar({ showSidebar }) {
         else setShowSecSidebar(name)
     }
 
-    const handleLogout = async () => {
-        await logout()
-        navigate("/login")
+    const handleLogout = () => {
+        alertConfirm("是否确认退出登录？", async () => {
+            await logout()
+            navigate("/login")
+        })
+    }
+    const closePopup = () => {
+        setShowPwdPopup(false)
     }
 
     return (
@@ -66,12 +75,26 @@ export default function Sidebar({ showSidebar }) {
                                     </NavLink>
                             )}
                     </nav>
-                    <div className='row flex-center mb1 user-info-container'>
-                        <h1>用户：{auth?.username ?? ""}</h1>
-                        <button onClick={handleLogout} >
-                            <LogoutIcon />
-                        </button>
+
+                    {/* 用户菜单 */}
+                    <div
+                        className='col flex-center mb1 g1 user-info-container' onMouseEnter={() => setShowUserFeatures(true)}
+                        onMouseLeave={() => setShowUserFeatures(false)}
+                    >
+                        {showUserFeatures &&
+                            <ul className='user-feature-dropdown'>
+                                <li onClick={() => setShowPwdPopup(true)}>修改密码</li>
+                                <li onClick={handleLogout}>退出登录</li>
+                            </ul>
+                        }
+                        <div className='row user-info-wrapper'>
+                            <UserIcon/>
+                            <h1>{auth?.username ?? ""}</h1>
+                        </div>
                     </div>
+
+                    {showPwdPopup && <UpdatePassword closePopup={closePopup} />}
+
                 </div >
             </div >
             <nav className={`sidebar col sec-sidebar ${showSecSidebar ? "" : "hidden"}`}>
