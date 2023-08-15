@@ -181,7 +181,7 @@ div.read-only>* {
 .sidebar.hidden {
   max-width: 0;
   overflow: hidden;
-  transition: 0.2s;
+  transition: 0.1s;
 }
 
 #root {
