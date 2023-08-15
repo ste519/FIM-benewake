@@ -3,7 +3,7 @@ import { fetchOptions } from '../api/fetch';
 
 const inquiryTypeOptions = [{ inquiryType: "PO(客户付款)" }, { inquiryType: "PR(客户提出付款意向)" }, { inquiryType: "YG(供应链预估)" }, { inquiryType: "YC(销售预测)" }, { inquiryType: "XD(意向询单)" }]
 
-const getOptionName = (type, option) => {
+const getOptionName = (type, option, searchKey) => {
     switch (type) {
         case "customer":
             return option.fname
@@ -95,7 +95,7 @@ const DataList = memo(function DataList({ type, searchKey, initialValue, handleC
                                 identifier !== "itemCode"
                                     ? <li key={i}
                                         onClick={() => handleSelect(option)}>
-                                        {getOptionName(type, option)}
+                                        {getOptionName(type, option, searchKey)}
                                     </li>
                                     : <li className='row' key={i}
                                         onClick={() => handleSelect(option)}>

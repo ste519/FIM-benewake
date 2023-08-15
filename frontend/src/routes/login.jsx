@@ -13,7 +13,7 @@ function setCookie(name, value, days) {
         date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
         expires = "; expires=" + date.toUTCString();
     }
-    document.cookie = name + "=" + (value || "") + expires + "; path=/";
+    document.cookie = "benewake" + name + "=" + (value || "") + expires + "; path=/";
 }
 
 export default function Login() {
@@ -25,14 +25,19 @@ export default function Login() {
     useEffect(() => {
         if (document.cookie !== "") {
             const cookies = document.cookie.split('; ');
-            setAuth({
-                username: cookies?.[1]?.split('=')?.[1],
-                userType: cookies?.[2]?.split('=')?.[1]
-            })
-            navigate("/user")
+
+            const hasBenewakeusername = cookies.some(item => item.startsWith("benewakeusername="));
+            const hasBenewakeuserType = cookies.some(item => item.startsWith("benewakeuserType="));
+            if (hasBenewakeusername && hasBenewakeuserType) {
+                setAuth({
+                    username: cookies.find(item => item.startsWith("benewakeusername=")).split("=")[1],
+                    userType: cookies.find(item => item.startsWith("benewakeuserType=")).split("=")[1]
+                })
+                navigate("/user")
+            }
         }
     }, [])
-
+    
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const handleUsernameChange = (e) => { setUsername(e.target.value); };

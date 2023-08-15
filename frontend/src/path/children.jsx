@@ -21,9 +21,18 @@ const children = [
         name: "全部订单", path: "all", id: 1,
         element: <All />,
         loader: async () => {
-            const viewRes = await fetchNewViews("1")
-            return {
-                newViews: viewRes.data,
+            try {
+                const res = await fetchNewViews("1")
+                if (res?.code !== 200) {
+                    console.log(res?.message);
+                    return []
+                }
+                else {
+                    return res.data
+                }
+            }
+            catch (err) {
+                console.log(err);
             }
         }
 
@@ -38,10 +47,16 @@ const children = [
     // { name: "仪表盘", path: "charts", element: <Charts /> },
     // { name: "销售计划", path: "sales", element: <Sales /> },
     {
-        name: "用户主页", path: "user", element: <User />, loader: async () => {
-            const res = await findMessages()
-            return res.data
-        }
+        name: "用户主页", path: "user", element: <User />, loader:
+            async () => {
+                try {
+                    const res = await findMessages()
+                    return res.data
+                }
+                catch (err) {
+                    console.log(err);
+                }
+            }
     },
     { name: "新增询单", path: "new", element: <New /> },
     { name: "修改询单", path: "edit", element: <Edit /> },

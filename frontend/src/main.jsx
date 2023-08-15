@@ -8,7 +8,7 @@ import './index.css'
 import "the-new-css-reset/css/reset.css";
 import App from './App';
 import children from './path/children';
-import Login from './routes/Login';
+import Login from './routes/login';
 import AuthProvider from './providers/AuthProvider'
 import AlertProvider from './providers/AlertProvider';
 import adminChildren from './path/adminChildren';
