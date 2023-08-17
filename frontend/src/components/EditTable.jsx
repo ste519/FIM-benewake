@@ -131,7 +131,7 @@ const schema = [
         header: "备注",
         identifier: "remark",
         element:
-            (data) => <Input
+            (data, handleChange) => <Input
                 name="remark"
                 value={data.remark}
                 onChange={(e) => handleChange(["remark"], [e.target.value])}

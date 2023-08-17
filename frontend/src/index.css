@@ -1476,13 +1476,9 @@ input[type=number] {
   color: var(--confirm-dark);
 }
 
-.message-wrapper .transparent {
-  visibility: hidden;
-}
 
-.message-wrapper:hover .transparent,
-.message-wrapper:focus .transparent {
-  visibility: visible;
+.message-wrapper h1 {
+  width: min-content;
 }
 
 .post-message-container .scroll {

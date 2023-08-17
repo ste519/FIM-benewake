@@ -6,13 +6,11 @@ function getAlertInfo(code, message) {
         case 400:
             return { type: "error", message: message }
         case 200:
-            //TODO
-            break
+            return { type: "success", message: message }
         default:
             throw new Error("Unknown status")
     }
 }
-
 
 export default function ExcelUploader({ close, updateAlert }) {
     const [file, setFile] = useState(null);

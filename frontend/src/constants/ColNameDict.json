@@ -3,7 +3,7 @@
         "col_id": 22,
         "col_name_CN": "单据编号",
         "col_name_ENG": "inquiry_code",
-        "size": 115
+        "size": 125
     },
     {
         "col_id": 23,
@@ -39,19 +39,19 @@
         "col_id": 28,
         "col_name_CN": "物料编码",
         "col_name_ENG": "item_code",
-        "size": 90
+        "size":100
     },
     {
         "col_id": 29,
         "col_name_CN": "物料名称",
         "col_name_ENG": "item_name",
-        "size": 170
+        "size": 200
     },
     {
         "col_id": 30,
         "col_name_CN": "客户名称",
         "col_name_ENG": "customer_name",
-        "size": 100
+        "size": 200
     },
     {
         "col_id": 31,
