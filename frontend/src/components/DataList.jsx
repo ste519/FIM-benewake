@@ -1,5 +1,5 @@
 import { memo, useState, useEffect } from 'react';
-import { fetchOptions } from '../api/fetch';
+import { fetchOptions, fetchUser } from '../api/fetch';
 
 const inquiryTypeOptions = [{ inquiryType: "PO(客户付款)" }, { inquiryType: "PR(客户提出付款意向)" }, { inquiryType: "YG(供应链预估)" }, { inquiryType: "YC(销售预测)" }, { inquiryType: "XD(意向询单)" }]
 
@@ -20,15 +20,18 @@ const DataList = memo(function DataList({ type, searchKey, initialValue, handleC
 
     const onChange = async (e) => {
         setValue(e.target.value)
-        if (identifier !== "inquiryType") {
-            const res = (await fetchOptions(type, searchKey, e.target.value))
+        if (identifier === "salesmanName") {
+            const res = await fetchUser(e.target.value, "2")
             setOptions(res)
         }
-        else {
+        else if (identifier === "inquiryType") {
             setOptions(inquiryTypeOptions)
         }
+        else {
+            const res = await fetchOptions(type, searchKey, e.target.value)
+            setOptions(res)
+        }
         setShowDropdown(true);
-
     }
 
     const handleSelect = (option) => {

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import api from '../api/axios';
 import localOptions from '../constants/LocalOptions.json'
-import { fetchStateNums } from '../api/fetch';
+import { fetchStateNums, fetchUser } from '../api/fetch';
 import { getStateStr } from '../js/parseData';
 
 function getOptionName(listName, option) {
@@ -63,6 +63,10 @@ const SimpleDataList = ({ name, initialValue, initialOptions, handleChange, sear
 
                 setOptions(fuzzyMatchResults)
             }
+            else if (name === "salesman_name") {
+                const res = await fetchUser(e.target.value, "2")
+                setOptions(res)
+            }
             else {
                 const res = (await api.post(url, { [searchKey]: e.target.value }))
                 setOptions(res?.data?.data)
@@ -106,7 +110,7 @@ const SimpleDataList = ({ name, initialValue, initialOptions, handleChange, sear
                     className="data-list-dropdown"
                     onMouseLeave={clearData} >
                     {
-                        name === "item_code" &&  options.length > 0 &&
+                        name === "item_code" && options.length > 0 &&
                         < li className='row sticky' >
                             <div>物料编码</div><div>物料名称</div>
                         </li>

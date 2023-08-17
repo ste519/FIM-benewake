@@ -19,7 +19,6 @@ export default function Sidebar({ showSidebar }) {
 
     const handleLogout = async () => {
         await logout()
-        document.cookie.split(";").forEach(function (c) { document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); });
         navigate("/login")
     }
     return (

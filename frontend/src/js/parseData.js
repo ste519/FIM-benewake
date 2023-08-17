@@ -88,7 +88,7 @@ export async function parseInquiryObj(source) {
         result.itemId = res?.[0]?.id?.toString()
     }
     if (!result.salesmanId) {
-        const res = await fetchUser(source.salesman_name)
+        const res = await fetchUser(source.salesman_name, "2")
         result.salesmanId = res?.[0]?.id?.toString()
     }
 
@@ -100,7 +100,7 @@ export async function rowToInquiry(row, inquiryType) {
     let salesmanId = null;
     if (inquiryType) {
         if (!row?.salesmanId) {
-            const res = await fetchUser(row.salesmanName)
+            const res = await fetchUser(row.salesmanName, "2")
             salesmanId = res?.[0]?.id?.toString()
         }
         else {

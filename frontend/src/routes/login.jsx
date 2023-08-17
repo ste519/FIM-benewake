@@ -3,7 +3,7 @@ import { ReactComponent as AppIcon } from '../assets/logos/App.svg'
 
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { createUser, login } from '../api/auth';
+import { createUser, login, logout } from '../api/auth';
 import { useAlertContext, useAuthContext } from '../hooks/useCustomContext';
 
 function setCookie(name, value, days) {
@@ -37,7 +37,7 @@ export default function Login() {
             }
         }
     }, [])
-    
+
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const handleUsernameChange = (e) => { setUsername(e.target.value); };
@@ -52,6 +52,10 @@ export default function Login() {
                 navigate('/user')
                 setCookie("username", res.data.username, 7)
                 setCookie("userType", res.data.userType, 7)
+                break;
+            case 202:
+                await logout()
+                await handleSubmit()
                 break;
             case 400:
                 updateAlert({ type: "SHOW_ALERT", data: { type: "warning", message: res.message } })

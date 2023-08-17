@@ -164,6 +164,8 @@ export async function fetchOptions(type, searchKey, searchValue) {
     }
 }
 
+fetch
+
 export async function fetchUser(username, userType) {
     try {
         const response = await api.post("/user/likeList", { username, userType })
