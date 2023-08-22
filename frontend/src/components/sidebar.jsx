@@ -16,7 +16,6 @@ export default function Sidebar({ showSidebar }) {
         updateTabs({ type: "ADD_TAB", tab: newTab })
     }
 
-
     const handleLogout = async () => {
         await logout()
         navigate("/login")

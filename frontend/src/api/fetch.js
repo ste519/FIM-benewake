@@ -39,6 +39,7 @@ const inquiryInitTypeObject = value => ({
     value
 });
 
+
 const stateObject = value => ({
     colName: "state",
     condition: "eq",
@@ -98,6 +99,12 @@ const inquiryMapping = {
     8: [inquiryInitTypeObject(getInquiryTypeInt("YC(销售预测)")), inquiryTypeObject("PO")]//YC已变PO询单
 };
 
+const deliveryProgressMapping = {
+    "-1": [deliveryProgressObject("已签收")],
+    "-2": [deliveryProgressObject("已发货客户未签收")],
+    "-3": [deliveryProgressObject("未发货")]
+};
+
 export async function fetchData({ tableId, viewId, filterCriterias, secTab }) {
     let newCriterias = filterCriterias;
     let newViewId = tableId > 1 && viewId > 0 ? -1 : viewId
@@ -130,6 +137,13 @@ export async function fetchData({ tableId, viewId, filterCriterias, secTab }) {
 
     if (tableId === 5) {
         const additionalCriterias = inquiryMapping[viewId];
+        if (additionalCriterias) {
+            newCriterias = [...newCriterias, ...additionalCriterias];
+        }
+    }
+
+    if (tableId === 6) {
+        const additionalCriterias = deliveryProgressMapping[viewId];
         if (additionalCriterias) {
             newCriterias = [...newCriterias, ...additionalCriterias];
         }
@@ -206,7 +220,7 @@ export async function fetchDeliveryUpdates() {
     }
 }
 
-export async function fetchStateNums(){
+export async function fetchStateNums() {
     try {
         const response = await api.get('/order/stateList')
         return response.data;

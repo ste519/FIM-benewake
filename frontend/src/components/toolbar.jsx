@@ -59,11 +59,24 @@ export default function Toolbar({ features }) {
                     action: async () => {
                         if (!noRowSelected()) {
                             const orderIds = getIndexes(rowSelection)?.map((index) => tableData[index].inquiry_id);
-                            await orderIds?.forEach(orderId => deleteInquiry(orderId))
-                            updateAlert({
-                                type: "SHOW_ALERT",
-                                data: { type: "success", message: "删除成功！", action: null }
-                            })
+                            const res = [];
+                            orderIds?.forEach(async (orderId, i) => { res[i] = await deleteInquiry(orderId) })
+
+                            if (res.some(item => item.code === 400 || item.code === 1)) {
+                                updateAlert({
+                                    type: "SHOW_ALERT",
+                                    data: {
+                                        type: "error",
+                                        message: "删除失败！失败原因：" + [...new Set(res.filter(item => item.code === 400).map(item => item.message))].join(' ')
+                                    }
+                                })
+                            } else {
+                                updateAlert({
+                                    type: "SHOW_ALERT",
+                                    data: { type: "success", message: "删除成功！" }
+                                })
+                            }
+
                             updateTableData({ type: "DELETE_ROWS", rowSelection: rowSelection })
                             updateTableStates({ type: "RESET_ROW_SELECTION" })
                         }

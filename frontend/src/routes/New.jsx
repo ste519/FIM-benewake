@@ -1,14 +1,14 @@
 import DatePicker from '../components/DatePicker';
 import NewTable from '../components/NewTable';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import { NEW_INQUIRY_DATA } from '../constants/Global';
 import { startInquiry } from '../api/inquiry';
 import { rowToInquiry } from '../js/parseData';
 import moment from 'moment';
-import { useAlertContext, useAuthContext } from '../hooks/useCustomContext';
+import { useAlertContext, useAuthContext, useSelectedDataContext } from '../hooks/useCustomContext';
 
-const SimpleToolbar = ({ rows, inquiryType, ids, setIds }) => {
+const SimpleToolbar = ({ rows, inquiryType, clearData }) => {
     const updateAlert = useAlertContext()
     const [action, setAction] = useState(null)
 
@@ -26,7 +26,7 @@ const SimpleToolbar = ({ rows, inquiryType, ids, setIds }) => {
                         message: res.message
                     }
                 })
-                setIds(res.data.ids)
+                clearData()
                 break
             case 400:
                 updateAlert({
@@ -59,8 +59,7 @@ const SimpleToolbar = ({ rows, inquiryType, ids, setIds }) => {
         setAction({ type: "开始询单", time: new Date() })
 
         let newInquiries;
-        if (ids) { newInquiries = ids.map((id) => ({ "inquiryId": id })) }
-        else { newInquiries = await Promise.all(rows.map(row => rowToInquiry(row, inquiryType))) }
+        newInquiries = await Promise.all(rows.map(row => rowToInquiry(row, inquiryType)))
 
         const res = await startInquiry(newInquiries, 1)
         switch (res.code) {
@@ -71,7 +70,7 @@ const SimpleToolbar = ({ rows, inquiryType, ids, setIds }) => {
                         message: res.message
                     }
                 })
-                if (!ids) setIds(res.data.ids)
+                clearData()
                 break
             case 400:
                 updateAlert({
@@ -124,14 +123,22 @@ const SimpleToolbar = ({ rows, inquiryType, ids, setIds }) => {
 const New = () => {
     const [inquiryType, setInquiryType] = useState(null)
     const [currentDate, setCurrentDate] = useState(new Date());
-    const [ids, setIds] = useState(null)
     const { auth } = useAuthContext()
+    const { savedNewData, setSavedNewData } = useSelectedDataContext()
+
     const new_inquiry_data = { ...NEW_INQUIRY_DATA, salesmanName: auth.username }
-    const [rows, setRows] = useState([new_inquiry_data])
+    const [rows, setRows] = useState(savedNewData ?? [new_inquiry_data])
+
+    useEffect(() => { setSavedNewData(rows) }, [rows])
+
+    const clearData = () => {
+        setSavedNewData(null)
+        setRows([new_inquiry_data])
+    }
 
     return (
         <div className='col full-screen invoice-container'>
-            <SimpleToolbar rows={rows} inquiryType={inquiryType} ids={ids} setIds={setIds} />
+            <SimpleToolbar rows={rows} inquiryType={inquiryType} clearData={clearData} />
             <div className='col inquiry-info'>
                 <div className='row'>
                     <h1>订单类型：</h1>

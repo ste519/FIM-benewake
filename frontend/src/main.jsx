@@ -1,3 +1,7 @@
+if (window.location.protocol !== 'https:') {
+  window.location.replace(`https:${window.location.href.substring(window.location.protocol.length)}`);
+}
+
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import {
@@ -12,7 +16,6 @@ import Login from './routes/login';
 import AuthProvider from './providers/AuthProvider'
 import AlertProvider from './providers/AlertProvider';
 import adminChildren from './path/adminChildren';
-
 
 const router = createHashRouter([
   {
@@ -29,7 +32,6 @@ const router = createHashRouter([
     element: <App />,
     children: adminChildren
   }
-
 ]);
 
 ReactDOM.createRoot(document.getElementById('root')).render(

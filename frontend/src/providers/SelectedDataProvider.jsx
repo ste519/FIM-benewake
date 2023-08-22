@@ -185,6 +185,7 @@ const defaultQuery = {
 const SelectedDataProvider = ({ children }) => {
     const [selectedData, setSelectedData] = useState();
     const [selectedQuery, setSelectedQuery] = useState(defaultQuery)
+    const [savedNewData, setSavedNewData] = useState(null)
     function updateSelectedQuery(tableId, key, newValue) {
         setSelectedQuery(prev =>
         ({
@@ -209,7 +210,7 @@ const SelectedDataProvider = ({ children }) => {
         )
     }
     return (
-        <SelectedDataContext.Provider value={{ selectedData, setSelectedData, selectedQuery, updateSelectedQuery, resetSelectedQuery }}>
+        <SelectedDataContext.Provider value={{ selectedData, setSelectedData, selectedQuery, updateSelectedQuery, resetSelectedQuery, savedNewData, setSavedNewData }}>
             {children}
         </SelectedDataContext.Provider>
     );

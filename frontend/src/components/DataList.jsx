@@ -11,6 +11,7 @@ const getOptionName = (type, option, searchKey) => {
             return option[searchKey]
     }
 }
+
 const DataList = memo(function DataList({ type, searchKey, initialValue, handleChange, identifier }) {
     const [options, setOptions] = useState(null)
     const [showDropdown, setShowDropdown] = useState(false);

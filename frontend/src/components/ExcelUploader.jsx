@@ -15,7 +15,6 @@ function getAlertInfo(code, message) {
 export default function ExcelUploader({ close, updateAlert }) {
     const [file, setFile] = useState(null);
 
-
     const handleFile = (event) => {
         setFile(event.target.files[0])
     };
