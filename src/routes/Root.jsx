@@ -1,0 +1,9 @@
+import React from 'react';
+import Login from './Login';
+export default function root() {
+    return (
+        <div id="root">
+            <Login />
+        </div>
+    )
+}
