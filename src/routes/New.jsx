@@ -8,7 +8,7 @@ import { rowToInquiry } from '../js/parseData';
 import moment from 'moment';
 import { useAlertContext, useAuthContext, useSelectedDataContext } from '../hooks/useCustomContext';
 
-const SimpleToolbar = ({ rows, inquiryType, clearData }) => {
+const SimpleToolbar = ({ rows, inquiryType, setRows }) => {
     const updateAlert = useAlertContext()
     const [action, setAction] = useState(null)
 
@@ -18,15 +18,19 @@ const SimpleToolbar = ({ rows, inquiryType, clearData }) => {
         const newInquiries = await Promise.all(rows.map(row => rowToInquiry(row, inquiryType)));
 
         const res = await startInquiry(newInquiries, 0)
+
         switch (res.code) {
             case 200:
+                const newData = [...rows]
+                res.data.ids.forEach((id, i) => newData[i].inquiryId = id)
+                setRows(newData)
+
                 updateAlert({
                     type: "SHOW_ALERT", data: {
                         type: "success",
                         message: res.message
                     }
                 })
-                clearData()
                 break
             case 400:
                 updateAlert({
@@ -58,19 +62,17 @@ const SimpleToolbar = ({ rows, inquiryType, clearData }) => {
     const handleStartClick = async () => {
         setAction({ type: "开始询单", time: new Date() })
 
-        let newInquiries;
-        newInquiries = await Promise.all(rows.map(row => rowToInquiry(row, inquiryType)))
+        const newInquiries = await Promise.all(rows.map(row => rowToInquiry(row, inquiryType)));
 
         const res = await startInquiry(newInquiries, 1)
         switch (res.code) {
             case 200:
                 updateAlert({
                     type: "SHOW_ALERT", data: {
-                        type: "warning",
+                        type: "success",
                         message: res.message
                     }
                 })
-                clearData()
                 break
             case 400:
                 updateAlert({
@@ -130,15 +132,11 @@ const New = () => {
     const [rows, setRows] = useState(savedNewData ?? [new_inquiry_data])
 
     useEffect(() => { setSavedNewData(rows) }, [rows])
-
-    const clearData = () => {
-        setSavedNewData(null)
-        setRows([new_inquiry_data])
-    }
+    console.log(rows);
 
     return (
         <div className='col full-screen invoice-container'>
-            <SimpleToolbar rows={rows} inquiryType={inquiryType} clearData={clearData} />
+            <SimpleToolbar rows={rows} setRows={setRows} inquiryType={inquiryType} />
             <div className='col inquiry-info'>
                 <div className='row'>
                     <h1>订单类型：</h1>

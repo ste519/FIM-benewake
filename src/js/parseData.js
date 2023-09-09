@@ -25,6 +25,20 @@ export function getStateStr(num) {
         return `询单${num}次`
 }
 
+
+export function filterOut9999(data) {
+    const result = data.map(row => (
+        {
+            ...row,
+            "expected_time": row.expected_time?.slice(0, 4) === "9999" ?
+                ""
+                : row.expected_time
+        })
+    )
+    console.log(result);
+    return result
+}
+
 export function getStateNum(str) {
     if (!str)
         return null
@@ -100,18 +114,19 @@ export async function rowToInquiry(row, inquiryType) {
     let salesmanId = null;
     if (inquiryType) {
         if (!row?.salesmanId) {
-            const res = await fetchUser(row.salesmanName, "2")
-            salesmanId = res?.[0]?.id?.toString()
-        }
-        else {
-            salesmanId = row.salesmanId.toString()
-        }
-        const { itemId, customerId, saleNum, expectedTime, remark } = row
+                const res = await fetchUser(row.salesmanName, "2")
+                salesmanId = res?.[0]?.id?.toString()
+            }
+            else {
+                salesmanId = row.salesmanId.toString()
+            }
+        const { itemId, customerId, saleNum, expectedTime, remark, inquiryId } = row
         param = {
             salesmanId,
             itemId: itemId?.toString(),
             customerId: customerId?.toString(),
             saleNum: saleNum?.toString(),
+            inquiryId: inquiryId?.toString(),
             expectedTime: expectedTime ? moment(expectedTime).format("YYYY/MM/DD") : null,
             inquiryType: inquiryType?.toString(),
             remark

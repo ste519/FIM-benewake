@@ -59,7 +59,7 @@ const schema = [
         identifier: "expected_time",
         element:
             (data, handleChange) =>
-                <DatePicker selected={new Date(data.expectedTime)}
+                <DatePicker selected={new Date(data.expectedTime || new Date())}
                     onChange={(date) => handleChange(["expectedTime"], [date])}
                 />
     },
@@ -113,7 +113,7 @@ const schema = [
         element:
             (data) => <Input
                 name="arrangedTime"
-                value={moment(data.arrangedTime).format("YYYY/MM/DD")}
+                value={data.arrangedTime ? moment(data.arrangedTime).format("YYYY/MM/DD") : ""}
                 readOnly
             />
     },

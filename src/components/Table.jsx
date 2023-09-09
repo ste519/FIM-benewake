@@ -16,6 +16,7 @@ import { ReactComponent as ArrowIcon } from '../assets/icons/arrow-down.svg';
 import { DndProvider, useDrag, useDrop } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
 import { useTableStatesContext, useUpdateTableStatesContext } from '../hooks/useCustomContext';
+import { filterOut9999 } from '../js/parseData';
 
 const Search = ({ column, closeSearch }) => {
     const [inputValue, setInputValue] = useState('');

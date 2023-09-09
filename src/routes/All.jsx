@@ -6,13 +6,13 @@ import Toolbar from '../components/Toolbar';
 import { useTableDataContext } from '../hooks/useCustomContext';
 import { allViews } from '../constants/Views';
 import AllDefs from '../constants/AllDefs';
+import { filterOut9999 } from '../js/parseData';
 
 const All = () => {
   const tableData = useTableDataContext()
   const columns = useMemo(() => AllDefs, [])
   const features = ["new", "delete", "import", "export", "edit", "startInquiry", "refresh", 'visibility']
   const [views, setViews] = useState(allViews)
-
 
   return (
     <div className='col full-screen'>
@@ -28,7 +28,7 @@ const All = () => {
       {tableData &&
         <div className='content-container col'>
           <Table
-            data={tableData}
+            data={filterOut9999(tableData)}
             columns={columns}
           />
         </div>
