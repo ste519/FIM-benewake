@@ -95,10 +95,11 @@ export const Filter = ({ index, initialValues, setFilters, filters, headers }) =
       [key]: value,
     }));
   }
-  
+
+
 
   return (
-    <div className='row filter' >
+    <div className='row filter'>
       <div className='filter-select-wrapper'>
         <select value={values.colName} onChange={(e) => handleChange("colName", e.target.value)}>
           {headers.map((header, i) =>
@@ -141,6 +142,11 @@ export default function Filters({ display, headers }) {
 
   const enabledHeaders = useMemo(() => headers.filter(header => !isHeaderExisted(filters, header)), [headers, filters]);
 
+  const handleKeyDown = (event) => {
+    if (event.key === 'Enter') {
+      queryData();
+    }
+  }
 
   const initialFilterValue = useMemo(() => ({
     colName: enabledHeaders[0]?.col_name_ENG, condition: conditions[0].id, value: ""
@@ -168,11 +174,12 @@ export default function Filters({ display, headers }) {
   }
 
   return (
-    <div className='col filter-container'>
+    <div className='col filter-container' >
       {
         isVisible &&
         <div className='row'>
-          <div className="filter-wrapper">
+          <div className="filter-wrapper" tabIndex="0"
+            onKeyDown={handleKeyDown} >
             {filters?.map((value, i) =>
               <Filter
                 key={i}
@@ -199,6 +206,6 @@ export default function Filters({ display, headers }) {
       <button onClick={toggleVisible} className="row flex-center toggle-btn blue5">
         <ArrowIcon className={isVisible ? "rotate180" : "rotate0"} /> {isVisible ? "收起筛选" : "展示筛选"}
       </button>
-    </div>
+    </div >
   )
 }

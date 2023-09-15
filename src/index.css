@@ -1298,11 +1298,12 @@ datalist {
   width: max-content;
   overflow-y: auto;
   background: white;
-  box-shadow: var(--shadow);
+  box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.2);
   text-align: left;
   border-radius: 0.5rem;
   z-index: 3;
 }
+
 
 .data-list li {
   cursor: pointer;
@@ -1447,7 +1448,7 @@ input[type=number] {
   white-space: nowrap;
 }
 
-.message-wrapper {
+.message-wrapper, .todos-wrapper {
   background: white;
   padding: 1rem;
   display: flex;
@@ -1476,7 +1477,6 @@ input[type=number] {
   color: var(--confirm-dark);
 }
 
-
 .message-wrapper h1 {
   width: min-content;
 }
@@ -1484,4 +1484,9 @@ input[type=number] {
 .post-message-container .scroll {
   overflow: auto;
   flex: 1 1 1px;
+}
+
+.todos-wrapper {
+  border-color: var(--warning-dark);
+  background-color: var(--warning-light)
 }

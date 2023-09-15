@@ -257,7 +257,7 @@ const Views = ({ views, editable }) => {
                 )}
                 {editable &&
                     <div className='controls row g1'>
-                        <button className="rounded blue40" onClick={handleAdd}>
+                        <button className="rounded white" onClick={handleAdd}>
                             <AddIcon />新增方案
                         </button>
                         <button className="rounded white"

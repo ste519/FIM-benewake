@@ -11,9 +11,9 @@ import "moment/dist/locale/zh-cn";
 import { deleteInquiry } from '../api/delete';
 import { startInquiry } from '../api/inquiry';
 import ColVisibility from './ColVisibility';
-import { getIndexes, EngToCn, VisibilityToHeadersENG } from '../js/transformType';
+import { getIndexes, EngToCn, VisibilityToHeadersENG, snakeToCamelCase } from '../js/transformType';
 import { noData, isObjectEmpty, noVisibleCols } from '../js/valueCheck';
-import { getVisbleTableData } from '../js/parseData';
+import { getVisbleTableData, parseInquiryObj } from '../js/parseData';
 import { getTableId } from '../js/getData';
 import { EDIT_INQUIRY_TAB, NEW_INQUIRY_TAB } from '../constants/Global';
 
@@ -92,6 +92,10 @@ export default function Toolbar({ features }) {
         updateTableData({ type: "SET_TABLE_DATA", tableData: res.lists })
     }
 
+    const handleAllowInquiry = async () => {
+        console.log("111");
+    }
+
     const handleExport = () => {
         if (noData(tableData) || noVisibleCols(states.columnVisibility)) {
             updateAlert({ type: "SHOW_ALERT", data: { type: "error", message: "没有数据！" } })
@@ -157,8 +161,14 @@ export default function Toolbar({ features }) {
                 const newTab = EDIT_INQUIRY_TAB
                 updateTabs({ type: "ADD_TAB", tab: newTab })
                 const selectedIndex = Number(Object.keys(rowSelection)[0])
-                const selecteData = tableData[selectedIndex]
-                setSelectedData(selecteData)
+                const selectedData = tableData[selectedIndex]
+                const initialData = await (parseInquiryObj(selectedData))
+                Object.entries(selectedData).forEach(([key, value]) => {
+                    const camelCaseKey = snakeToCamelCase(key)
+                    initialData[camelCaseKey] = value
+                })
+
+                setSelectedData(initialData)
                 navigate("/edit")
             }
         }
@@ -211,14 +221,17 @@ export default function Toolbar({ features }) {
 
                 <button onClick={handleStartInquiry} className={`${features?.includes("startInquiry") ? "" : "hidden"}`}>开始询单</button>
             </div>
-            {
-                features.includes("visibility")
-                && !noData(tableData)
-                &&
-                <div className="row flex-center status">
-                    <ColVisibility editable={tableId === 1 && defaultSelection.viewId > 0} />
-                </div>
-            }
+            <div>
+                <button onClick={handleAllowInquiry} className={`${features?.includes("startAllow") ? "" : "hidden"}`}>允许询单</button>
+                {
+                    features.includes("visibility")
+                    && !noData(tableData)
+                    &&
+                    <div className="row flex-center status">
+                        <ColVisibility editable={tableId === 1 && defaultSelection.viewId > 0} />
+                    </div>
+                }
+            </div>
         </div >
     )
 }

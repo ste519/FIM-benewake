@@ -5,6 +5,7 @@ import DataList from './DataList'
 import { fetchCustomerType } from '../api/fetch';
 import moment from 'moment';
 import { EngToSize, camelToSnakeCase } from '../js/transformType';
+import { useAuthContext } from '../hooks/useCustomContext';
 
 const schema = [
     {
@@ -59,7 +60,7 @@ const schema = [
         identifier: "expected_time",
         element:
             (data, handleChange) =>
-                <DatePicker selected={new Date(data.expectedTime || new Date())}
+                <DatePicker selected={data.expectedTime ? new Date(data.expectedTime) : null}
                     onChange={(date) => handleChange(["expectedTime"], [date])}
                 />
     },
@@ -111,9 +112,10 @@ const schema = [
         header: "计划反馈日期",
         identifier: "arrangedTime",
         element:
-            (data) => <Input
+            (data, handleChange) => <Input
                 name="arrangedTime"
                 value={data.arrangedTime ? moment(data.arrangedTime).format("YYYY/MM/DD") : ""}
+                onChange={(date) => handleChange(["arrangedTime"], [date])}
                 readOnly
             />
     },
@@ -139,7 +141,16 @@ const schema = [
     }
 ]
 
-const Input = ({ type, name, value, readOnly, onChange }) => {
+const Input = ({ type, name, value, readOnly, onChange, }) => {
+    const { auth } = useAuthContext()
+
+    if (name === 'arrangedTime') {
+        if (auth.userType && auth.userType == "1") {
+            return <DatePicker selected={!value ? null : new Date(value)}
+                onChange={onChange}
+            />
+        }
+    }
     return (
         <input
             type={type ?? "text"}

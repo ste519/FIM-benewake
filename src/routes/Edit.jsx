@@ -121,22 +121,17 @@ const SimpleToolbar = ({ rows, ids, setIds }) => {
 }
 
 const Edit = () => {
-    const { selectedData } = useSelectedDataContext()
-    let initialData;
-    const [ids, setIds] = useState(null)
-    const [rows, setRows] = useState(null)
+    const { selectedData, setSelectedData } = useSelectedDataContext()
+    console.log(selectedData);
+
+    const [ids, setIds] = useState([selectedData.inquiryId])
+    const [rows, setRows] = useState([selectedData])
+
     useEffect(() => {
-        async function fetch() {
-            initialData = await (parseInquiryObj(selectedData))
-            Object.entries(selectedData).forEach(([key, value]) => {
-                const camelCaseKey = snakeToCamelCase(key)
-                initialData[camelCaseKey] = value
-            })
-            setRows([initialData])
-            setIds([selectedData.inquiry_id])
+        if (rows) {
+            setSelectedData(rows[0]);
         }
-        fetch()
-    }, [])
+    }, [rows]);
 
     const [currentDate, setCurrentDate] = useState(new Date());
 
@@ -146,7 +141,7 @@ const Edit = () => {
             <div className='col inquiry-info'>
                 <div className='row input-wrapper'>
                     <h1>单据编号：</h1>
-                    <input type="text" readOnly name="inquiryCode" value={(selectedData?.inquiry_code || selectedData?.inquiryCode) ?? ""} className='inquiry-code' />
+                    <input type="text" readOnly name="inquiryCode" value={selectedData?.inquiryCode ?? ""} className='inquiry-code' />
                 </div>
                 <div className="react-datepicker-container input-wrapper">
                     单据日期：
@@ -158,7 +153,7 @@ const Edit = () => {
                 </div>
             </div>
             {rows && <EditTable rows={rows} setRows={setRows} />}
-           
+
         </div >
 
     )

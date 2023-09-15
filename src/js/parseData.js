@@ -35,7 +35,6 @@ export function filterOut9999(data) {
                 : row.expected_time
         })
     )
-    console.log(result);
     return result
 }
 
@@ -112,14 +111,16 @@ export async function parseInquiryObj(source) {
 export async function rowToInquiry(row, inquiryType) {
     let param;
     let salesmanId = null;
+
+    //new inquiry
     if (inquiryType) {
         if (!row?.salesmanId) {
-                const res = await fetchUser(row.salesmanName, "2")
-                salesmanId = res?.[0]?.id?.toString()
-            }
-            else {
-                salesmanId = row.salesmanId.toString()
-            }
+            const res = await fetchUser(row.salesmanName, "2")
+            salesmanId = res?.[0]?.id?.toString()
+        }
+        else {
+            salesmanId = row.salesmanId.toString()
+        }
         const { itemId, customerId, saleNum, expectedTime, remark, inquiryId } = row
         param = {
             salesmanId,
@@ -132,8 +133,10 @@ export async function rowToInquiry(row, inquiryType) {
             remark
         }
     }
+
+    //edit inquiry
     else {
-        const { inquiryId, inquiryCode, inquiryType, salesmanId, itemId, customerId, saleNum, expectedTime, remark, state } = row
+        const { inquiryId, inquiryCode, inquiryType, salesmanId, itemId, customerId, saleNum, expectedTime, remark, arrangedTime, state } = row
         param = {
             inquiryId: inquiryId?.toString(),
             inquiryCode,
@@ -143,6 +146,7 @@ export async function rowToInquiry(row, inquiryType) {
             saleNum: saleNum?.toString(),
             expectedTime: expectedTime ? moment(expectedTime).format("YYYY/MM/DD") : null,
             inquiryType: getInquiryTypeInt(inquiryType)?.toString(),
+            arrangedTime: arrangedTime ? moment(arrangedTime).format("YYYY/MM/DD") : null,
             state: getStateNum(state),
             remark
         }

@@ -14,7 +14,7 @@ import Inventory from '../routes/Inventory';
 import Sales from '../routes/Sales';
 import Edit from '../routes/Edit';
 import { fetchNewViews } from '../api/fetch';
-import { findMessages } from '../api/message'
+import { findMessages, findTodos, findPMMessages, findPODelay} from '../api/message'
 
 const children = [
     {
@@ -24,7 +24,6 @@ const children = [
             try {
                 const res = await fetchNewViews("1")
                 if (res?.code !== 200) {
-                    console.log(res?.message);
                     return []
                 }
                 else {
@@ -50,8 +49,16 @@ const children = [
         name: "用户主页", path: "user", element: <User />, loader:
             async () => {
                 try {
-                    const res = await findMessages()
-                    return res.data
+                    const messages = await findMessages()
+                    const todos = await findTodos()
+                    const PMMessages = await findPMMessages()
+                    const PODelay = await findPODelay()
+                    return {
+                        messages: messages?.data,
+                        todos: todos?.data,
+                        PMMessages: [PMMessages?.data],
+                        PODelay: PODelay?.data
+                    }
                 }
                 catch (err) {
                     console.log(err);

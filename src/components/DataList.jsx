@@ -1,4 +1,4 @@
-import { memo, useState, useEffect } from 'react';
+import { memo, useState, useEffect, useRef } from 'react';
 import { fetchOptions, fetchUser } from '../api/fetch';
 
 const inquiryTypeOptions = [{ inquiryType: "PO(客户付款)" }, { inquiryType: "PR(客户提出付款意向)" }, { inquiryType: "YG(供应链预估)" }, { inquiryType: "YC(销售预测)" }, { inquiryType: "XD(意向询单)" }]
@@ -16,6 +16,25 @@ const DataList = memo(function DataList({ type, searchKey, initialValue, handleC
     const [options, setOptions] = useState(null)
     const [showDropdown, setShowDropdown] = useState(false);
     const [value, setValue] = useState("")
+
+    const containerRef = useRef(null);
+
+    const handleDocumentClick = (e) => {
+        if (containerRef.current && !containerRef.current.contains(e.target)) {
+            setShowDropdown(false);
+            clearData();
+            document.removeEventListener('mousedown', handleDocumentClick);
+        }
+    };
+
+    useEffect(() => {
+        if (showDropdown) {
+            document.addEventListener('mousedown', handleDocumentClick);
+        }
+        return () => {
+            document.removeEventListener('mousedown', handleDocumentClick);
+        };
+    }, [showDropdown]);
 
     useEffect(() => { setValue(initialValue) }, [initialValue])
 
@@ -58,6 +77,7 @@ const DataList = memo(function DataList({ type, searchKey, initialValue, handleC
     };
 
     const clearData = () => {
+        console.log(111);
         if (value?.length > 0) {
             if (identifier === "itemCode") {
                 handleChange(["itemCode", "itemName", "itemType", "itemId", "customerType"], ["", "", "", "", ""])
@@ -75,7 +95,7 @@ const DataList = memo(function DataList({ type, searchKey, initialValue, handleC
     }
 
     return (
-        <div className="data-list" >
+        <div className="data-list" ref={containerRef}>
             <input
                 type="text"
                 value={value}
@@ -86,7 +106,7 @@ const DataList = memo(function DataList({ type, searchKey, initialValue, handleC
                 showDropdown && options &&
                 <ul
                     className="data-list-dropdown"
-                    onMouseLeave={clearData} >
+                >
                     {
                         identifier === "itemCode" &&
                         < li className='row sticky' >

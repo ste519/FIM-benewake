@@ -20,6 +20,7 @@ export async function updateInquiry(
         customerId,
         expectedTime,
         salesmanId,
+        arrangedTime,
         state,
         remark }) {
     try {
@@ -32,6 +33,7 @@ export async function updateInquiry(
             customerId,
             expectedTime,
             salesmanId,
+            arrangedTime,
             state,
             remark
         })

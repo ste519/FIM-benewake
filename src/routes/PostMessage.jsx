@@ -8,7 +8,7 @@ const PostMessage = () => {
     const [value, setValue] = useState("")
     const [messageType, setMessageType] = useState("0")
 
-    const [pastMessages, setPastMessages] = useState(useLoaderData() ?? [])
+    const [pastMessages, setPastMessages] = useState(useLoaderData()?.messages ?? [])
 
     const updateAlert = useAlertContext()
 
@@ -71,7 +71,7 @@ const PostMessage = () => {
                 <h1>已发布列表</h1>
                 <div className='col g1 scroll'>
                     {pastMessages?.map((message) =>
-                        <Message message={message} key={message.id} setMessages={setPastMessages} deletable/>
+                        <Message message={message} key={message.id} setMessages={setPastMessages} deletable />
                     )}
                 </div>
             </div >
