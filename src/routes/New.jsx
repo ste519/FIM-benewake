@@ -132,7 +132,6 @@ const New = () => {
     const [rows, setRows] = useState(savedNewData ?? [new_inquiry_data])
 
     useEffect(() => { setSavedNewData(rows) }, [rows])
-    console.log(rows);
 
     return (
         <div className='col full-screen invoice-container'>

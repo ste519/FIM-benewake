@@ -24,7 +24,6 @@ const children = [
             try {
                 const res = await fetchNewViews("1")
                 if (res?.code !== 200) {
-                    console.log(res?.message);
                     return []
                 }
                 else {
