@@ -127,7 +127,6 @@ export async function rowToInquiry(row, inquiryType) {
             itemId: itemId?.toString(),
             customerId: customerId?.toString(),
             saleNum: saleNum?.toString(),
-            inquiryId: inquiryId?.toString(),
             expectedTime: expectedTime ? moment(expectedTime).format("YYYY/MM/DD") : null,
             inquiryType: inquiryType?.toString(),
             remark

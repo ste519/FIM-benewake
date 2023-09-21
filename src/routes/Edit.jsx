@@ -153,7 +153,6 @@ const Edit = () => {
                 </div>
             </div>
             {rows && <EditTable rows={rows} setRows={setRows} />}
-
         </div >
 
     )

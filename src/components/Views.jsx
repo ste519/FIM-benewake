@@ -224,30 +224,27 @@ const Views = ({ views, editable }) => {
     }
 
     const handleViewNameChange = (newName, viewId) => {
-        setNewViews(prev => 
-            prev.map(view => 
-                view.viewId === viewId ? { ...view, viewName: newName } : view
-            )
-        );
+        setNewViews(prev => [...prev.filter(view => view.viewId !== viewId), { viewId, viewName: newName }])
     }
+
     return (
         <>
             <div className='view-container row'>
-                {views?.map((item) =>
+                {views?.map((item, i) =>
                     <View
                         id={item.viewId}
                         name={item.viewName}
-                        key={item.viewId}
+                        key={i}
                         isSelected={selected === item.viewId}
                         handleViewClick={() => handleViewClick(item.viewId)}
                         handleDelete={handleDelete}
                     />
                 )}
-                {newViews?.map((item) =>
+                {newViews?.map((item, i) =>
                     <View
                         id={item.viewId}
                         name={item.viewName}
-                        key={item.viewId}
+                        key={i}
                         isSelected={selected === item.viewId}
                         handleViewClick={() => handleViewClick(item.viewId)}
                         handleDelete={handleDelete}
