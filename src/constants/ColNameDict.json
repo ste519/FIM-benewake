@@ -124,5 +124,11 @@
         "col_name_CN": "备注",
         "col_name_ENG": "remark",
         "size": 150
+    },
+    {
+        "col_id": 21,
+        "col_name_CN": "是否允许询单",
+        "col_name_ENG": "allow_inquiry",
+        "size": 90
     }
 ]
