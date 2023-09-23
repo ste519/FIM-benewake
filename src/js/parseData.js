@@ -64,6 +64,7 @@ export function getVisbleTableData(tableData, headers_ENG) {
             if (row.hasOwnProperty(header)) {
                 newData[header] = row[header];
             }
+            else { newData[header] = null }
         });
         return newData;
     });
@@ -131,7 +132,7 @@ export function rowToInquiry(row, inquiryType) {
     //edit inquiry
     else {
         const { inquiryId, inquiryCode, inquiryType, salesmanId, itemId, customerId, saleNum, expectedTime, remark, arrangedTime, state } = row
-        
+
         param = {
             inquiryId: inquiryId?.toString(),
             inquiryCode,

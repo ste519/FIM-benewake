@@ -199,7 +199,6 @@ const Row = ({ rowIndex, data, updateCells, addRow, removeRow, colWidths, isSele
 const NewTable = ({ rows, setRows }) => {
     const headers = NEW_INQUIRY_HEADERS;
     const { auth } = useAuthContext()
-    console.log(rows);
 
     const [selectedRows, setSelectedRows] = useState([])
     const addSelectedRow = (rowIndex) => setSelectedRows([...selectedRows, rowIndex])

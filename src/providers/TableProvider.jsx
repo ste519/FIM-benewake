@@ -6,6 +6,7 @@ import { VISIBILITY_ALL_FALSE } from "../constants/Global";
 import { fetchData } from "../api/fetch";
 import { useSelectedDataContext } from "../hooks/useCustomContext";
 import { getTableId } from '../js/getData'
+import { filterOut9999 } from "../js/parseData";
 
 const tableDataReducer = (state, action) => {
     switch (action.type) {
@@ -52,9 +53,8 @@ const TableProvider = ({ children }) => {
         if (tableId) {
             async function fetch() {
                 const res = await fetchData(selectedQuery[tableId])
-                console.log(res);
                 updateTableStates({ type: "SET_COLUMN_VISIBILITY", columnVisibility: res.columnVisibility });
-                updateTableData({ type: "SET_TABLE_DATA", tableData: res.lists });
+                updateTableData({ type: "SET_TABLE_DATA", tableData: filterOut9999(res.lists) });
             }
             fetch()
         }

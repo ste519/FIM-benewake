@@ -113,39 +113,36 @@ export default function Toolbar({ features }) {
 
     const handleExport = () => {
         updateAlert({ type: "SHOW_ALERT", data: { type: "warning", message: "功能完善中" } })
-        // if (noData(tableData) || noVisibleCols(states.columnVisibility)) {
-        //     updateAlert({ type: "SHOW_ALERT", data: { type: "error", message: "没有数据！" } })
-        // }
-        // else {
-        //     updateAlert({
-        //         type: "SHOW_ALERT", data: {
-        //             type: "confirm", message: "确定导出该表单？", action: () => {
+        if (noData(tableData) || noVisibleCols(states.columnVisibility)) {
+            updateAlert({ type: "SHOW_ALERT", data: { type: "error", message: "没有数据！" } })
+        }
+        else {
+            updateAlert({
+                type: "SHOW_ALERT", data: {
+                    type: "confirm", message: "确定导出该表单？", action: () => {
 
-        //                 const wb = XLSX.utils.book_new();
-        //                 const ws = XLSX.utils.json_to_sheet([]);
+                        const wb = XLSX.utils.book_new();
+                        const ws = XLSX.utils.json_to_sheet([]);
 
-        //                 const headers_ENG = VisibilityToHeadersENG(states.columnVisibility)
+                        const headers_ENG = VisibilityToHeadersENG(states.columnVisibility)
 
-        //                 const filteredData = tableData.map((row) => row.map())
+                        let headers_CN = headers_ENG.map((name) => EngToCn(name)).filter((value) => value !== undefined)
 
-        //                 let headers_CN = headers_ENG.map((name) => EngToCn(name)).filter((value) => value !== undefined)
+                        XLSX.utils.sheet_add_aoa(ws, [headers_CN]);
+                        const newData = getVisbleTableData(tableData, headers_ENG)
 
-        //                 XLSX.utils.sheet_add_aoa(ws, [headers_CN]);
-        //                 const newData = getVisbleTableData(tableData, headers_ENG)
+                        XLSX.utils.sheet_add_json(ws, newData, { origin: 'A2', skipHeader: true });
+                        XLSX.utils.book_append_sheet(wb, ws);
 
-        //                 console.log(tableData, headers_ENG);
-        //                 XLSX.utils.sheet_add_json(ws, newData, { origin: 'A2', skipHeader: true });
-        //                 XLSX.utils.book_append_sheet(wb, ws);
+                        const timestamp = moment(new Date()).format('YYMMDDHHmmss')
+                        const filename = children.filter((child) => child.path === activeTab)[0].name
 
-        //                 const timestamp = moment(new Date()).format('YYMMDDHHmmss')
-        //                 const filename = children.filter((child) => child.path === activeTab)[0].name
+                        XLSX.writeFileXLSX(wb, filename + timestamp + ".xlsx");
+                    }
+                }
+            })
 
-        //                 // XLSX.writeFileXLSX(wb, filename + timestamp + ".xlsx");
-        //             }
-        //         }
-        //     })
-
-        // }
+        }
     }
 
     const handleStartInquiry = async () => {
