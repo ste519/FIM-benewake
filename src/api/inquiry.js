@@ -43,3 +43,13 @@ export async function updateInquiry(
         console.log(err);
     }
 }
+
+export async function allowInquiry(ids) {
+    try {
+        const response = await api.post('/order/allowinquiry', ids)
+        return response.data;
+    }
+    catch (err) {
+        console.log(err);
+    }
+}

@@ -48,15 +48,16 @@ const TableProvider = ({ children }) => {
     const location = useLocation();
 
     useLayoutEffect(() => {
-        async function fetch() {
-            const tableId = getTableId(location)
-            if (tableId) {
+        const tableId = getTableId(location)
+        if (tableId) {
+            async function fetch() {
                 const res = await fetchData(selectedQuery[tableId])
+                console.log(res);
                 updateTableStates({ type: "SET_COLUMN_VISIBILITY", columnVisibility: res.columnVisibility });
                 updateTableData({ type: "SET_TABLE_DATA", tableData: res.lists });
             }
+            fetch()
         }
-        fetch()
     }, [location]);
 
     return (

@@ -4,6 +4,12 @@ import localOptions from '../constants/LocalOptions.json'
 import { fetchStateNums, fetchUser } from '../api/fetch';
 import { getStateStr } from '../js/parseData';
 
+function dropDuplicates(array) {
+    return Array.from(
+        new Set(array.map(JSON.stringify))
+    ).map(JSON.parse);
+}
+
 function getOptionName(listName, option) {
     switch (listName) {
         case "customer_name":
@@ -137,7 +143,7 @@ const SimpleDataList = ({ name, initialValue, initialOptions, handleChange, sear
                     }
                     {
                         options.length > 0
-                            ? options.map((option, i) =>
+                            ? dropDuplicates(options).map((option, i) =>
                                 name !== "item_code" ?
                                     <li key={i}
                                         onClick={() => handleSelect(option)}>

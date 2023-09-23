@@ -122,7 +122,6 @@ const SimpleToolbar = ({ rows, ids, setIds }) => {
 
 const Edit = () => {
     const { selectedData, setSelectedData } = useSelectedDataContext()
-    console.log(selectedData);
 
     const [ids, setIds] = useState([selectedData.inquiryId])
     const [rows, setRows] = useState([selectedData])

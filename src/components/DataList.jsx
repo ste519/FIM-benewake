@@ -56,6 +56,7 @@ const DataList = memo(function DataList({ type, searchKey, initialValue, handleC
 
     const handleSelect = (option) => {
         if (identifier === "itemCode") {
+            
             setValue(option.itemCode)
             handleChange(["itemCode", "itemName", "itemType", "itemId"], [option.itemCode, option.itemName, option.itemType, option.id])
         }
@@ -77,7 +78,6 @@ const DataList = memo(function DataList({ type, searchKey, initialValue, handleC
     };
 
     const clearData = () => {
-        console.log(111);
         if (value?.length > 0) {
             if (identifier === "itemCode") {
                 handleChange(["itemCode", "itemName", "itemType", "itemId", "customerType"], ["", "", "", "", ""])
@@ -109,8 +109,8 @@ const DataList = memo(function DataList({ type, searchKey, initialValue, handleC
                 >
                     {
                         identifier === "itemCode" &&
-                        < li className='row sticky' >
-                            <div>物料编码</div><div>物料名称</div>
+                        < li className='row sticky g1' >
+                            <div style={{width: 66}}>物料编码</div><div>物料名称</div>
                         </li>
                     }
                     {
@@ -121,7 +121,7 @@ const DataList = memo(function DataList({ type, searchKey, initialValue, handleC
                                         onClick={() => handleSelect(option)}>
                                         {getOptionName(type, option, searchKey)}
                                     </li>
-                                    : <li className='row' key={i}
+                                    : <li className='row g1' key={i}
                                         onClick={() => handleSelect(option)}>
                                         <div>{option.itemCode}</div>
                                         <div>{option.itemName}</div>

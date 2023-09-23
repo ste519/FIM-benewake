@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import ExcelUploader from './ExcelUploader';
 import * as XLSX from 'xlsx';
-import { useAlertContext, useSelectedDataContext, useTableDataContext, useTableStatesContext, useUpdateTabContext, useUpdateTableDataContext, useUpdateTableStatesContext } from '../hooks/useCustomContext';;
+import { useAlertContext, useAuthContext, useSelectedDataContext, useTableDataContext, useTableStatesContext, useUpdateTabContext, useUpdateTableDataContext, useUpdateTableStatesContext } from '../hooks/useCustomContext';;
 import { useLocation, useNavigate } from 'react-router-dom';
 import { fetchData } from '../api/fetch';
 import children from '../path/children';
@@ -9,7 +9,7 @@ import moment from 'moment';
 moment.updateLocale('zh-cn')
 import "moment/dist/locale/zh-cn";
 import { deleteInquiry } from '../api/delete';
-import { startInquiry } from '../api/inquiry';
+import { allowInquiry, startInquiry } from '../api/inquiry';
 import ColVisibility from './ColVisibility';
 import { getIndexes, EngToCn, VisibilityToHeadersENG, snakeToCamelCase } from '../js/transformType';
 import { noData, isObjectEmpty, noVisibleCols } from '../js/valueCheck';
@@ -35,6 +35,8 @@ export default function Toolbar({ features }) {
     const { rowSelection } = useTableStatesContext()
     const [openImportPopup, setOpenImportPopup] = useState(false)
     const activeTab = useLocation().pathname.replace("/", "")
+
+    const { auth } = useAuthContext()
 
     const toggleImportPopup = () => setOpenImportPopup(!openImportPopup)
 
@@ -93,43 +95,57 @@ export default function Toolbar({ features }) {
     }
 
     const handleAllowInquiry = async () => {
-        console.log("111");
+        if (noRowSelected()) {
+            return
+        }
+
+        const rowIndexes = Object.keys(rowSelection).map(str => Number(str))
+        const inquiryIds = rowIndexes.map(id => tableData[id].inquiry_id)
+
+        const res = await allowInquiry(inquiryIds)
+        const message = res?.map(item => item.message).join('\n')
+
+        //TODO: adding code varification
+        updateAlert({ type: "SHOW_ALERT", data: { type: "success", message } })
+        handleRefresh()
+
     }
 
     const handleExport = () => {
-        if (noData(tableData) || noVisibleCols(states.columnVisibility)) {
-            updateAlert({ type: "SHOW_ALERT", data: { type: "error", message: "没有数据！" } })
-        }
-        else {
-            updateAlert({
-                type: "SHOW_ALERT", data: {
-                    type: "confirm", message: "确定导出该表单？", action: () => {
+        updateAlert({ type: "SHOW_ALERT", data: { type: "warning", message: "功能完善中" } })
+        // if (noData(tableData) || noVisibleCols(states.columnVisibility)) {
+        //     updateAlert({ type: "SHOW_ALERT", data: { type: "error", message: "没有数据！" } })
+        // }
+        // else {
+        //     updateAlert({
+        //         type: "SHOW_ALERT", data: {
+        //             type: "confirm", message: "确定导出该表单？", action: () => {
 
-                        const wb = XLSX.utils.book_new();
-                        const ws = XLSX.utils.json_to_sheet([]);
+        //                 const wb = XLSX.utils.book_new();
+        //                 const ws = XLSX.utils.json_to_sheet([]);
 
-                        const headers_ENG = VisibilityToHeadersENG(states.columnVisibility)
-                        
-                        const filteredData = tableData.map((row)=> row.map())
-                        
-                        let headers_CN = headers_ENG.map((name) => EngToCn(name)).filter((value) => value !== undefined)
+        //                 const headers_ENG = VisibilityToHeadersENG(states.columnVisibility)
 
-                        XLSX.utils.sheet_add_aoa(ws, [headers_CN]);
-                        const newData = getVisbleTableData(tableData, headers_ENG)
+        //                 const filteredData = tableData.map((row) => row.map())
 
-                        console.log(tableData, headers_ENG);
-                        XLSX.utils.sheet_add_json(ws, newData, { origin: 'A2', skipHeader: true });
-                        XLSX.utils.book_append_sheet(wb, ws);
+        //                 let headers_CN = headers_ENG.map((name) => EngToCn(name)).filter((value) => value !== undefined)
 
-                        const timestamp = moment(new Date()).format('YYMMDDHHmmss')
-                        const filename = children.filter((child) => child.path === activeTab)[0].name
+        //                 XLSX.utils.sheet_add_aoa(ws, [headers_CN]);
+        //                 const newData = getVisbleTableData(tableData, headers_ENG)
 
-                        // XLSX.writeFileXLSX(wb, filename + timestamp + ".xlsx");
-                    }
-                }
-            })
+        //                 console.log(tableData, headers_ENG);
+        //                 XLSX.utils.sheet_add_json(ws, newData, { origin: 'A2', skipHeader: true });
+        //                 XLSX.utils.book_append_sheet(wb, ws);
 
-        }
+        //                 const timestamp = moment(new Date()).format('YYMMDDHHmmss')
+        //                 const filename = children.filter((child) => child.path === activeTab)[0].name
+
+        //                 // XLSX.writeFileXLSX(wb, filename + timestamp + ".xlsx");
+        //             }
+        //         }
+        //     })
+
+        // }
     }
 
     const handleStartInquiry = async () => {
@@ -224,18 +240,22 @@ export default function Toolbar({ features }) {
                 <button onClick={handleEdit} className={`${features?.includes("edit") ? "" : "hidden"}`}>修改</button>
 
                 <button onClick={handleStartInquiry} className={`${features?.includes("startInquiry") ? "" : "hidden"}`}>开始询单</button>
+
+                <button onClick={handleAllowInquiry}
+                    className={`${features?.includes("allowInquiry") && auth.userType == "1" ? "" : "hidden"}`}>
+                    允许询单
+                </button>
             </div>
-            <div>
-                <button onClick={handleAllowInquiry} className={`${features?.includes("startAllow") ? "" : "hidden"}`}>允许询单</button>
-                {
-                    features.includes("visibility")
-                    && !noData(tableData)
-                    &&
-                    <div className="row flex-center status">
-                        <ColVisibility editable={tableId === 1 && defaultSelection.viewId > 0} />
-                    </div>
-                }
-            </div>
+
+            {
+                features.includes("visibility")
+                && !noData(tableData)
+                &&
+                <div className="row flex-center status">
+                    <ColVisibility editable={tableId === 1 && defaultSelection.viewId > 0} />
+                </div>
+            }
+
         </div >
     )
 }

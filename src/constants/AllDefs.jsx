@@ -38,7 +38,7 @@ const allDefs =
                     return "是"
                 }
                 else {
-                    row[item.col_name_ENG]
+                    return row[item.col_name_ENG]
                 }
             },
             size: item.size

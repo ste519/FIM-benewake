@@ -15,7 +15,6 @@ const Todos = ({ data, type, deletable }) => {
         switch (res.code) {
             case 200:
                 const inquiryInfo = res.data.find(inquiry => inquiry.inquiryId === id)
-                console.log(inquiryInfo);
                 setSelectedData(inquiryInfo);
                 break;
             case 400:

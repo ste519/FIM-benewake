@@ -1404,11 +1404,9 @@ input[type=number] {
   color: var(--blue30);
 }
 
-.data-list-dropdown li.row {
-  display: grid;
-  grid-template-columns: 1fr 2fr;
+.data-list-dropdown li.row+div {
+  width: max-content;
 }
-
 .data-list-dropdown .sticky {
   position: sticky;
   top: 0;

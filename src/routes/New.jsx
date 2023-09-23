@@ -8,96 +8,94 @@ import { rowToInquiry } from '../js/parseData';
 import moment from 'moment';
 import { useAlertContext, useAuthContext, useSelectedDataContext } from '../hooks/useCustomContext';
 
-const SimpleToolbar = ({ rows, inquiryType, clearData }) => {
+function alertAndSetRows(res, updateAlert, action) {
+    switch (res.code) {
+        case 200:
+            updateAlert({
+                type: "SHOW_ALERT", data: {
+                    type: "success",
+                    message: res.message
+                }
+            })
+            action()
+            break
+        case 400:
+            updateAlert({
+                type: "SHOW_ALERT", data: {
+                    type: "error",
+                    message: res.message
+                }
+            })
+            break
+        case 1:
+            updateAlert({
+                type: "SHOW_ALERT", data: {
+                    type: "error",
+                    message: res.message
+                }
+            })
+            break
+        default:
+            updateAlert({
+                type: "SHOW_ALERT", data: {
+                    type: "error",
+                    message: "未知错误"
+                }
+            })
+            break
+    }
+}
+
+const SimpleToolbar = ({ rows, inquiryType, setRows }) => {
     const updateAlert = useAlertContext()
     const [action, setAction] = useState(null)
 
     const handleSaveClick = async () => {
         setAction({ type: "保存", time: new Date() })
 
-        const newInquiries = await Promise.all(rows.map(row => rowToInquiry(row, inquiryType)));
+        const newInquiries = rows.map(row => rowToInquiry(row, inquiryType));
 
         const res = await startInquiry(newInquiries, 0)
-        switch (res.code) {
-            case 200:
-                updateAlert({
-                    type: "SHOW_ALERT", data: {
-                        type: "success",
-                        message: res.message
-                    }
-                })
-                clearData()
-                break
-            case 400:
-                updateAlert({
-                    type: "SHOW_ALERT", data: {
-                        type: "error",
-                        message: res.message
-                    }
-                })
-                break
-            case 1:
-                updateAlert({
-                    type: "SHOW_ALERT", data: {
-                        type: "error",
-                        message: res.message
-                    }
-                })
-                break
-            default:
-                updateAlert({
-                    type: "SHOW_ALERT", data: {
-                        type: "error",
-                        message: "未知错误"
-                    }
-                })
-                break
+        const saveInquiryIdAndCode = () => {
+            const { ids, inquiryCode } = res.data;
+
+            const newArray = rows.map((row, i) =>
+            ({
+                ...row,
+                inquiryId: ids[i],
+                inquiryCode: inquiryCode[i],
+            }))
+            setRows(newArray);
         }
+        alertAndSetRows(res, updateAlert, saveInquiryIdAndCode)
     }
 
     const handleStartClick = async () => {
         setAction({ type: "开始询单", time: new Date() })
 
         let newInquiries;
-        newInquiries = await Promise.all(rows.map(row => rowToInquiry(row, inquiryType)))
+        newInquiries = rows.map(
+            row => row.inquiryId ?
+                { inquiryId: row.inquiryId }
+                : rowToInquiry(row, inquiryType)
+        )
 
         const res = await startInquiry(newInquiries, 1)
-        switch (res.code) {
-            case 200:
-                updateAlert({
-                    type: "SHOW_ALERT", data: {
-                        type: "warning",
-                        message: res.message
-                    }
-                })
-                clearData()
-                break
-            case 400:
-                updateAlert({
-                    type: "SHOW_ALERT", data: {
-                        type: "error",
-                        message: res.message
-                    }
-                })
-                break
-            case 1:
-                updateAlert({
-                    type: "SHOW_ALERT", data: {
-                        type: "error",
-                        message: res.message
-                    }
-                })
-                break
-            default:
-                updateAlert({
-                    type: "SHOW_ALERT", data: {
-                        type: "error",
-                        message: "未知错误"
-                    }
-                })
-                break
-        }
 
+        const saveInquiryIdAndCode = () => {
+            const { ids, inquiryCode } = res.data;
+
+            const newArray = rows.map((row) =>
+                row.inquiryId ?
+                    row :
+                    {
+                        ...row,
+                        inquiryId: ids.shift(),
+                        inquiryCode: inquiryCode.shift()
+                    })
+            setRows(newArray);
+        }
+        alertAndSetRows(res, updateAlert, saveInquiryIdAndCode)
     }
 
     return (
@@ -126,14 +124,15 @@ const New = () => {
     const { auth } = useAuthContext()
     const { savedNewData, setSavedNewData } = useSelectedDataContext()
 
-    const new_inquiry_data = { ...NEW_INQUIRY_DATA, salesmanName: auth.username }
+    const new_inquiry_data = { ...NEW_INQUIRY_DATA, salesmanName: auth.userType == "2" ? auth.username : "" }
     const [rows, setRows] = useState(savedNewData ?? [new_inquiry_data])
 
     useEffect(() => { setSavedNewData(rows) }, [rows])
 
+
     return (
         <div className='col full-screen invoice-container'>
-            <SimpleToolbar rows={rows} inquiryType={inquiryType} clearData={clearData} />
+            <SimpleToolbar rows={rows} inquiryType={inquiryType} setRows={setRows} />
             <div className='col inquiry-info'>
                 <div className='row'>
                     <h1>订单类型：</h1>

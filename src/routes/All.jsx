@@ -10,7 +10,7 @@ import AllDefs from '../constants/AllDefs';
 const All = () => {
   const tableData = useTableDataContext()
   const columns = useMemo(() => AllDefs, [])
-  const features = ["new", "delete", "import", "export", "edit", "startInquiry", "refresh", 'visibility']
+  const features = ["new", "delete", "import", "export", "edit", "startInquiry", "refresh", 'allowInquiry', 'visibility']
   const [views, setViews] = useState(allViews)
 
 
