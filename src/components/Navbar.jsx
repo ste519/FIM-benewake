@@ -1,5 +1,4 @@
-import React from 'react'
-import { useTabContext, useUpdateTabContext } from '../hooks/useCustomContext'
+import { useSelectedDataContext, useTabContext, useUpdateTabContext } from '../hooks/useCustomContext'
 import { ReactComponent as CloseIcon } from '../assets/icons/cross.svg'
 import { ReactComponent as LogoIcon } from '../assets/logos/logo.svg'
 import { ReactComponent as MenuIcon } from '../assets/icons/menu.svg';
@@ -8,8 +7,13 @@ import { NavLink, useNavigate } from 'react-router-dom';
 const Tabs = ({ navigate }) => {
     const tabs = useTabContext()
     const updateTabs = useUpdateTabContext()
+    const { setSavedNewData } = useSelectedDataContext()
     const handleRemoveTab = (event, tab) => {
         event.preventDefault()
+        console.log(tab);
+        if (tab.path === "new") {
+            setSavedNewData(null)
+        }
         updateTabs({ type: 'REMOVE_TAB', tab })
         navigate('/user');
     }
