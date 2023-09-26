@@ -1,8 +1,14 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import api from '../api/axios';
 import localOptions from '../constants/LocalOptions.json'
 import { fetchStateNums, fetchUser } from '../api/fetch';
 import { getStateStr } from '../js/parseData';
+
+function dropDuplicates(array) {
+    return Array.from(
+        new Set(array.map(JSON.stringify))
+    ).map(JSON.parse);
+}
 
 function getOptionName(listName, option) {
     switch (listName) {
@@ -88,14 +94,34 @@ const SimpleDataList = ({ name, initialValue, initialOptions, handleChange, sear
         setShowDropdown(false)
     };
 
+    const containerRef = useRef(null);
+
+    const handleDocumentClick = (e) => {
+        if (containerRef.current && !containerRef.current.contains(e.target)) {
+            setShowDropdown(false);
+            clearData();
+            document.removeEventListener('mousedown', handleDocumentClick);
+        }
+    };
+
+    useEffect(() => {
+        if (showDropdown) {
+            document.addEventListener('mousedown', handleDocumentClick);
+        }
+        return () => {
+            document.removeEventListener('mousedown', handleDocumentClick);
+        };
+    }, [showDropdown]);
+
     const clearData = () => {
         setShowDropdown(false)
         setOptions(null)
+        setValue("")
     }
 
     return (
         <div className="data-list"
-            onMouseLeave={clearData}
+            ref={containerRef}
         >
             <input
                 type="text"
@@ -108,7 +134,7 @@ const SimpleDataList = ({ name, initialValue, initialOptions, handleChange, sear
                 showDropdown && options &&
                 <ul
                     className="data-list-dropdown"
-                    onMouseLeave={clearData} >
+                >
                     {
                         name === "item_code" && options.length > 0 &&
                         < li className='row sticky' >
@@ -117,9 +143,9 @@ const SimpleDataList = ({ name, initialValue, initialOptions, handleChange, sear
                     }
                     {
                         options.length > 0
-                            ? options.map((option, i) =>
-                                name !== "item_code"
-                                    ? <li key={i}
+                            ? dropDuplicates(options).map((option, i) =>
+                                name !== "item_code" ?
+                                    <li key={i}
                                         onClick={() => handleSelect(option)}>
                                         {getOptionName(name, option, searchKey)}
                                     </li>

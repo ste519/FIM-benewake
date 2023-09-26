@@ -30,3 +30,42 @@ export async function findMessages(createUsername) {
         console.log(err);
     }
 }
+export async function findTodos() {
+    try {
+        const response = await api.get('/todotask/filtered-orders')
+        return response.data;
+    }
+    catch (err) {
+        console.log(err);
+    }
+}
+
+export async function findPMMessages() {
+    try {
+        const response = await api.get('/todotask/PMMessages')
+        return response.data;
+    }
+    catch (err) {
+        console.log(err);
+    }
+}
+
+export async function findPODelay() {
+    try {
+        const response = await api.get('/todotask/PoDelay')
+        return response.data;
+    }
+    catch (err) {
+        console.log(err);
+    }
+}
+
+export async function fetchFilteredInquiries() {
+    try {
+        const response = await api.get('/todotask/filtered-inquiries')
+        return response.data;
+    }
+    catch (err) {
+        console.log(err);
+    }
+}

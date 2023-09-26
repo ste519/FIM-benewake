@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import ExcelUploader from './ExcelUploader';
 import * as XLSX from 'xlsx';
-import { useAlertContext, useSelectedDataContext, useTableDataContext, useTableStatesContext, useUpdateTabContext, useUpdateTableDataContext, useUpdateTableStatesContext } from '../hooks/useCustomContext';;
+import { useAlertContext, useAuthContext, useSelectedDataContext, useTableDataContext, useTableStatesContext, useUpdateTabContext, useUpdateTableDataContext, useUpdateTableStatesContext } from '../hooks/useCustomContext';;
 import { useLocation, useNavigate } from 'react-router-dom';
 import { fetchData } from '../api/fetch';
 import children from '../path/children';
@@ -9,11 +9,11 @@ import moment from 'moment';
 moment.updateLocale('zh-cn')
 import "moment/dist/locale/zh-cn";
 import { deleteInquiry } from '../api/delete';
-import { startInquiry } from '../api/inquiry';
+import { allowInquiry, startInquiry } from '../api/inquiry';
 import ColVisibility from './ColVisibility';
-import { getIndexes, EngToCn, VisibilityToHeadersENG } from '../js/transformType';
+import { getIndexes, EngToCn, VisibilityToHeadersENG, snakeToCamelCase } from '../js/transformType';
 import { noData, isObjectEmpty, noVisibleCols } from '../js/valueCheck';
-import { getVisbleTableData } from '../js/parseData';
+import { getVisbleTableData, parseInquiryObj } from '../js/parseData';
 import { getTableId } from '../js/getData';
 import { EDIT_INQUIRY_TAB, NEW_INQUIRY_TAB } from '../constants/Global';
 
@@ -35,6 +35,8 @@ export default function Toolbar({ features }) {
     const { rowSelection } = useTableStatesContext()
     const [openImportPopup, setOpenImportPopup] = useState(false)
     const activeTab = useLocation().pathname.replace("/", "")
+
+    const { auth } = useAuthContext()
 
     const toggleImportPopup = () => setOpenImportPopup(!openImportPopup)
 
@@ -92,7 +94,25 @@ export default function Toolbar({ features }) {
         updateTableData({ type: "SET_TABLE_DATA", tableData: res.lists })
     }
 
+    const handleAllowInquiry = async () => {
+        if (noRowSelected()) {
+            return
+        }
+
+        const rowIndexes = Object.keys(rowSelection).map(str => Number(str))
+        const inquiryIds = rowIndexes.map(id => tableData[id].inquiry_id)
+
+        const res = await allowInquiry(inquiryIds)
+        const message = res?.map(item => item.message).join('\n')
+
+        //TODO: adding code varification
+        updateAlert({ type: "SHOW_ALERT", data: { type: "success", message } })
+        handleRefresh()
+
+    }
+
     const handleExport = () => {
+        updateAlert({ type: "SHOW_ALERT", data: { type: "warning", message: "功能完善中" } })
         if (noData(tableData) || noVisibleCols(states.columnVisibility)) {
             updateAlert({ type: "SHOW_ALERT", data: { type: "error", message: "没有数据！" } })
         }
@@ -105,6 +125,7 @@ export default function Toolbar({ features }) {
                         const ws = XLSX.utils.json_to_sheet([]);
 
                         const headers_ENG = VisibilityToHeadersENG(states.columnVisibility)
+
                         let headers_CN = headers_ENG.map((name) => EngToCn(name)).filter((value) => value !== undefined)
 
                         XLSX.utils.sheet_add_aoa(ws, [headers_CN]);
@@ -157,8 +178,14 @@ export default function Toolbar({ features }) {
                 const newTab = EDIT_INQUIRY_TAB
                 updateTabs({ type: "ADD_TAB", tab: newTab })
                 const selectedIndex = Number(Object.keys(rowSelection)[0])
-                const selecteData = tableData[selectedIndex]
-                setSelectedData(selecteData)
+                const selectedData = tableData[selectedIndex]
+                const initialData = await (parseInquiryObj(selectedData))
+                Object.entries(selectedData).forEach(([key, value]) => {
+                    const camelCaseKey = snakeToCamelCase(key)
+                    initialData[camelCaseKey] = value
+                })
+
+                setSelectedData(initialData)
                 navigate("/edit")
             }
         }
@@ -210,7 +237,13 @@ export default function Toolbar({ features }) {
                 <button onClick={handleEdit} className={`${features?.includes("edit") ? "" : "hidden"}`}>修改</button>
 
                 <button onClick={handleStartInquiry} className={`${features?.includes("startInquiry") ? "" : "hidden"}`}>开始询单</button>
+
+                <button onClick={handleAllowInquiry}
+                    className={`${features?.includes("allowInquiry") && auth.userType == "1" ? "" : "hidden"}`}>
+                    允许询单
+                </button>
             </div>
+
             {
                 features.includes("visibility")
                 && !noData(tableData)
@@ -219,6 +252,7 @@ export default function Toolbar({ features }) {
                     <ColVisibility editable={tableId === 1 && defaultSelection.viewId > 0} />
                 </div>
             }
+
         </div >
     )
 }

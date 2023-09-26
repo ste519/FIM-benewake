@@ -10,7 +10,7 @@ export const NEW_INQUIRY_TAB = { name: "新增询单", path: "new", element: <Ne
 
 export const EDIT_INQUIRY_TAB = { name: "修改询单", path: "edit", element: <Edit /> }
 
-export const NEW_INQUIRY_HEADERS = ["物料编码 *", "物料名称", "数量 *", "客户名称 *", "销售员 *", "产品类型", "客户类型", "期望发货日期 *", "计划反馈日期", "是否延期", "备注"]
+export const NEW_INQUIRY_HEADERS = ["单据编号", "物料编码 *", "物料名称", "数量 *", "客户名称 *", "销售员 *", "产品类型", "客户类型", "期望发货日期 *", "计划反馈日期", "是否延期", "备注"]
 
 export const ADMIN_USER = 1
 
@@ -18,6 +18,7 @@ export const NEW_INQUIRY_DATA = {
     itemCode: "",
     itemName: "",
     inquiryId: undefined,
+    inquiryCode: undefined,
     itemId: "",
     saleNum: undefined,
     customerName: "",

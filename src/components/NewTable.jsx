@@ -23,6 +23,17 @@ const Input = ({ type, name, value, readOnly, onChange }) => {
 
 const schema = [
     {
+        header: "单据编号",
+        identifier: "inquiryCode",
+        element:
+            (data) =>
+                < Input
+                    name="inquiryCode"
+                    value={data.inquiryCode}
+                    readOnly
+                />
+    },
+    {
         header: "物料编码 *",
         identifier: "itemCode",
         element:
@@ -195,10 +206,10 @@ const NewTable = ({ rows, setRows }) => {
     const removeSelectedRow = (rowIndex) => setSelectedRows(selectedRows.filter((index) => index !== rowIndex))
     const removeAllRows = () => { setSelectedRows([]) }
 
-    const new_inquiry_data = { ...NEW_INQUIRY_DATA, salesmanName: auth.username }
+    const new_inquiry_data = { ...NEW_INQUIRY_DATA, salesmanName: auth.userType == "2" ? auth.username : "" }
     const handleAddRow = () => setRows([...rows, new_inquiry_data])
     const handleDuplicateRow = () => {
-        let selectedRowData = selectedRows.map((id) => rows[id])
+        const selectedRowData = selectedRows.map((id) => ({ ...rows[id], inquiryCode: undefined, inquiryId: undefined }))
         setRows([...rows, ...selectedRowData])
     }
     const handleDeleteRow = () => {

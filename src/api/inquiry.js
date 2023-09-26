@@ -20,6 +20,7 @@ export async function updateInquiry(
         customerId,
         expectedTime,
         salesmanId,
+        arrangedTime,
         state,
         remark }) {
     try {
@@ -32,9 +33,20 @@ export async function updateInquiry(
             customerId,
             expectedTime,
             salesmanId,
+            arrangedTime,
             state,
             remark
         })
+        return response.data;
+    }
+    catch (err) {
+        console.log(err);
+    }
+}
+
+export async function allowInquiry(ids) {
+    try {
+        const response = await api.post('/order/allowinquiry', ids)
         return response.data;
     }
     catch (err) {

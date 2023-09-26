@@ -7,7 +7,6 @@ import moment from 'moment';
 import { EngToSize, camelToSnakeCase } from '../js/transformType';
 import { useAuthContext } from '../hooks/useCustomContext';
 
-
 const schema = [
     {
         header: "物料编码 *",
@@ -18,7 +17,7 @@ const schema = [
                 searchKey="itemCode"
                 initialValue={data.itemCode}
                 handleChange={handleChange}
-                identifier="item_code"
+                identifier="itemCode"
             />
     },
     {
@@ -46,7 +45,7 @@ const schema = [
     },
     {
         header: "订单状态 *",
-        identifier: "inquiry_type",
+        identifier: "inquiryType",
         element:
             (data, handleChange) =>
                 <DataList
@@ -67,7 +66,7 @@ const schema = [
     },
     {
         header: "销售员 *",
-        identifier: "salesman_name",
+        identifier: "salesmanName",
         element:
             (data, handleChange) => <DataList
                 type="user"
@@ -79,10 +78,10 @@ const schema = [
     },
     {
         header: "物料名称",
-        identifier: "item_name",
+        identifier: "itemName",
         element:
             (data) => <Input
-                name="item_name"
+                name="itemName"
                 value={data.itemName}
                 readOnly
             />
@@ -90,7 +89,7 @@ const schema = [
 
     {
         header: "产品类型",
-        identifier: "item_type",
+        identifier: "itemType",
         element:
             (data) => <Input
                 name="item_type"
@@ -100,10 +99,10 @@ const schema = [
     },
     {
         header: "客户类型",
-        identifier: "customer_type",
+        identifier: "customerType",
         element:
             (data) => <Input
-                name="customer_type"
+                name="customerType"
                 value={data.customerType}
                 readOnly
             />
@@ -215,7 +214,7 @@ const EditTable = ({ rows, setRows }) => {
     };
     const updateCells = (keys, values, rowIndex) => {
         const copy = [...rows]
-        keys.forEach((key, i) => copy[rowIndex] = { ...copy[rowIndex], [key]: values[i] })
+        keys.forEach((key, i) => copy[rowIndex] = { ...copy[rowIndex], [key]: values[i] });
         setRows(copy)
     }
 

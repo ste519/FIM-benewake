@@ -64,6 +64,7 @@ export function getVisbleTableData(tableData, headers_ENG) {
             if (row.hasOwnProperty(header)) {
                 newData[header] = row[header];
             }
+            else { newData[header] = null }
         });
         return newData;
     });
@@ -108,29 +109,27 @@ export async function parseInquiryObj(source) {
     return result;
 }
 
-export async function rowToInquiry(row, inquiryType) {
+export function rowToInquiry(row, inquiryType) {
     let param;
-    let salesmanId = null;
+
+    //new inquiry
     if (inquiryType) {
-        if (!row?.salesmanId) {
-            const res = await fetchUser(row.salesmanName, "2")
-            salesmanId = res?.[0]?.id?.toString()
-        }
-        else {
-            salesmanId = row.salesmanId.toString()
-        }
-        const { itemId, customerId, saleNum, expectedTime, remark, inquiryId } = row
+        const { salesmanId, itemId, customerId, saleNum, expectedTime, remark, inquiryId, inquiryCode } = row
+
         param = {
             salesmanId,
+            inquiryId,
+            inquiryCode,
             itemId: itemId?.toString(),
             customerId: customerId?.toString(),
             saleNum: saleNum?.toString(),
-            inquiryId: inquiryId?.toString(),
             expectedTime: expectedTime ? moment(expectedTime).format("YYYY/MM/DD") : null,
             inquiryType: inquiryType?.toString(),
             remark
         }
     }
+
+    //edit inquiry
     else {
         const { inquiryId, inquiryCode, inquiryType, salesmanId, itemId, customerId, saleNum, expectedTime, remark, arrangedTime, state } = row
         param = {

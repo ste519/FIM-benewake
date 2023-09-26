@@ -32,6 +32,11 @@ const defaultQuery = {
                 "colName": "inquiry_type",
                 "condition": "like",
                 "value": ""
+            },
+            {
+                "colName": "inquiry_code",
+                "condition": "like",
+                "value": ""
             }
         ],
     },
@@ -62,6 +67,11 @@ const defaultQuery = {
             },
             {
                 "colName": "inquiry_type",
+                "condition": "like",
+                "value": ""
+            },
+            {
+                "colName": "inquiry_code",
                 "condition": "like",
                 "value": ""
             }
@@ -96,6 +106,11 @@ const defaultQuery = {
                 "colName": "inquiry_type",
                 "condition": "like",
                 "value": ""
+            },
+            {
+                "colName": "inquiry_code",
+                "condition": "like",
+                "value": ""
             }
         ]
     },
@@ -128,6 +143,11 @@ const defaultQuery = {
                 "colName": "inquiry_type",
                 "condition": "like",
                 "value": ""
+            },
+            {
+                "colName": "inquiry_code",
+                "condition": "like",
+                "value": ""
             }
         ]
     },
@@ -155,6 +175,11 @@ const defaultQuery = {
                 "colName": "inquiry_type",
                 "condition": "like",
                 "value": ""
+            },
+            {
+                "colName": "inquiry_code",
+                "condition": "like",
+                "value": ""
             }
         ]
     },
@@ -175,6 +200,11 @@ const defaultQuery = {
             },
             {
                 "colName": "customer_name",
+                "condition": "like",
+                "value": ""
+            },
+            {
+                "colName": "inquiry_code",
                 "condition": "like",
                 "value": ""
             }
