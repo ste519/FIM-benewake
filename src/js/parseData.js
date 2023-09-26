@@ -109,12 +109,21 @@ export async function parseInquiryObj(source) {
     return result;
 }
 
-export function rowToInquiry(row, inquiryType) {
+export async function rowToInquiry(row, inquiryType) {
     let param;
 
     //new inquiry
     if (inquiryType) {
-        const { salesmanId, itemId, customerId, saleNum, expectedTime, remark, inquiryId, inquiryCode } = row
+        let salesmanId = null;
+        if (!row?.salesmanId) {
+            const res = await fetchUser(row.salesmanName, "2")
+            salesmanId = res?.[0]?.id?.toString()
+        }
+        else {
+            salesmanId = row.salesmanId.toString()
+        }
+
+        const { itemId, customerId, saleNum, expectedTime, remark, inquiryId } = row
 
         param = {
             salesmanId,
