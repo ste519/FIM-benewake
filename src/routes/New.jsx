@@ -53,7 +53,9 @@ const SimpleToolbar = ({ rows, inquiryType, setRows }) => {
     const handleSaveClick = async () => {
         setAction({ type: "保存", time: new Date() })
 
-        const newInquiries = rows.map(row => rowToInquiry(row, inquiryType));
+        const newInquiries = await Promise.all(
+            rows.map(row => rowToInquiry(row, inquiryType))
+        );
 
         const res = await startInquiry(newInquiries, 0)
         const saveInquiryIdAndCode = () => {
@@ -73,11 +75,12 @@ const SimpleToolbar = ({ rows, inquiryType, setRows }) => {
     const handleStartClick = async () => {
         setAction({ type: "开始询单", time: new Date() })
 
-        let newInquiries;
-        newInquiries = rows.map(
-            row => row.inquiryId ?
-                { inquiryId: row.inquiryId }
-                : rowToInquiry(row, inquiryType)
+        const newInquiries = await Promise.all(
+            rows.map(
+                row => row.inquiryId ?
+                    { inquiryId: row.inquiryId }
+                    : rowToInquiry(row, inquiryType)
+            )
         )
 
         const res = await startInquiry(newInquiries, 1)
