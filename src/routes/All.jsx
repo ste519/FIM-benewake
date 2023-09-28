@@ -13,7 +13,6 @@ const All = () => {
   const features = ["new", "delete", "import", "export", "edit", "startInquiry", "refresh", 'allowInquiry', 'visibility']
   const [views, setViews] = useState(allViews)
 
-
   return (
     <div className='col full-screen'>
       <div className="tab-contents">

@@ -14,7 +14,8 @@ import Inventory from '../routes/Inventory';
 import Sales from '../routes/Sales';
 import Edit from '../routes/Edit';
 import { fetchNewViews } from '../api/fetch';
-import { findMessages, findTodos, findPMMessages, findPODelay} from '../api/message'
+import { findMessages, findTodos, findPMMessages, findPODelay } from '../api/message'
+import { defer } from 'react-router-dom';
 
 const children = [
     {
@@ -49,16 +50,16 @@ const children = [
         name: "用户主页", path: "user", element: <User />, loader:
             async () => {
                 try {
-                    const messages = await findMessages()
-                    const todos = await findTodos()
-                    const PMMessages = await findPMMessages()
-                    const PODelay = await findPODelay()
-                    return {
-                        messages: messages?.data,
-                        todos: todos?.data,
-                        PMMessages: [PMMessages?.data],
-                        PODelay: PODelay?.data
-                    }
+                    const messagePromise = findMessages()
+                    const todoPromise = findTodos()
+                    const PMMessagePromise = findPMMessages()
+                    const PODelayPromise = findPODelay()
+                    return defer({
+                        messages: messagePromise,
+                        todos: todoPromise,
+                        PMMessages: PMMessagePromise,
+                        PODelay: PODelayPromise
+                    })
                 }
                 catch (err) {
                     console.log(err);

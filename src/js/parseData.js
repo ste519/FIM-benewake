@@ -62,9 +62,8 @@ export function getVisbleTableData(tableData, headers_ENG) {
         let newData = {};
         headers_ENG.forEach(header => {
             if (row.hasOwnProperty(header)) {
-                switch(header){
+                switch (header) {
                     case "expected_time":
-
                         newData[header] = row[header] && moment(row[header]).format('YYYY/MM/DD');
                         break;
                     case "arranged_time":
@@ -136,7 +135,7 @@ export async function rowToInquiry(row, inquiryType) {
             salesmanId = row.salesmanId.toString()
         }
 
-        const { itemId, customerId, saleNum, expectedTime, remark, inquiryId } = row
+        const { itemId, customerId, saleNum, expectedTime, remark, inquiryId, inquiryCode } = row
 
         param = {
             salesmanId,
