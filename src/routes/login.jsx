@@ -16,6 +16,21 @@ function setCookie(name, value, days) {
     document.cookie = "benewake" + name + "=" + (value || "") + expires + "; path=/";
 }
 
+function AreCookiesValid(cookies) {
+    if (cookies) {
+        const hasBenewakeusername = cookies.some(item => item.startsWith("benewakeusername="));
+        const hasBenewakeuserType = cookies.some(item => item.startsWith("benewakeuserType="));
+        if (hasBenewakeusername && hasBenewakeuserType) {
+            return true
+        }
+        else {
+            return false
+        }
+    }
+    else {
+        return false
+    }
+}
 export default function Login() {
 
     const updateAlert = useAlertContext()
@@ -23,18 +38,13 @@ export default function Login() {
     const navigate = useNavigate()
 
     useEffect(() => {
-        if (document.cookie !== "") {
-            const cookies = document.cookie.split('; ');
-
-            const hasBenewakeusername = cookies.some(item => item.startsWith("benewakeusername="));
-            const hasBenewakeuserType = cookies.some(item => item.startsWith("benewakeuserType="));
-            if (hasBenewakeusername && hasBenewakeuserType) {
-                setAuth({
-                    username: cookies.find(item => item.startsWith("benewakeusername=")).split("=")[1],
-                    userType: cookies.find(item => item.startsWith("benewakeuserType=")).split("=")[1]
-                })
-                navigate("/user")
-            }
+        const cookies = document.cookie.split('; ');
+        if (AreCookiesValid(cookies)) {
+            setAuth({
+                username: cookies.find(item => item.startsWith("benewakeusername=")).split("=")[1],
+                userType: cookies.find(item => item.startsWith("benewakeuserType=")).split("=")[1]
+            })
+            navigate("/user")
         }
     }, [])
 
@@ -54,8 +64,11 @@ export default function Login() {
                 setCookie("userType", res.data.userType, 7)
                 break;
             case 202:
-                await logout()
-                await handleSubmit()
+                const cookies = document.cookie.split('; ');
+                if (!AreCookiesValid(cookies)) {
+                    await logout()
+                    await handleSubmit()
+                }
                 break;
             case 400:
                 updateAlert({ type: "SHOW_ALERT", data: { type: "warning", message: res.message } })

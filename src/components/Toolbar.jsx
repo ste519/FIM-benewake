@@ -130,7 +130,7 @@ export default function Toolbar({ features }) {
 
                         XLSX.utils.sheet_add_aoa(ws, [headers_CN]);
                         const newData = getVisbleTableData(tableData, headers_ENG)
-
+;
                         XLSX.utils.sheet_add_json(ws, newData, { origin: 'A2', skipHeader: true });
                         XLSX.utils.book_append_sheet(wb, ws);
 

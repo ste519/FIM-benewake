@@ -10,7 +10,6 @@ const Tabs = ({ navigate }) => {
     const { setSavedNewData } = useSelectedDataContext()
     const handleRemoveTab = (event, tab) => {
         event.preventDefault()
-        console.log(tab);
         if (tab.path === "new") {
             setSavedNewData(null)
         }

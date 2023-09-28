@@ -62,7 +62,20 @@ export function getVisbleTableData(tableData, headers_ENG) {
         let newData = {};
         headers_ENG.forEach(header => {
             if (row.hasOwnProperty(header)) {
-                newData[header] = row[header];
+                switch(header){
+                    case "expected_time":
+
+                        newData[header] = row[header] && moment(row[header]).format('YYYY/MM/DD');
+                        break;
+                    case "arranged_time":
+                        newData[header] = row[header] && moment(row[header]).format('YYYY/MM/DD');
+                        break
+                    case "allow_inquiry":
+                        newData[header] = row[header] && "是"
+                        break
+                    default:
+                        newData[header] = row[header]
+                }
             }
             else { newData[header] = null }
         });
