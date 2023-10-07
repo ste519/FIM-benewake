@@ -1,12 +1,10 @@
 import DatePicker from '../components/DatePicker';
 import EditTable from '../components/EditTable';
 import { useState, useEffect } from 'react';
-
 import { startInquiry, updateInquiry } from '../api/inquiry';
-import { parseInquiryObj, rowToInquiry } from '../js/parseData';
+import { rowToInquiry } from '../js/parseData';
 import moment from 'moment';
 import { useAlertContext, useSelectedDataContext } from '../hooks/useCustomContext';
-import { snakeToCamelCase } from '../js/transformType';
 
 const SimpleToolbar = ({ rows, ids, setIds }) => {
     const updateAlert = useAlertContext()
