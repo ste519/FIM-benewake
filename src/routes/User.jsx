@@ -66,21 +66,20 @@ export default function User() {
                             errorElement={
                                 <p>加载失败！</p>
                             }
-                            children={(todosNMessages) => {
+                            children={(todosNMessages) =>
                                 todosNMessages.message &&
-                                    <Todos data={todosNMessages.message} type="PMMessages" />
-                            }}
+                                <Todos data={todosNMessages.message} type="PMMessages" />}
                         />
                         <Await
                             resolve={data.PODelay}
                             errorElement={
                                 <p>加载失败！</p>
                             }
-                            children={(PODelay) => {
+                            children={(PODelay) =>
                                 isValid(PODelay.data) &&
-                                    PODelay.data.map((data, i) =>
-                                        <Todos data={data} type="PODelay" key={i} />)
-                            }}
+                                PODelay.data.map((data, i) =>
+                                    <Todos data={data} type="PODelay" key={i} />)
+                            }
                         />
                     </Suspense >
                 </div>
