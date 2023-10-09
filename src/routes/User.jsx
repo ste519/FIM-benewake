@@ -59,35 +59,31 @@ export default function User() {
             </div>
             <div className='user-feature'>
                 <h1>待处理监控消息</h1>
-                <Suspense fallback={<Loader />}>
-                    <Await
-                        resolve={data.todosNMessages}
-                        errorElement={
-                            <p>加载失败！</p>
-                        }
-                        children={(todosNMessages) =>
-                            <div className='col g1 mt1'>
-                                {todosNMessages.message &&
+                <div className='col g1 mt1'>
+                    <Suspense fallback={<Loader />}>
+                        <Await
+                            resolve={data.todosNMessages}
+                            errorElement={
+                                <p>加载失败！</p>
+                            }
+                            children={(todosNMessages) => {
+                                todosNMessages.message &&
                                     <Todos data={todosNMessages.message} type="PMMessages" />
-                                }
-                            </div>
-                        }
-                    />
-                    <Await
-                        resolve={data.PODelay}
-                        errorElement={
-                            <p>加载失败！</p>
-                        }
-                        children={(PODelay) =>
-                            <div className='col g1 mt1'>
-                                {isValid(PODelay.data) &&
+                            }}
+                        />
+                        <Await
+                            resolve={data.PODelay}
+                            errorElement={
+                                <p>加载失败！</p>
+                            }
+                            children={(PODelay) => {
+                                isValid(PODelay.data) &&
                                     PODelay.data.map((data, i) =>
-                                        <Todos data={data} type="PODelay" key={i} />
-                                    )}
-                            </div>}
-                    />
-                </Suspense >
-
+                                        <Todos data={data} type="PODelay" key={i} />)
+                            }}
+                        />
+                    </Suspense >
+                </div>
             </div>
         </div>
     )
