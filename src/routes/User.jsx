@@ -39,14 +39,14 @@ export default function User() {
                 <h1>待办任务</h1>
                 <Suspense fallback={<Loader />}>
                     <Await
-                        resolve={data.todos}
+                        resolve={data.todosNMessages}
                         errorElement={
                             <p>加载失败！</p>
                         }
-                        children={(todos) =>
+                        children={(todosNMessages) =>
                             <div className='col g1 mt1'>
-                                {isValid(todos.data) &&
-                                    todos.data.map((todo, i) =>
+                                {isValid(todosNMessages.data) &&
+                                    todosNMessages.data.map((todo, i) =>
                                         <Todos data={todo} type="todos" key={i} />
                                     )}
                             </div>
@@ -61,14 +61,14 @@ export default function User() {
                 <h1>待处理监控消息</h1>
                 <Suspense fallback={<Loader />}>
                     <Await
-                        resolve={data.PMMessages}
+                        resolve={data.todosNMessages}
                         errorElement={
                             <p>加载失败！</p>
                         }
-                        children={(PMMessages) =>
+                        children={(todosNMessages) =>
                             <div className='col g1 mt1'>
-                                {PMMessages.data &&
-                                    <Todos data={PMMessages.data} type="PMMessages" />
+                                {todosNMessages.message &&
+                                    <Todos data={todosNMessages.message} type="PMMessages" />
                                 }
                             </div>
                         }

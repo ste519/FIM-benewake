@@ -7,8 +7,8 @@ import Message from '../components/Message'
 const PostMessage = () => {
     const [value, setValue] = useState("")
     const [messageType, setMessageType] = useState("0")
-
-    const [pastMessages, setPastMessages] = useState(useLoaderData()?.messages ?? [])
+    const [pastMessages, setPastMessages] = useState(useLoaderData()?.data ?? [])
+  
 
     const updateAlert = useAlertContext()
 

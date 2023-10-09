@@ -14,7 +14,7 @@ import Inventory from '../routes/Inventory';
 import Sales from '../routes/Sales';
 import Edit from '../routes/Edit';
 import { fetchNewViews } from '../api/fetch';
-import { findMessages, findTodos, findPMMessages, findPODelay } from '../api/message'
+import { findMessages, findTodos, findPODelay } from '../api/message'
 import { defer } from 'react-router-dom';
 
 const children = [
@@ -52,12 +52,10 @@ const children = [
                 try {
                     const messagePromise = findMessages()
                     const todoPromise = findTodos()
-                    const PMMessagePromise = findPMMessages()
                     const PODelayPromise = findPODelay()
                     return defer({
                         messages: messagePromise,
-                        todos: todoPromise,
-                        PMMessages: PMMessagePromise,
+                        todosNMessages: todoPromise,
                         PODelay: PODelayPromise
                     })
                 }

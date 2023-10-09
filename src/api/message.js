@@ -40,16 +40,6 @@ export async function findTodos() {
     }
 }
 
-export async function findPMMessages() {
-    try {
-        const response = await api.get('/todotask/PMMessages')
-        return response.data;
-    }
-    catch (err) {
-        console.log(err);
-    }
-}
-
 export async function findPODelay() {
     try {
         const response = await api.get('/todotask/PoDelay')
