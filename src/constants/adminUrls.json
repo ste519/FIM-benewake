@@ -1,0 +1,7 @@
+{
+    "customerType": {
+        "fetch": "/admin/getCustomerTypes",
+        "add": "/admin/addCustomerType",
+        "delete": "/admin/deleteCustomerType"
+    }
+}

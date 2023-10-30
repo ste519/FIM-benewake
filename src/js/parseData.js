@@ -169,3 +169,7 @@ export async function rowToInquiry(row, inquiryType) {
     }
     return param
 }
+
+export function capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}

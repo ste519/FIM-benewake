@@ -17,9 +17,13 @@ const AlertProvider = ({ children }) => {
         display: false,
         type: "",
         message: "",
-        action: null
+        action: null,
+        cancel: null
     });
 
+    const AlertConfirm = (action) => updateAlertInfo({
+        type: "SHOW_ALERT", data: { type: "confirm", action: action }
+    })
 
     return (
         <AlertContext.Provider value={updateAlertInfo}>
@@ -29,6 +33,7 @@ const AlertProvider = ({ children }) => {
                     type={alertInfo.type}
                     message={alertInfo.message}
                     action={alertInfo.action}
+                    cancel={alertInfo.cancel}
                 />
             }
             {children}

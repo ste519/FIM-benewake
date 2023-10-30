@@ -1,15 +1,17 @@
 import React from 'react'
 import { useAlertContext } from '../hooks/useCustomContext';
 
-export default function Alert({ type, message, action }) {
+export default function Alert({ type, message, action, cancel }) {
     const updateAlert = useAlertContext()
     const closeAlert = () => updateAlert({ type: "CLOSE_ALERT" })
+    const handleCancel = () => {
+        cancel && cancel();
+        closeAlert();
+    }
 
     const handleConfirm = () => {
-        if (action) {
-            action();
-        }
-        closeAlert();
+        action && action();
+        closeAlert()
     }
 
     function getHeading() {
@@ -35,7 +37,7 @@ export default function Alert({ type, message, action }) {
                 <div className='row btn-wrapper'>
                     {action ?
                         <>
-                            <button onClick={closeAlert} className='white small'>取消</button>
+                            <button onClick={handleCancel} className='white small'>取消</button>
                             <button onClick={handleConfirm} className='blue60 small'>确认</button>
                         </>
                         : <button onClick={closeAlert} className='white small'>确认</button>

@@ -9,8 +9,6 @@ export const useAuthContext = () => { return useContext(AuthContext); }
 export const useTabContext = () => { return useContext(TabContext); }
 export const useUpdateTabContext = () => { return useContext(UpdateTabContext); }
 
-
-
 export const useTableDataContext = () => { return useContext(TableDataContext); }
 export const useUpdateTableDataContext = () => { return useContext(UpdateTableDataContext); }
 
