@@ -153,7 +153,6 @@ export async function rowToInquiry(row, inquiryType) {
     //edit inquiry
     else {
         const { inquiryId, inquiryCode, inquiryType, salesmanId, itemId, customerId, saleNum, expectedTime, remark, arrangedTime, state } = row
-
         param = {
             inquiryId: inquiryId?.toString(),
             inquiryCode,

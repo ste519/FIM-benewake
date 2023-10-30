@@ -36,11 +36,13 @@ function getFuzzyMatchResult(value, allOptions) {
         option => option.toLowerCase().includes(value.toLowerCase())
     )
 }
-const SimpleDataList = ({ name, initialValue, initialOptions, handleChange, searchKey, url }) => {
+
+const SimpleDataList = ({ name, initialValue, handleChange, searchKey, url }) => {
     const [options, setOptions] = useState(null)
     const [showDropdown, setShowDropdown] = useState(false);
     const [value, setValue] = useState("")
     const [stateOptions, setStateOptions] = useState()
+    const [autoComplete, setAutoComplete] = useState("off")
 
     useEffect(() => {
         setValue(initialValue);
@@ -58,39 +60,28 @@ const SimpleDataList = ({ name, initialValue, initialOptions, handleChange, sear
 
     const onChange = async (e) => {
         setValue(e.target.value)
-        if (initialOptions) {
-            setOptions(initialOptions)
-            handleChange()
+        setAutoComplete(false)
+        if (!url) {
+            const allOptions = name === "state" ? stateOptions : localOptions[name]
+            const fuzzyMatchResults = getFuzzyMatchResult(e.target.value, allOptions)
+
+            setOptions(fuzzyMatchResults)
+        }
+        else if (name === "salesman_name") {
+            const res = await fetchUser(e.target.value, "2")
+            setOptions(res)
         }
         else {
-            if (!url) {
-                const allOptions = name === "state" ? stateOptions : localOptions[name]
-                const fuzzyMatchResults = getFuzzyMatchResult(e.target.value, allOptions)
-
-                setOptions(fuzzyMatchResults)
-            }
-            else if (name === "salesman_name") {
-                const res = await fetchUser(e.target.value, "2")
-                setOptions(res)
-            }
-            else {
-                const res = (await api.post(url, { [searchKey]: e.target.value }))
-                setOptions(res?.data?.data)
-            }
-            handleChange("value", e.target.value)
+            const res = (await api.post(url, { [searchKey]: e.target.value }))
+            setOptions(res?.data?.data)
         }
-
+        handleChange("value", e.target.value)
         setShowDropdown(true);
     }
 
     const handleSelect = (option) => {
         setValue(getOptionName(name, option, searchKey))
-        if (initialOptions) {
-            handleChange()
-        }
-        else {
-            handleChange("value", getOptionName(name, option, searchKey))
-        }
+        handleChange("value", getOptionName(name, option, searchKey))
         setShowDropdown(false)
     };
 
@@ -99,7 +90,6 @@ const SimpleDataList = ({ name, initialValue, initialOptions, handleChange, sear
     const handleDocumentClick = (e) => {
         if (containerRef.current && !containerRef.current.contains(e.target)) {
             setShowDropdown(false);
-            clearData();
             document.removeEventListener('mousedown', handleDocumentClick);
         }
     };
@@ -128,7 +118,10 @@ const SimpleDataList = ({ name, initialValue, initialOptions, handleChange, sear
                 value={value}
                 onChange={onChange}
                 name={name}
-                onFocus={() => setShowDropdown(true)}
+                autoComplete={autoComplete ? "on" : "off"}
+                onFocus={() => {
+                    setAutoComplete(true)
+                }}
             />
             {
                 showDropdown && options &&

@@ -153,14 +153,16 @@ export default function Filters({ display, headers }) {
   }), [enabledHeaders])
 
   useEffect(() => {
-    updateSelectedQuery(tableId, "filterCriterias", filters);
-  }, [filters]);
-
-  useEffect(() => {
     if (JSON.stringify(defaultSelection?.filterCriterias) !== JSON.stringify(filters)) {
       setFilters(defaultSelection?.filterCriterias);
     }
   }, [defaultSelection?.filterCriterias]);
+
+  useEffect(() => {
+    if (tableId === 1 && defaultSelection.viewId > 0) {
+      updateSelectedQuery(tableId, "filterCriterias", filters)
+    }
+  }, [filters])
 
 
   const addFilter = () => {

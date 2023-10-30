@@ -10,7 +10,7 @@ const SecTabs = () => {
     const updateTableData = useUpdateTableDataContext()
     const location = useLocation()
     const tableId = getTableId(location)
-    const { selectedQuery, updateSelectedQuery } = useSelectedDataContext()
+    const { selectedQuery, updateSelectedQuery, resetSelectedQuery } = useSelectedDataContext()
     const defaultSelection = selectedQuery[tableId]
     const [activeSecTab, setActiveSecTab] = useState(defaultSelection.secTab);
 
@@ -18,7 +18,7 @@ const SecTabs = () => {
         setActiveSecTab(secTab);
         updateSelectedQuery(tableId, "secTab", secTab)
         updateTableData({ type: "CLEAR_TABLE_DATA" })
-
+        resetSelectedQuery(tableId, "filterCriterias", defaultSelection.viewId)
         const res = await fetchData({ ...defaultSelection, secTab })
         updateTableData({ type: "SET_TABLE_DATA", tableData: res.lists })
     }

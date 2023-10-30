@@ -1,5 +1,5 @@
 import DatePicker from './DatePicker';
-import { useState, useEffect } from 'react';
+import { memo, useState, useEffect, useRef } from 'react';
 import ResizableHeader from './ResizableHeader';
 import DataList from './DataList'
 import { fetchCustomerType } from '../api/fetch';

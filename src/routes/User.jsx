@@ -39,14 +39,14 @@ export default function User() {
                 <h1>待办任务</h1>
                 <Suspense fallback={<Loader />}>
                     <Await
-                        resolve={data.todos}
+                        resolve={data.todosNMessages}
                         errorElement={
                             <p>加载失败！</p>
                         }
-                        children={(todos) =>
+                        children={(todosNMessages) =>
                             <div className='col g1 mt1'>
-                                {isValid(todos.data) &&
-                                    todos.data.map((todo, i) =>
+                                {isValid(todosNMessages.data) &&
+                                    todosNMessages.data.map((todo, i) =>
                                         <Todos data={todo} type="todos" key={i} />
                                     )}
                             </div>
@@ -59,35 +59,30 @@ export default function User() {
             </div>
             <div className='user-feature'>
                 <h1>待处理监控消息</h1>
-                <Suspense fallback={<Loader />}>
-                    <Await
-                        resolve={data.PMMessages}
-                        errorElement={
-                            <p>加载失败！</p>
-                        }
-                        children={(PMMessages) =>
-                            <div className='col g1 mt1'>
-                                {PMMessages.data &&
-                                    <Todos data={PMMessages.data} type="PMMessages" />
-                                }
-                            </div>
-                        }
-                    />
-                    <Await
-                        resolve={data.PODelay}
-                        errorElement={
-                            <p>加载失败！</p>
-                        }
-                        children={(PODelay) =>
-                            <div className='col g1 mt1'>
-                                {isValid(PODelay.data) &&
-                                    PODelay.data.map((data, i) =>
-                                        <Todos data={data} type="PODelay" key={i} />
-                                    )}
-                            </div>}
-                    />
-                </Suspense >
-
+                <div className='col g1 mt1'>
+                    <Suspense fallback={<Loader />}>
+                        <Await
+                            resolve={data.todosNMessages}
+                            errorElement={
+                                <p>加载失败！</p>
+                            }
+                            children={(todosNMessages) =>
+                                todosNMessages.message &&
+                                <Todos data={todosNMessages.message} type="PMMessages" />}
+                        />
+                        <Await
+                            resolve={data.PODelay}
+                            errorElement={
+                                <p>加载失败！</p>
+                            }
+                            children={(PODelay) =>
+                                isValid(PODelay.data) &&
+                                PODelay.data.map((data, i) =>
+                                    <Todos data={data} type="PODelay" key={i} />)
+                            }
+                        />
+                    </Suspense >
+                </div>
             </div>
         </div>
     )
