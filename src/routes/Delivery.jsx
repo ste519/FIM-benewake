@@ -4,19 +4,51 @@ import Table from '../components/Table';
 import Views from '../components/Views';
 import Toolbar from '../components/Toolbar';
 import { useTableDataContext } from '../hooks/useCustomContext';
-import { deliveryViews } from '../constants/Views'
 import AllDefs from '../constants/AllDefs';
 import { fetchDeliveryUpdates } from '../api/fetch';
+import { useSelectedDataContext } from '../hooks/useCustomContext';
+
+const deliveryViews =
+{
+  default: [
+    { "viewId": 0, "viewName": "我的" },
+    { "viewId": -1, "viewName": "已签收" },
+    { "viewId": -2, "viewName": "已发货客户未签收" },
+    { "viewId": -3, "viewName": "未发货" },
+    { "viewId": -4, "viewName": "海外订单" }
+  ],
+  complete: [
+    { "viewId": 0, "viewName": "我的" },
+    { "viewId": -1, "viewName": "已签收" },
+    { "viewId": -2, "viewName": "已发货客户未签收" },
+    { "viewId": -4, "viewName": "海外订单" },
+  ],
+  incomplete: [
+    { "viewId": 0, "viewName": "我的" },
+    { "viewId": -3, "viewName": "未发货" }
+  ]
+}
+
 
 // 全部订单
 export default function Delivery() {
   const tableData = useTableDataContext()
   const columns = useMemo(() => AllDefs, [])
   const features = ["delete", "export", "refresh", 'visibility']
-  const [views, setViews] = useState(deliveryViews)
+  const [views, setViews] = useState([])
+  const { selectedQuery } = useSelectedDataContext()
+  const secTab = selectedQuery[6].secTab
+
   useEffect(() => {
     fetchDeliveryUpdates()
-   }, [])
+  }, [])
+
+  useEffect(() => {
+    if (secTab === "已完成") { setViews(deliveryViews.complete) }
+    else if (secTab === null) { setViews(deliveryViews.default) }
+    else { setViews(deliveryViews.incomplete) }
+  }, [secTab])
+
   return (
     <div className='col full-screen'>
       <div className="tab-contents">

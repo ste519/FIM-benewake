@@ -212,12 +212,11 @@ const Views = ({ views, editable }) => {
         updateTableData({ type: "SET_TABLE_DATA", tableData: res.lists })
 
         //新增视图
-        if (tableId === 1) {
-            if (id > 0)
-                updateSelectedQuery(1, "filterCriterias", ColsToFilters(res.cols))
-            else {
-                resetSelectedQuery(1, "filterCriterias")
-            }
+        if (tableId === 1 && id > 0) {
+            updateSelectedQuery(1, "filterCriterias", ColsToFilters(res.cols))
+        }
+        else {
+            resetSelectedQuery(tableId, "filterCriterias")
         }
 
         updateTableStates({ type: "SET_COLUMN_VISIBILITY", columnVisibility: res.columnVisibility })

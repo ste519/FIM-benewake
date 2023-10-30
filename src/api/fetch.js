@@ -49,7 +49,11 @@ const stateObject = value => ({
 const secTabMapping = {
     "已完成": [
         inquiryTypeObject("PO"),
-        deliveryProgressObject("已发货")
+        {
+            colName: "order_delivery_progress",
+            condition: "notlike",
+            value: "未发货"
+        }
     ],
     "未过期未完成": [
         expectedTimeObject("ge"),
@@ -102,7 +106,8 @@ const inquiryMapping = {
 const deliveryProgressMapping = {
     "-1": [deliveryProgressObject("已签收")],
     "-2": [deliveryProgressObject("已发货客户未签收")],
-    "-3": [deliveryProgressObject("未发货")]
+    "-3": [deliveryProgressObject("未发货")],
+    "-4": [deliveryProgressObject("海外订单")]
 };
 
 export async function fetchData({ tableId, viewId, filterCriterias, secTab }) {

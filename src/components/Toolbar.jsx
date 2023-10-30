@@ -26,7 +26,7 @@ export default function Toolbar({ features }) {
     const tableData = useTableDataContext()
     const updateAlert = useAlertContext()
 
-    const { selectedQuery, setSelectedData } = useSelectedDataContext()
+    const { selectedQuery, setSelectedData, setSavedNewData } = useSelectedDataContext()
     const location = useLocation()
     const tableId = getTableId(location)
     const defaultSelection = selectedQuery[tableId]
@@ -206,6 +206,7 @@ export default function Toolbar({ features }) {
 
     const handleNew = () => {
         const newTab = NEW_INQUIRY_TAB
+        setSavedNewData(null)
         updateTabs({ type: "ADD_TAB", tab: newTab })
         navigate("/new")
     }

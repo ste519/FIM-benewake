@@ -125,5 +125,10 @@
         "header": "备注",
         "identifier": "remark",
         "element": "text"
+    },
+    "allow_inquiry": {
+        "header": "是否允许询单",
+        "identifier": "allow_inquiry",
+        "element": "datalist"
     }
 }

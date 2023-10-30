@@ -39,13 +39,13 @@
         "col_id": 7,
         "col_name_CN": "物料编码",
         "col_name_ENG": "item_code",
-        "size": 100
+        "size": 150
     },
     {
         "col_id": 8,
         "col_name_CN": "物料名称",
         "col_name_ENG": "item_name",
-        "size": 200
+        "size": 290
     },
     {
         "col_id": 9,

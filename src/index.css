@@ -868,6 +868,7 @@ tr:focus {
 
 .user-feature .col {
   overflow: auto;
+  height: 100%;
 }
 
 .user-feature>h1 {
@@ -1404,9 +1405,12 @@ input[type=number] {
   color: var(--blue30);
 }
 
-.data-list-dropdown li.row+div {
-  width: max-content;
+.data-list-dropdown li.row {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: 1fr 3fr;
 }
+
 .data-list-dropdown .sticky {
   position: sticky;
   top: 0;
@@ -1446,7 +1450,8 @@ input[type=number] {
   white-space: nowrap;
 }
 
-.message-wrapper, .todos-wrapper {
+.message-wrapper,
+.todos-wrapper {
   background: white;
   padding: 1rem;
   display: flex;

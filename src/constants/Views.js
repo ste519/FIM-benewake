@@ -2,8 +2,8 @@
 
 export const allViews =
     [
-        { viewId: 0, viewName: '我的' },
-        { viewId: -1, viewName: '全部' }
+        { "viewId": 0, viewName: '我的' },
+        { "viewId": -1, viewName: '全部' }
     ]
     
 
@@ -49,12 +49,4 @@ export const inquiryViews =
         { "viewId": 6, "viewName": "YC已变PR询单" },
         { "viewId": 7, "viewName": "XD已变PO询单" },
         { "viewId": 8, "viewName": "YC已变PO询单" },
-    ]
-
-export const deliveryViews =
-    [
-        { "viewId": 0, "viewName": "我的" },
-        { "viewId": -1, "viewName": "已签收" },
-        { "viewId": -2, "viewName": "已发货客户未签收" },
-        { "viewId": -3, "viewName": "未发货" },
     ]

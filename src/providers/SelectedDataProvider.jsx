@@ -228,16 +228,31 @@ const SelectedDataProvider = ({ children }) => {
         )
     }
 
-    function resetSelectedQuery(tableId, key) {
-        setSelectedQuery(prev =>
-        ({
-            ...prev,
-            [tableId]: {
-                ...prev[tableId],
-                [key]: defaultQuery[tableId][key]
-            },
-        })
-        )
+    function resetSelectedQuery(tableId, key, viewId) {
+        if (tableId === 1 && viewId > 0) {
+            setSelectedQuery(prev =>
+            ({
+                ...prev,
+                1: {
+                    ...prev[1],
+                    filterCriterias: prev[1].filterCriterias.map(criteria => ({
+                        ...criteria,
+                        value: ""
+                    }))
+                },
+            }))
+        }
+        else {
+            setSelectedQuery(prev =>
+            ({
+                ...prev,
+                [tableId]: {
+                    ...prev[tableId],
+                    [key]: [...defaultQuery[tableId][key]]
+                },
+            })
+            )
+        }
     }
     return (
         <SelectedDataContext.Provider value={{ selectedData, setSelectedData, selectedQuery, updateSelectedQuery, resetSelectedQuery, savedNewData, setSavedNewData }}>
