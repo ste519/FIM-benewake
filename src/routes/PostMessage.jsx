@@ -8,34 +8,29 @@ const PostMessage = () => {
     const [value, setValue] = useState("")
     const [messageType, setMessageType] = useState("0")
     const [pastMessages, setPastMessages] = useState(useLoaderData()?.data ?? [])
-  
 
-    const updateAlert = useAlertContext()
+    const { alertSuccess, alertConfirm, alertError } = useAlertContext()
 
     const handleSubmit = async () => {
-        updateAlert({
-            type: "SHOW_ALERT", data: {
-                type: "confirm", message: "确认发布消息？",
-                action: async () => {
-                    const res = await postMessage(value, messageType)
-                    switch (res.code) {
-                        case 200:
-                            updateAlert({ type: "SHOW_ALERT", data: { type: "success", message: "发布成功！" } })
-                            const res = await findMessages()
-                            setPastMessages(res.data)
-                            break
-                        case 400:
-                            updateAlert({ type: "SHOW_ALERT", data: { type: "error", message: res.message } })
-                            break
-                        case 1:
-                            updateAlert({ type: "SHOW_ALERT", data: { type: "error", message: res.message } })
-                            break
-                        default:
-                            throw new Error("Unknown inquiry problem")
-                    }
+        alertConfirm("确认发布消息？",
+            async () => {
+                const res = await postMessage(value, messageType)
+                switch (res.code) {
+                    case 200:
+                        alertSuccess("发布成功！")
+                        const res = await findMessages()
+                        setPastMessages(res.data)
+                        break
+                    case 400:
+                    case 1:
+                        alertError(res.message)
+                        break
+                    default:
+                        alertError("未知错误")
+                        break
                 }
             }
-        })
+        )
     }
 
 

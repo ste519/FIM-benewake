@@ -1,8 +1,6 @@
 import { useState, useEffect } from 'react'
 import AdminTable from '../components/AdminTable'
-import { deleteAdminData, fetchAdminData } from '../api/admin'
-import { addAdminData } from '../api/admin';
-
+import { fetchAdminData } from '../api/admin'
 
 const schema = [
     {

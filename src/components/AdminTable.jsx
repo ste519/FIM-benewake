@@ -4,36 +4,29 @@ import { useState } from 'react';
 import { useAlertContext } from '../hooks/useCustomContext';
 import { addAdminData, deleteAdminData } from '../api/admin';
 
-const addConfirm = (updateAlert, type, value, handleChange) => {
+const addConfirm = (alertConfirm, type, value, handleChange) => {
     console.log(11);
-    updateAlert({
-        type: "SHOW_ALERT", data: {
-            type: "confirm",
-            message: "确认添加该行？",
-            action: async () => 
-            {
-                const res = await addAdminData(type, { [type]: value })
-            },
-            cancel: () => handleChange(["customerType"], [""])
-        }
-    })
+    alertConfirm(
+        "确认添加该行？",
+        async () => {
+            const res = await addAdminData(type, { [type]: value })
+        },
+        () => handleChange(["customerType"], [""])
+    )
 }
 
-const deleteConfirm = (updateAlert, type, value) => {
-    updateAlert({
-        type: "SHOW_ALERT", data: {
-            type: "confirm",
-            message: "确认删除所选行？",
-            action: async () => {
-                const res = await deleteAdminData(type, { [type]: value })
-                console.log(res);
-            }
+const deleteConfirm = (alertConfirm, type, value) => {
+    alertConfirm(
+        "确认删除所选行？",
+        async () => {
+            const res = await deleteAdminData(type, { [type]: value })
+            console.log(res);
         }
-    })
+    )
 }
 
 const Row = ({ schema, rowIndex, data, updateCells, colWidths, addRow, removeRow, isSelected }) => {
-    const updateAlert = useAlertContext()
+    const { alertConfirm } = useAlertContext()
 
     const handleChange = (keys, values) => {
         updateCells(keys, values, rowIndex)
@@ -50,7 +43,7 @@ const Row = ({ schema, rowIndex, data, updateCells, colWidths, addRow, removeRow
                     className='td'
                     key={cell.identifier}>
                     {cell.element(data, handleChange,
-                        (e) => addConfirm(updateAlert, cell.identifier, e.target.value, handleChange)
+                        (e) => addConfirm(alertConfirm, cell.identifier, e.target.value, handleChange)
                     )}
                 </div>
             )}
@@ -59,7 +52,7 @@ const Row = ({ schema, rowIndex, data, updateCells, colWidths, addRow, removeRow
 }
 
 const AdminTable = ({ schema, colWidths, setColWidths, rows, setRows }) => {
-    const updateAlert = useAlertContext()
+    const { alertConfirm } = useAlertContext()
     const [selectedRows, setSelectedRows] = useState([])
     const addSelectedRow = (rowIndex) => setSelectedRows([...selectedRows, rowIndex])
     const addAllRows = () => setSelectedRows(Object.keys(rows).map((num) => parseInt(num)))
@@ -76,7 +69,7 @@ const AdminTable = ({ schema, colWidths, setColWidths, rows, setRows }) => {
         selectedRows.forEach(index => {
             const key = Object.keys(rows[index])[0];
             const value = rows[index][key];
-            deleteConfirm(updateAlert, key, value);
+            deleteConfirm(alertConfirm, key, value);
         })
         setRows(prev => prev.filter((_, index) => !selectedRows.includes(index)))
         setSelectedRows([])

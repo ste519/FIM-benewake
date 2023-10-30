@@ -20,7 +20,7 @@ const ViewPopup = ({ closePopup, setNewViews, tableId }) => {
     const [viewName, setViewName] = useState("")
     const [visibility, setVisibility] = useState(VISIBILITY_ALL_FALSE)
 
-    const updateAlert = useAlertContext()
+    const { alertError, alertSuccess } = useAlertContext()
     const visibleCols = VisibilityToCols(visibility)
     const handleSumbit = async (e) => {
         e.preventDefault();
@@ -35,20 +35,17 @@ const ViewPopup = ({ closePopup, setNewViews, tableId }) => {
         }
         res = await postView(params)
 
-        switch (res?.code) {
+        switch (res.code) {
             case 200:
-                updateAlert({
-                    type: "SHOW_ALERT",
-                    data: { type: "success", message: res.message }
-                });
+                alertSuccess(res.message)
                 const views = await fetchNewViews("1")
                 setNewViews(views.data)
                 break
             case 400:
-                updateAlert({
-                    type: "SHOW_ALERT",
-                    data: { type: "error", message: res.message }
-                });
+                alertError(res.message)
+                break
+            default:
+                alertError("未知错误")
                 break
         }
         closePopup()
@@ -115,7 +112,7 @@ const View = ({ id, name, isSelected, handleViewClick, handleDelete, editable, h
 const Views = ({ views, editable }) => {
     const updateTableData = useUpdateTableDataContext()
     const updateTableStates = useUpdateTableStatesContext()
-    const updateAlert = useAlertContext()
+    const { alertError, alertSuccess, alertWarning, alertConfirm } = useAlertContext()
     const states = useTableStatesContext()
     const { selectedQuery, updateSelectedQuery, resetSelectedQuery } = useSelectedDataContext()
 
@@ -133,10 +130,10 @@ const Views = ({ views, editable }) => {
     const handleSave = async () => {
 
         if (defaultSelection.viewId === null || defaultSelection.viewId === undefined || defaultSelection.viewId === "") {
-            updateAlert({ type: "SHOW_ALERT", data: { type: "warning", message: "未选择方案！" } })
+            alertWarning("未选择方案！")
         }
         else if (defaultSelection.viewId <= 0) {
-            updateAlert({ type: "SHOW_ALERT", data: { type: "warning", message: "系统方案无法修改！" } })
+            alertWarning("系统方案无法修改！")
         }
         else {
             let res;
@@ -151,18 +148,15 @@ const Views = ({ views, editable }) => {
 
             res = await postView(params)
 
-            switch (res?.code) {
+            switch (res.code) {
                 case 200:
-                    updateAlert({
-                        type: "SHOW_ALERT",
-                        data: { type: "success", message: res.message }
-                    });
+                    alertSuccess(res.message)
                     break
                 case 400:
-                    updateAlert({
-                        type: "SHOW_ALERT",
-                        data: { type: "error", message: res.message }
-                    });
+                    alertError(res.message)
+                    break
+                default:
+                    alertError("未知错误")
                     break
             }
         }
@@ -172,20 +166,15 @@ const Views = ({ views, editable }) => {
         const res = await deleteView(id)
         switch (res.code) {
             case 200:
-                updateAlert({
-                    type: "SHOW_ALERT", data: {
-                        type: "success", message: res.message
-                    }
-                })
+                alertSuccess(res.message)
                 updateTableData({ type: "CLEAR_TABLE_DATA" })
                 setNewViews(prev => prev.filter(value => value.viewId !== id))
                 break
             case 400:
-                updateAlert({
-                    type: "SHOW_ALERT", data: {
-                        type: "error", message: res.message
-                    }
-                })
+                alertError(res.message)
+                break
+            default:
+                alertError("未知错误")
                 break
         }
 
@@ -193,13 +182,7 @@ const Views = ({ views, editable }) => {
 
     const handleDelete = async (event, id) => {
         event.stopPropagation()
-        updateAlert({
-            type: "SHOW_ALERT", data: {
-                type: "confirm",
-                message: "确定删除所选方案？",
-                action: () => confirmDeleteView(id)
-            }
-        })
+        alertConfirm("确定删除所选方案？", () => confirmDeleteView(id))
     }
 
     const closePopup = () => setOpen(false)

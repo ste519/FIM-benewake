@@ -1,35 +1,29 @@
 import { useState } from 'react';
 import { postExcelFile } from '../api/post';
+import { useAlertContext } from '../hooks/useCustomContext';
 
-function getAlertInfo(code, message) {
-    switch (code) {
-        case 400:
-            return { type: "error", message: message }
-        case 200:
-            return { type: "success", message: message }
-        default:
-            throw new Error("Unknown status")
-    }
-}
-
-export default function ExcelUploader({ close, updateAlert }) {
+export default function ExcelUploader({ close }) {
     const [file, setFile] = useState(null);
-
+    const { alertWarning, alertSuccess } = useAlertContext
     const handleFile = (event) => {
         setFile(event.target.files[0])
     };
 
     const addData = async () => {
-        if (!file)
-            updateAlert({
-                type: "SHOW_ALERT", data: {
-                    type: "warning", message: "未选择文件！"
-                }
-            })
+        if (!file) {
+            alertWarning("未选择文件！")
+        }
         else {
             const res = await postExcelFile(file)
-            const alertInfo = getAlertInfo(res.code, res.message)
-            updateAlert({ type: "SHOW_ALERT", data: alertInfo })
+            switch (res.code) {
+                case 400:
+                    alertError(res.message)
+                case 200:
+                    alertSuccess(res.message)
+                default:
+                    alertError("未知错误")
+                    break
+            }
         }
         close();
     }

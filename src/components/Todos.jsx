@@ -6,8 +6,7 @@ import { fetchFilteredInquiries } from '../api/message';
 
 const Todos = ({ data, type, deletable }) => {
     const { setSelectedData } = useSelectedDataContext()
-    const updateAlert = useAlertContext()
-
+    const { alertError, alertWarning } = useAlertContext()
 
     const handleClick = async (id) => {
         const res = await fetchFilteredInquiries()
@@ -18,20 +17,10 @@ const Todos = ({ data, type, deletable }) => {
                 setSelectedData(inquiryInfo);
                 break;
             case 400:
-                updateAlert({
-                    type: "SHOW_ALERT", data: {
-                        type: "error",
-                        message: res.message
-                    }
-                });
+                alertError(res.message)
                 break;
             default:
-                updateAlert({
-                    type: "SHOW_ALERT", data: {
-                        type: "warning",
-                        message: res.message
-                    }
-                });
+                alertWarning(res.message)
         }
 
     }

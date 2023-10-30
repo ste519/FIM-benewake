@@ -4,32 +4,27 @@ import { useAlertContext } from '../hooks/useCustomContext'
 import { deleteMessages, findMessages } from '../api/message'
 
 const Message = ({ message, setMessages, deletable }) => {
-    const updateAlert = useAlertContext()
+    const { alertSuccess, alertError, alertWarning, alertConfirm } = useAlertContext()
 
     const handleDelete = async (id) => {
-        updateAlert({
-            type: "SHOW_ALERT", data: {
-                type: "confirm", message: "确认删除消息？",
-                action: async () => {
-                    const res = await deleteMessages([id])
-                    switch (res.code) {
-                        case 200:
-                            updateAlert({ type: "SHOW_ALERT", data: { type: "success", message: "删除成功！" } })
-                            const res = await findMessages()
-                            setMessages(res.data)
-                            break
-                        case 400:
-                            updateAlert({ type: "SHOW_ALERT", data: { type: "error", message: res.message } })
-                            break
-                        case 1:
-                            updateAlert({ type: "SHOW_ALERT", data: { type: "error", message: res.message } })
-                            break
-                        default:
-                            throw new Error("Unknown inquiry problem")
-                    }
+        alertConfirm("确认删除消息？",
+            async () => {
+                const res = await deleteMessages([id])
+                switch (res.code) {
+                    case 200:
+                        alertSuccess("删除成功！")
+                        const res = await findMessages()
+                        setMessages(res.data)
+                        break
+                    case 400:
+                    case 1:
+                        alertError(res.message)
+                        break
+                    default:
+                        alertError("未知错误")
+                        break
                 }
-            }
-        })
+            })
     }
 
     return (

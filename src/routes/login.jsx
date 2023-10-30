@@ -33,7 +33,7 @@ function AreCookiesValid(cookies) {
 }
 export default function Login() {
 
-    const updateAlert = useAlertContext()
+    const { alertError, alertWarning } = useAlertContext()
     const { setAuth } = useAuthContext();
     const navigate = useNavigate()
 
@@ -56,7 +56,7 @@ export default function Login() {
     const handleSubmit = async (e) => {
         e.preventDefault()
         const res = await login({ username, password })
-        switch (res?.code) {
+        switch (res.code) {
             case 200:
                 setAuth(res.data)
                 navigate('/user')
@@ -71,16 +71,16 @@ export default function Login() {
                 }
                 break;
             case 400:
-                updateAlert({ type: "SHOW_ALERT", data: { type: "warning", message: res.message } })
+                alertWarning(res.message)
                 break;
             default:
-                updateAlert({ type: "SHOW_ALERT", data: { type: "error", message: "未知错误，请联系飞书管理员!" } })
+                alertError("未知错误，请联系飞书管理员!")
                 break;
         }
     };
 
     const handleForgetPassword = () => {
-        updateAlert({ type: "SHOW_ALERT", data: { type: "warning", message: "请联系飞书管理员!" } })
+        alertWarning("请联系飞书管理员!")
     }
 
     const handleCreateUser = async () => {

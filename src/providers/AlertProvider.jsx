@@ -21,12 +21,25 @@ const AlertProvider = ({ children }) => {
         cancel: null
     });
 
-    const AlertConfirm = (action) => updateAlertInfo({
-        type: "SHOW_ALERT", data: { type: "confirm", action: action }
+    const alertConfirm = (message, action, cancel) => updateAlertInfo({
+        type: "SHOW_ALERT", data: { type: "confirm", message: message, action: action, cancel: cancel }
     })
 
+    const alertSuccess = (message) => updateAlertInfo({
+        type: "SHOW_ALERT", data: { type: "success", message: message }
+    })
+
+    const alertError = (message) => updateAlertInfo({
+        type: "SHOW_ALERT", data: { type: "", message: message }
+    })
+
+    const alertWarning = (message) => updateAlertInfo({
+        type: "SHOW_ALERT", data: { type: "", message: message }
+    })
+
+
     return (
-        <AlertContext.Provider value={updateAlertInfo}>
+        <AlertContext.Provider value={{ alertConfirm, alertSuccess, alertError, alertWarning }}>
             {
                 alertInfo.display &&
                 <Alert

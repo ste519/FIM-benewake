@@ -8,46 +8,24 @@ import { rowToInquiry } from '../js/parseData';
 import moment from 'moment';
 import { useAlertContext, useAuthContext, useSelectedDataContext } from '../hooks/useCustomContext';
 
-function alertAndSetRows(res, updateAlert, action) {
+function alertAndSetRows(res, alertSuccess, alertError, action) {
     switch (res.code) {
         case 200:
-            updateAlert({
-                type: "SHOW_ALERT", data: {
-                    type: "success",
-                    message: res.message
-                }
-            })
+            alertSuccess(res.message)
             action()
             break
         case 400:
-            updateAlert({
-                type: "SHOW_ALERT", data: {
-                    type: "error",
-                    message: res.message
-                }
-            })
-            break
         case 1:
-            updateAlert({
-                type: "SHOW_ALERT", data: {
-                    type: "error",
-                    message: res.message
-                }
-            })
+            alertError(res.message)
             break
         default:
-            updateAlert({
-                type: "SHOW_ALERT", data: {
-                    type: "error",
-                    message: "未知错误"
-                }
-            })
+            alertError("未知错误")
             break
     }
 }
 
 const SimpleToolbar = ({ rows, inquiryType, setRows }) => {
-    const updateAlert = useAlertContext()
+    const { alertSuccess, alertError } = useAlertContext()
     const [action, setAction] = useState(null)
 
     const handleSaveClick = async () => {
@@ -69,7 +47,7 @@ const SimpleToolbar = ({ rows, inquiryType, setRows }) => {
             }))
             setRows(newArray);
         }
-        alertAndSetRows(res, updateAlert, saveInquiryIdAndCode)
+        alertAndSetRows(res, alertSuccess, alertError, saveInquiryIdAndCode)
     }
 
     const handleStartClick = async () => {
@@ -98,7 +76,7 @@ const SimpleToolbar = ({ rows, inquiryType, setRows }) => {
                     })
             setRows(newArray);
         }
-        alertAndSetRows(res, updateAlert, saveInquiryIdAndCode)
+        alertAndSetRows(res, alertSuccess, alertError, saveInquiryIdAndCode)
     }
 
     return (
