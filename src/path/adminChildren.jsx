@@ -1,7 +1,8 @@
 
 import { findMessages } from '../api/message';
-import Manage from '../routes/Manage';
+import Tables from '../routes/Tables';
 import PostMessage from '../routes/PostMessage';
+import Manage from '../routes/Manage';
 
 const adminChildren = [
     {
@@ -16,7 +17,8 @@ const adminChildren = [
         }
     },
     {
-        name: "用户管理", path: "user", element: <Manage />, type: "admin"
+        name: "表单管理", path: "tables", element: <Tables />, type: "admin",
+        children: [{ name: "管理", path: "manage", element: <Manage />, type: "admin" }]
     }
 ]
 

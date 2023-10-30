@@ -2,7 +2,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import {
-  createHashRouter,
+  createBrowserRouter,
   RouterProvider,
 } from "react-router-dom";
 import './index.css'
@@ -14,7 +14,7 @@ import AuthProvider from './providers/AuthProvider'
 import AlertProvider from './providers/AlertProvider';
 import adminChildren from './path/adminChildren';
 
-const router = createHashRouter([
+const router = createBrowserRouter([
   {
     path: "/login",
     element: <Login />
