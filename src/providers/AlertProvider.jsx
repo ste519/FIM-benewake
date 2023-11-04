@@ -24,22 +24,23 @@ const AlertProvider = ({ children }) => {
     const alertConfirm = (message, action, cancel) => updateAlertInfo({
         type: "SHOW_ALERT", data: { type: "confirm", message: message, action: action, cancel: cancel }
     })
+    const closeAlert = () => updateAlertInfo({ type: "CLOSE_ALERT" })
 
     const alertSuccess = (message) => updateAlertInfo({
         type: "SHOW_ALERT", data: { type: "success", message: message }
     })
 
     const alertError = (message) => updateAlertInfo({
-        type: "SHOW_ALERT", data: { type: "", message: message }
+        type: "SHOW_ALERT", data: { type: "error", message: message }
     })
 
     const alertWarning = (message) => updateAlertInfo({
-        type: "SHOW_ALERT", data: { type: "", message: message }
+        type: "SHOW_ALERT", data: { type: "warning", message: message }
     })
 
 
     return (
-        <AlertContext.Provider value={{ alertConfirm, alertSuccess, alertError, alertWarning }}>
+        <AlertContext.Provider value={{ alertConfirm, alertSuccess, alertError, alertWarning, closeAlert }}>
             {
                 alertInfo.display &&
                 <Alert

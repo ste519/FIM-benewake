@@ -11,11 +11,11 @@ import {
     getGroupedRowModel
 } from '@tanstack/react-table'
 import Paginate from './Paginate';
-import { ReactComponent as FilterIcon } from '../assets/icons/filter.svg';
-import { ReactComponent as ArrowIcon } from '../assets/icons/arrow-down.svg';
+import { ReactComponent as FilterIcon } from '../../assets/icons/filter.svg';
+import { ReactComponent as ArrowIcon } from '../../assets/icons/arrow-down.svg';
 import { DndProvider, useDrag, useDrop } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
-import { useTableStatesContext, useUpdateTableStatesContext } from '../hooks/useCustomContext';
+import { useTableStatesContext, useUpdateTableStatesContext } from '../../hooks/useCustomContext';
 
 const Search = ({ column, closeSearch }) => {
     const [inputValue, setInputValue] = useState('');

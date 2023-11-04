@@ -4,7 +4,7 @@ import { useAuthContext, useUpdateTabContext } from '../hooks/useCustomContext';
 import { ReactComponent as LogoutIcon } from '../assets/icons/logout.svg'
 import { logout } from '../api/auth';
 import adminChildren from '../path/adminChildren';
-import {ADMIN_USER} from '../constants/Global'
+import { ADMIN_USER } from '../constants/Global'
 
 export default function Sidebar({ showSidebar }) {
     const updateTabs = useUpdateTabContext()
@@ -20,6 +20,7 @@ export default function Sidebar({ showSidebar }) {
         await logout()
         navigate("/login")
     }
+
     return (
         <div className={`sidebar col ${showSidebar ? "" : "hidden"}`}>
             <nav className="col">
@@ -39,11 +40,11 @@ export default function Sidebar({ showSidebar }) {
                 {
                     auth?.userType == ADMIN_USER &&
                     adminChildren.map((obj, i) =>
-                        <NavLink
+                        obj.inSidebar && <NavLink
                             key={i}
                             to={"/admin/" + obj.path}
                             className="sidebar-item"
-                            onClick={(e) => handleClick(obj, e)}
+                            onClick={!obj.menu && ((e) => handleClick(obj, e))}
                         >
                             {obj.name}
                         </NavLink>)

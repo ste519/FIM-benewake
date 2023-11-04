@@ -438,8 +438,8 @@ button svg {
   width: 100%;
 }
 
-.table-wrapper .td:first-child,
-.table-wrapper .th:first-child {
+.table .td:first-child,
+.table .th:first-child {
   width: 3rem;
   height: 37px;
 }
@@ -1492,4 +1492,36 @@ input[type=number] {
 .todos-wrapper {
   border-color: var(--warning-dark);
   background-color: var(--warning-light)
+}
+
+.admin-table-wrapper {
+  flex: 1 1 1px;
+  overflow: auto;
+}
+
+.admin-table-wrapper input:not([type="checkbox"]) {
+  width: 100%;
+}
+
+.admin-table-wrapper .table {
+  flex: 0 1 auto;
+  width: fit-content;
+}
+
+.admin-table-wrapper .th {
+  border-top: 1px solid var(--blue30)
+}
+
+.admin-tables .row {
+  gap: 2rem;
+  color: var(--blue60);
+  font-weight: 600;
+}
+
+.admin-tables>h1 {
+  border-bottom: 1px solid var(--blue10);
+  line-height: 2rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: var(--blue80);
 }

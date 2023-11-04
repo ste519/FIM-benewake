@@ -130,5 +130,15 @@
         "header": "是否允许询单",
         "identifier": "allow_inquiry",
         "element": "datalist"
+    },
+    "create_time": {
+        "header": "创建日期",
+        "identifier": "create_time",
+        "element": "datepicker"
+    },
+    "update_time": {
+        "header": "更新日期",
+        "identifier": "update_time",
+        "element": "datepicker"
     }
 }

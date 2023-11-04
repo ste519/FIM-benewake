@@ -130,5 +130,18 @@
         "col_name_CN": "是否允许询单",
         "col_name_ENG": "allow_inquiry",
         "size": 90
+    },
+    {
+        "col_id": 23,
+        "col_name_CN": "创建日期",
+        "col_name_ENG": "create_time",
+        "size": 100
+
+    },
+    {
+        "col_id": 24,
+        "col_name_CN": "更新日期",
+        "col_name_ENG": "update_time",
+        "size": 100
     }
 ]

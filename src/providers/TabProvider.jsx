@@ -4,7 +4,7 @@ import { TabContext, UpdateTabContext } from "../contexts/createContext";
 const tabReducer = (state, action) => {
     switch (action.type) {
         case 'ADD_TAB':
-            if (state.includes(action.tab))
+            if (state.some(item => JSON.stringify(item) === JSON.stringify(action.tab)))
                 return state
             else
                 return [...state, action.tab];

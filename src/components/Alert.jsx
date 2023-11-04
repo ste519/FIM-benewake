@@ -2,8 +2,8 @@ import React from 'react'
 import { useAlertContext } from '../hooks/useCustomContext';
 
 export default function Alert({ type, message, action, cancel }) {
-    const updateAlert = useAlertContext()
-    const closeAlert = () => updateAlert({ type: "CLOSE_ALERT" })
+    const { closeAlert } = useAlertContext()
+
     const handleCancel = () => {
         cancel && cancel();
         closeAlert();

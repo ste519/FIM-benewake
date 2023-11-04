@@ -1,56 +1,33 @@
 import { useState, useEffect } from 'react'
-import AdminTable from '../components/AdminTable'
-import { fetchAdminData } from '../api/admin'
+import AdminTable from '../components/admin/AdminTable'
+import { useLoaderData } from 'react-router-dom'
+import adminDefs from '../constants/defs/AdminDefs';
 
-const schema = [
-    {
-        header: "客户类型",
-        identifier: "customerType",
-        width: 80,
-        element:
-            (data, handleChange, addConfirm) =>
-                <input
-                    readOnly={!data?.editable}
-                    name="customerType"
-                    autoComplete='off'
-                    value={data.customerType}
-                    onBlur={addConfirm}
-                    onChange={(e) => handleChange(["customerType"], [e.target.value])}
-                />
-    }
-]
-
-const Manage = () => {
-    const [colWidths, setColWidths] = useState(schema.map(item => item.width))
+const Manage = ({ table }) => {
+    const data = useLoaderData();
+    const schema = adminDefs.filter(item => item.type === table.eng)
     const [rows, setRows] = useState([])
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const res = await fetchAdminData('CustomerTypes');
-                console.log(res);
-                setRows(res)
-            } catch (error) {
-                console.error("Error fetching data:", error);
-            }
-        };
+    const handleRefresh = () => {
+        setRows(data);
+    }
 
-        fetchData();
-    }, []);
+    useEffect(() => {
+        handleRefresh()
+    }, [table]);
+
 
     return (
         <div className='col full-screen'>
             {rows?.length > 0 &&
                 <AdminTable
                     schema={schema}
-                    colWidths={colWidths}
-                    setColWidths={setColWidths}
                     rows={rows}
                     setRows={setRows}
+                    handleRefresh={handleRefresh}
                 />
             }
         </div>
-
     )
 }
 

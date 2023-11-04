@@ -1,8 +1,15 @@
 import React, { useState, useRef, useEffect } from 'react';
 
-const ResizableHeader = ({ children, width, index, onResize }) => {
-  const [colWidth, setColWidth] = useState(width?? 70);
-  useEffect(()=> onResize(index, colWidth), [colWidth])
+const ResizableHeader = ({ type, children, width, index, onResize }) => {
+  const [colWidth, setColWidth] = useState(width ?? 70);
+  useEffect(() => {
+    onResize(index, colWidth);
+  }, [colWidth]);
+
+  useEffect(() => {
+    setColWidth(width)
+  }, [type])
+  
   const startPos = useRef(0);
 
   const handleMouseDown = (e) => {

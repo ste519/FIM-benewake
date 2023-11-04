@@ -1,5 +1,5 @@
 import moment from "moment"
-import colNameDict from './ColNameDict.json'
+import colNameDict from '../ColNameDict.json'
 const allDefs =
     [
         {
@@ -29,7 +29,7 @@ const allDefs =
             header: item.col_name_CN,
             accessorKey: item.col_name_ENG,
             accessorFn: (row) => {
-                if (item.col_name_ENG === "expected_time" || item.col_name_ENG === "arranged_time") {
+                if (["expected_time", "arranged_time", "create_time", "update_time"].includes(item.col_name_ENG)) {
                     return (row[item.col_name_ENG] ?
                         moment(row[item.col_name_ENG]).format("YYYY/MM/DD")
                         : null)

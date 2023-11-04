@@ -1,11 +1,11 @@
 import { useMemo, useState } from 'react';
 import SecTabs from '../components/SecTabs'
-import Table from '../components/Table';
+import Table from '../components/table/Table';
 import Views from '../components/Views';
 import Toolbar from '../components/Toolbar';
 import { useTableDataContext } from '../hooks/useCustomContext';
 import { customerViews } from '../constants/Views'
-import AllDefs from '../constants/AllDefs';
+import AllDefs from '../constants/defs/AllDefs';
 
 // 全部订单
 export default function Customer() {

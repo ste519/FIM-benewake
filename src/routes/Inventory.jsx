@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import Toolbar from '../components/Toolbar';
-import Table from '../components/Table'
-import InventoryDefs from '../constants/InventoryDefs';
+import Table from '../components/table/Table'
+import InventoryDefs from '../constants/defs/InventoryDefs';
 import { useLoaderData } from 'react-router-dom';
 import {useTabContext} from '../hooks/useCustomContext';;
 
