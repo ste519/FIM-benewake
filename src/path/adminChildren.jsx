@@ -3,7 +3,7 @@ import { findMessages } from '../api/message';
 import AdminTables from '../routes/AdminTables';
 import PostMessage from '../routes/PostMessage';
 import Manage from '../routes/Manage';
-import tables from '../constants/adminTables.json'
+import adminSchemas from '../constants/adminSchemas'
 import { fetchAdminData } from '../api/admin';
 
 const adminChildren = [
@@ -21,10 +21,13 @@ const adminChildren = [
     {
         name: "数据管理", path: "tables", element: <AdminTables />, type: "admin", menu: true, inSidebar: true
     },
-    ...tables.map((table) => ({
-        name: table.cn, path: table.eng, element: <Manage table={table} />, type: "admin", loader: async () => {
+    ...Object.keys(adminSchemas).map((key) => ({
+        name: adminSchemas[key].cn,
+        path: key,
+        element: <Manage type={key} />,
+        type: "admin", loader: async () => {
             try {
-                const res = await fetchAdminData(table.select)
+                const res = await fetchAdminData(adminSchemas[key].select)
                 return res
             }
             catch (err) {

@@ -1,20 +1,25 @@
 import { useState, useEffect } from 'react'
 import AdminTable from '../components/admin/AdminTable'
 import { useLoaderData } from 'react-router-dom'
+import { fetchAdminData } from '../api/admin';
+import adminSchemas from '../constants/adminSchemas';
 import adminDefs from '../constants/defs/AdminDefs';
 
-const Manage = ({ table }) => {
+const Manage = ({ type }) => {
     const data = useLoaderData();
-    const schema = adminDefs.filter(item => item.type === table.eng)
-    const [rows, setRows] = useState([])
+    const [rows, setRows] = useState(data)
+    const schema = Object.keys(rows[0]).flatMap(key => adminDefs.filter((item) => item.eng === key))
+    console.log(schema);
 
-    const handleRefresh = () => {
-        setRows(data);
+    const handleRefresh = async () => {
+        const fetchUrl = adminSchemas[type].select
+        const res = await fetchAdminData(fetchUrl)
+        setRows(res ?? [])
     }
 
     useEffect(() => {
-        handleRefresh()
-    }, [table]);
+        setRows(data)
+    }, [type]);
 
 
     return (
@@ -22,6 +27,7 @@ const Manage = ({ table }) => {
             {rows?.length > 0 &&
                 <AdminTable
                     schema={schema}
+                    type={type}
                     rows={rows}
                     setRows={setRows}
                     handleRefresh={handleRefresh}

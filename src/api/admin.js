@@ -1,5 +1,5 @@
 import axios from "./axios";
-import tables from '../constants/adminTables.json'
+import adminSchemas from '../constants/adminSchemas'
 
 export async function fetchAdminData(url) {
     try {
@@ -13,7 +13,7 @@ export async function fetchAdminData(url) {
 
 export async function addAdminData(type, payload) {
 
-    const addUrl = tables.find(item => item.eng === type)?.add
+    const addUrl = adminSchemas[type].add.url
 
     try {
         const response = await axios.post(`/admin/${addUrl}`, null, { params: payload })
@@ -26,7 +26,7 @@ export async function addAdminData(type, payload) {
 
 export async function deleteAdminData(type, payload) {
 
-    const deleteUrl = tables.find(item => item.eng === type)?.delete
+    const deleteUrl = adminSchemas[type].delete.url
 
     try {
         const response = await axios.delete(`/admin/${deleteUrl}`, null, { params: payload })
