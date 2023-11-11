@@ -417,7 +417,6 @@ button svg {
 
 .td,
 .th {
-  flex: 1 1 auto;
   white-space: nowrap;
 }
 
@@ -430,8 +429,8 @@ button svg {
   width: 100%;
 }
 
-.table .td:first-child,
-.table .th:first-child {
+.table .td.checkbox,
+.table .th.checkbox {
   width: 3rem;
   height: 37px;
 }
@@ -544,7 +543,8 @@ button svg {
   background-color: var(--blue5);
 }
 
-.excel-uploader-container, .admin-popup-wrapper {
+.excel-uploader-container,
+.admin-popup-wrapper {
   gap: 1rem;
   border-left: 0.5rem solid;
   border-radius: 5px;
@@ -1247,7 +1247,7 @@ datalist {
   appearance: initial;
 }
 
-.new-table-container input:not([type="checkbox"]){
+.new-table-container input:not([type="checkbox"]) {
   padding: 10px;
   border: none;
   width: 100%;
@@ -1534,8 +1534,11 @@ input[type=number] {
 }
 
 .admin-popup-wrapper label {
-  width: 80%;
+  width: 100%;
   text-wrap: nowrap;
   align-items: center;
 }
 
+.admin-popup-wrapper form {
+  width: 80%;
+}

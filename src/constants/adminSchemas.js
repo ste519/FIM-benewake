@@ -44,6 +44,7 @@ const adminSchemas = {
         "delete": {
             url: "deleteCustomerName",
             bodyKeys: ["deleteCustomerName"],
+            bodyValues: ["customerName"]
         },
         "select": "selectFimCustomerTable",
         "update": {
@@ -130,7 +131,7 @@ const adminSchemas = {
             bodyKeys: ["itemCode", "itemName", "startMonth"]
         },
         "delete": {
-            url: null,
+            url: "deletePastChooseItemByItemCode",
             bodyKeys: ["itemCode", "itemName", "startMonth"]
         },
         "select": "selectFimPastChooseItemTable"

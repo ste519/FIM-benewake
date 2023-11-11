@@ -96,7 +96,7 @@ const inquiryMapping = {
     3: [inquiryInitTypeObject(getInquiryTypeInt("XD(意向询单)")),
     stateObject("-1")],//删除询单
     4: [inquiryInitTypeObject(getInquiryTypeInt("YC(销售预测)")),
-    stateObject("-1")],//删除预测
+    stateObject("-2")],//删除预测
     5: [inquiryInitTypeObject(getInquiryTypeInt("XD(意向询单)")), inquiryTypeObject("PR")],//XD已变PR询单
     6: [inquiryInitTypeObject(getInquiryTypeInt("YC(销售预测)")), inquiryTypeObject("PR")],//YC已变PR询单
     7: [inquiryInitTypeObject(getInquiryTypeInt("XD(意向询单)")), inquiryTypeObject("PO")],//XD已变PO询单

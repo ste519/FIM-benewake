@@ -25,11 +25,10 @@ export async function addAdminData(type, payload) {
 }
 
 export async function deleteAdminData(type, payload) {
-
     const deleteUrl = adminSchemas[type].delete.url
 
     try {
-        const response = await axios.delete(`/admin/${deleteUrl}`, null, { params: payload })
+        const response = await axios.delete(`/admin/${deleteUrl}`, { params: payload })
         return response.data;
     }
     catch (err) {
