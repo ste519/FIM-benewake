@@ -25,7 +25,8 @@ const adminChildren = [
         name: adminSchemas[key].cn,
         path: key,
         element: <Manage type={key} />,
-        type: "admin", loader: async () => {
+        type: "admin", 
+        loader: async () => {
             try {
                 const res = await fetchAdminData(adminSchemas[key].select)
                 return res

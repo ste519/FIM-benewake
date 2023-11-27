@@ -23,7 +23,9 @@ const Tabs = ({ navigate }) => {
                 tab && tab.name !== "用户主页" &&
                 <NavLink
                     key={i}
-                    to={tab?.type === "admin" ? "/admin/" + tab.path : "/" + tab.path}
+                    to={tab.type ?
+                        `/${tab.type}/${tab.path}` :
+                        `/${tab.path}`}
                     className="tab"
                 >
                     {tab.name}

@@ -1,6 +1,6 @@
 import ResizableHeader from '../ResizableHeader';
 import Checkbox from '../Checkbox';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { deleteAdminData } from '../../api/admin';
 import AdminPaginate from './AdminPaginate';
 import AdminPopup from './AdminPopup';

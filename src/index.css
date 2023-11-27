@@ -1542,3 +1542,31 @@ input[type=number] {
 .admin-popup-wrapper form {
   width: 80%;
 }
+
+.analysis .table .th {
+  border-top: 1px solid var(--blue30);
+  height: auto;
+}
+
+.analysis .toolbar {
+  margin-bottom: 2rem;
+}
+
+.dropdown-menu {
+  background-color: white;
+}
+
+.sidebar-item .arrow-icon {
+  width: 1rem;
+  margin-left: 0.5rem;
+}
+
+.arrow-up {
+  transform: rotate(180deg);
+  transition: transform 100ms;
+}
+
+.arrow-down {
+  transform: rotate(0deg);
+  transition: transform 100ms;
+}

@@ -96,7 +96,6 @@ export default function Toolbar({ features }) {
     }
 
     const handleExport = () => {
-        alertWarning("功能完善中")
         if (noData(tableData) || noVisibleCols(states.columnVisibility)) {
             alertError("没有数据！")
         }

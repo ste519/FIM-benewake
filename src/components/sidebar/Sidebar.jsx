@@ -1,10 +1,12 @@
 import { NavLink, useNavigate } from 'react-router-dom';
-import children from '../path/children';
-import { useAuthContext, useUpdateTabContext } from '../hooks/useCustomContext';
-import { ReactComponent as LogoutIcon } from '../assets/icons/logout.svg'
-import { logout } from '../api/auth';
-import adminChildren from '../path/adminChildren';
-import { ADMIN_USER } from '../constants/Global'
+import children from '../../path/children';
+import { useAuthContext, useUpdateTabContext } from '../../hooks/useCustomContext';
+import { ReactComponent as LogoutIcon } from '../../assets/icons/logout.svg'
+import { logout } from '../../api/auth';
+import adminChildren from '../../path/adminChildren';
+import { ADMIN_USER } from '../../constants/Global';
+import Dropdown from './Dropdown';
+import analysisChildren from '../../path/analysisChildren';
 
 export default function Sidebar({ showSidebar }) {
     const updateTabs = useUpdateTabContext()
@@ -49,6 +51,14 @@ export default function Sidebar({ showSidebar }) {
                             {obj.name}
                         </NavLink>)
                 }
+
+                <Dropdown
+                    items={analysisChildren}
+                    label="数据分析"
+                    type="analysis"
+                />
+
+
             </nav >
             <div className='row flex-center mb1 user-info-container'>
                 <h1>用户：{auth?.username ?? ""}</h1>

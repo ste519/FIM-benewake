@@ -13,6 +13,7 @@ import Login from './routes/login';
 import AuthProvider from './providers/AuthProvider'
 import AlertProvider from './providers/AlertProvider';
 import adminChildren from './path/adminChildren';
+import analysisChildren from './path/analysisChildren';
 
 const router = createHashRouter([
   {
@@ -28,6 +29,11 @@ const router = createHashRouter([
     path: "/admin",
     element: <App />,
     children: adminChildren
+  },
+  {
+    path: "/analysis",
+    element: <App />,
+    children: analysisChildren
   }
 ]);
 

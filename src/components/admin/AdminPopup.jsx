@@ -2,7 +2,7 @@ import React from 'react'
 import adminSchemas from '../../constants/adminSchemas';
 import { useState } from 'react';
 import adminDefs from '../../constants/defs/AdminDefs';
-import { addAdminData, deleteAdminData } from '../../api/admin';
+import { addAdminData } from '../../api/admin';
 import { useAlertContext } from '../../hooks/useCustomContext';
 
 const getLabels = (array) => {
@@ -65,7 +65,7 @@ const AdminPopup = ({ type, action, closePopup, handleRefresh }) => {
             <input type="submit" value="确定" className='small blue40' />
         </div>
     </form>
-    
+
     return (
         <div className='popup-container admin-popup flex-center'>
             <div className='admin-popup-wrapper col flex-center' >
