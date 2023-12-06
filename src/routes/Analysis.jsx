@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Table from '../components/table/Table';
 import { useLoaderData } from 'react-router-dom'
 import { fetchAnalysisData } from '../api/analysis';
@@ -13,15 +13,17 @@ function EngToCn(col_name_ENG) {
 
 const Analysis = () => {
     const res = useLoaderData();
-    const [rows, setRows] = useState(res.data)
+    const [rows, setRows] = useState([])
     const { alertConfirm } = useAlertContext()
 
+    useEffect(() => { setRows(res.data) }, [res])
+    
     const handleRefresh = async () => {
         setRows([])
         const res = await fetchAnalysisData('getAllPastAnalysis')
         setRows(res.data)
     }
-  
+
     const handleExport = () => {
         alertConfirm("确定导出该表单？", () => {
             const wb = XLSX.utils.book_new();
@@ -43,6 +45,8 @@ const Analysis = () => {
 
     }
 
+    const defs = rows.length === 0 ? undefined : analysisDefs.filter((def) => Object.keys(rows[0]).includes(def.id))
+
     return (
         <div className='col full-screen analysis'>
             <div className='row toolbar' >
@@ -54,7 +58,7 @@ const Analysis = () => {
             {rows?.length > 0 &&
                 <Table
                     data={rows}
-                    columns={analysisDefs}
+                    columns={defs}
                 />
             }
         </div>

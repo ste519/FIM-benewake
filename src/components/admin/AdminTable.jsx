@@ -6,7 +6,7 @@ import AdminPaginate from './AdminPaginate';
 import AdminPopup from './AdminPopup';
 import moment from 'moment';
 import { useAlertContext } from '../../hooks/useCustomContext';
-import adminSchemas from '../../constants/adminSchemas';
+import adminSchema from '../../constants/schemas/adminSchema';
 
 const Row = ({ schema, data, colWidths, addRow, removeRow, isSelected }) => {
     return (
@@ -51,7 +51,7 @@ const AdminTable = ({ schema, type, rows, setRows, handleRefresh }) => {
         let payloads;
         const deleteList = rows.filter((_, index) => selectedRows.includes
             (index))
-        const keys = adminSchemas[type]['delete'].bodyKeys ?? []
+        const keys = adminSchema[type]['delete'].bodyKeys ?? []
 
         if (type === "customerName") {
             payloads = deleteList.map((item) => ({

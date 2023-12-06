@@ -293,6 +293,8 @@ svg {
   max-width: 200px;
   transition: 0.2s;
   justify-content: space-between;
+  overflow-y: auto;
+  flex-shrink: 0;
 }
 
 .dropdown ul {
@@ -310,7 +312,7 @@ svg {
 .sidebar-item {
   padding: 1.5rem 2.5rem;
   display: flex;
-  width: 132px;
+  width: 160px;
 }
 
 .sidebar-item.active,

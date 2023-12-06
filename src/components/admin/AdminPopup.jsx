@@ -1,5 +1,5 @@
 import React from 'react'
-import adminSchemas from '../../constants/adminSchemas';
+import adminSchema from '../../constants/schemas/adminSchema';
 import { useState } from 'react';
 import adminDefs from '../../constants/defs/AdminDefs';
 import { addAdminData } from '../../api/admin';
@@ -24,7 +24,7 @@ const getInitialValues = (array) => {
 
 const AdminPopup = ({ type, action, closePopup, handleRefresh }) => {
     const { alertError, alertSuccess, alertWarning } = useAlertContext();
-    let keys = adminSchemas[type][action].bodyKeys ?? []
+    let keys = adminSchema[type][action].bodyKeys ?? []
 
     const [values, setValues] = useState(getInitialValues(keys))
     const labels = action !== "delete" && getLabels(keys)

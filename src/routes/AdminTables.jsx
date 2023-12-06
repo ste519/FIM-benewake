@@ -1,6 +1,6 @@
 import { NavLink } from "react-router-dom";
 import { useUpdateTabContext } from "../hooks/useCustomContext";
-import adminSchemas from '../constants/adminSchemas'
+import adminSchema from '../constants/schemas/adminSchema'
 
 const AdminTables = () => {
     const updateTabs = useUpdateTabContext()
@@ -14,12 +14,12 @@ const AdminTables = () => {
         <div className='col full-screen admin-tables'>
             <h1>数据管理</h1>
             <nav className="row">
-                {Object.keys(adminSchemas).map((key, i) =>
+                {Object.keys(adminSchema).map((key, i) =>
                     <NavLink
                         key={i}
                         to={"/admin/" + key}
-                        onClick={() => handleClick(adminSchemas[key].cn, key)}>
-                        {adminSchemas[key].cn}
+                        onClick={() => handleClick(adminSchema[key].cn, key)}>
+                        {adminSchema[key].cn}
                     </NavLink>
                 )}
             </nav >

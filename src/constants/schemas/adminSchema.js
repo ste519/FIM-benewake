@@ -1,4 +1,4 @@
-const adminSchemas = {
+const adminSchema = {
     customerType: {
         "cn": "客户类型",
         "select": "getCustomerTypes",
@@ -138,4 +138,4 @@ const adminSchemas = {
     }
 }
 
-export default adminSchemas;
+export default adminSchema;

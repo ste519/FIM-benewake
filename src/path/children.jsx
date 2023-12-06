@@ -15,7 +15,6 @@ import Sales from '../routes/Sales';
 import Edit from '../routes/Edit';
 import { fetchNewViews } from '../api/fetch';
 import { findMessages, findTodos, findPODelay } from '../api/message'
-import { defer } from 'react-router-dom';
 
 const children = [
     {
@@ -47,22 +46,25 @@ const children = [
     // { name: "仪表盘", path: "charts", element: <Charts /> },
     // { name: "销售计划", path: "sales", element: <Sales /> },
     {
-        name: "用户主页", path: "user", element: <User />, loader:
-            async () => {
-                try {
-                    const messagePromise = findMessages()
-                    const todoPromise = findTodos()
-                    const PODelayPromise = findPODelay()
-                    return defer({
-                        messages: messagePromise,
-                        todosNMessages: todoPromise,
-                        PODelay: PODelayPromise
-                    })
+        name: "用户主页", path: "user", element: <User />,
+        loader: async ({ signal }) => {
+            try {
+                const messages = await findMessages({ signal });
+                const todosNMessages = await findTodos({ signal });
+                const PODelay = await findPODelay({ signal });
+        
+                return {
+                    messages,
+                    todosNMessages,
+                    PODelay
+                };
+            } catch (err) {
+                if (err.name !== 'AbortError') {
+                    console.error("Error occurred:", err);
                 }
-                catch (err) {
-                    console.log(err);
-                }
+                throw err; 
             }
+        }
     },
     { name: "新增询单", path: "new", element: <New /> },
     { name: "修改询单", path: "edit", element: <Edit /> },

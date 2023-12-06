@@ -3,7 +3,7 @@ import { findMessages } from '../api/message';
 import AdminTables from '../routes/AdminTables';
 import PostMessage from '../routes/PostMessage';
 import Manage from '../routes/Manage';
-import adminSchemas from '../constants/adminSchemas'
+import adminSchema from '../constants/schemas/adminSchema'
 import { fetchAdminData } from '../api/admin';
 
 const adminChildren = [
@@ -21,18 +21,20 @@ const adminChildren = [
     {
         name: "数据管理", path: "tables", element: <AdminTables />, type: "admin", menu: true, inSidebar: true
     },
-    ...Object.keys(adminSchemas).map((key) => ({
-        name: adminSchemas[key].cn,
+    ...Object.keys(adminSchema).map(key => ({
+        name: adminSchema[key].cn,
         path: key,
         element: <Manage type={key} />,
-        type: "admin", 
-        loader: async () => {
+        type: "admin",
+        loader: async ({ signal }) => {
             try {
-                const res = await fetchAdminData(adminSchemas[key].select)
-                return res
-            }
-            catch (err) {
-                console.log(err);
+                const res = await fetchAdminData(adminSchema[key].select, { signal });
+                return res;
+            } catch (err) {
+                if (err.name !== 'AbortError') {
+                    console.error("Error fetching admin data:", err);
+                }
+                throw err;
             }
         }
     }))

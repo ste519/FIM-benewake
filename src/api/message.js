@@ -21,18 +21,9 @@ export async function deleteMessages(ids) {
     }
 }
 
-export async function findMessages(createUsername) {
+export async function findMessages({ signal } = {}) {
     try {
-        const response = await api.post('/notice/find', { createUsername })
-        return response.data;
-    }
-    catch (err) {
-        console.log(err);
-    }
-}
-export async function findTodos() {
-    try {
-        const response = await api.get('/todotask/filtered-orders')
+        const response = await api.post('/notice/find', { signal });
         return response.data;
     }
     catch (err) {
@@ -40,15 +31,26 @@ export async function findTodos() {
     }
 }
 
-export async function findPODelay() {
+export async function findTodos({ signal } = {}) {
     try {
-        const response = await api.get('/todotask/PoDelay')
+        const response = await api.get('/todotask/filtered-orders', { signal });
         return response.data;
     }
     catch (err) {
         console.log(err);
     }
 }
+
+export async function findPODelay({ signal } = {}) {
+    try {
+        const response = await api.get('/todotask/PoDelay', { signal });
+        return response.data;
+    }
+    catch (err) {
+        console.log(err);
+    }
+}
+
 
 export async function fetchFilteredInquiries() {
     try {

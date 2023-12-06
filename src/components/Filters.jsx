@@ -9,7 +9,7 @@ import { fetchData } from '../api/fetch'
 import { useLocation } from 'react-router-dom'
 import { getTableId } from '../js/getData'
 import SimpleDataList from './SimpleDataList'
-import schema from '../constants/FilterSchema.json'
+import schema from '../constants/schemas/filterSchema.json'
 import DatePicker from './DatePicker'
 
 // inquiry_code 单据编号：模糊匹配 /order/inquiryCodeList
