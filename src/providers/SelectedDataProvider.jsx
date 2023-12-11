@@ -5,7 +5,7 @@ import { SelectedDataContext } from '../contexts/createContext';
 const defaultQuery = {
     1: {
         tableId: 1,
-        secTab: null,
+        secTab: "未过期未完成",
         viewId: 0,
         filterCriterias: [
             {
