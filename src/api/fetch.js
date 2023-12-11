@@ -114,6 +114,7 @@ export async function fetchData({ tableId, viewId, filterCriterias, secTab }) {
     let newCriterias = filterCriterias;
     let newViewId = tableId > 1 && viewId > 0 ? -1 : viewId
     if (secTab) {
+        console.log(secTab);
         const additionalCriterias = secTabMapping[secTab];
         if (additionalCriterias) {
             newCriterias = [...newCriterias, ...additionalCriterias];
@@ -195,12 +196,11 @@ export async function fetchUser(username, userType) {
     }
 }
 
-export async function fetchNewViews(tableId) {
+export async function fetchNewViews(tableId, { signal } = {}) {
     try {
-        const response = await api.post('/order/views', { tableId })
+        const response = await api.post('/order/views', { tableId }, { signal });
         return response.data;
-    }
-    catch (err) {
+    } catch (err) {
         console.log(err);
     }
 }

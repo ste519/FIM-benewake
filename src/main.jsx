@@ -1,5 +1,4 @@
-
-import React from 'react'
+import React, { lazy, Suspense } from 'react';
 import ReactDOM from 'react-dom/client'
 import {
   createHashRouter,
@@ -7,13 +6,15 @@ import {
 } from "react-router-dom";
 import './index.css'
 import "the-new-css-reset/css/reset.css";
-import App from './App';
 import children from './path/children';
 import Login from './routes/login';
 import AuthProvider from './providers/AuthProvider'
 import AlertProvider from './providers/AlertProvider';
 import adminChildren from './path/adminChildren';
 import analysisChildren from './path/analysisChildren';
+import Loader from './components/Loader';
+
+const App = lazy(() => import('./App'));
 
 const router = createHashRouter([
   {
@@ -22,17 +23,24 @@ const router = createHashRouter([
   },
   {
     path: "/",
-    element: <App />,
+    element: <Suspense fallback={<Loader />}>
+    <App />
+  </Suspense>,
     children: children
   },
   {
     path: "/admin",
-    element: <App />,
+    element:
+      <Suspense fallback={<Loader />}>
+        <App />
+      </Suspense>,
     children: adminChildren
   },
   {
     path: "/analysis",
-    element: <App />,
+    element:  <Suspense fallback={<Loader />}>
+    <App />
+  </Suspense>,
     children: analysisChildren
   }
 ]);
@@ -41,7 +49,9 @@ ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <AuthProvider>
       <AlertProvider>
-        <RouterProvider router={router} />
+        <Suspense fallback={<Loader />}>
+          <RouterProvider router={router} />
+        </Suspense>
       </AlertProvider>
     </AuthProvider>
   </React.StrictMode>

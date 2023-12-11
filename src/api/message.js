@@ -51,7 +51,6 @@ export async function findPODelay({ signal } = {}) {
     }
 }
 
-
 export async function fetchFilteredInquiries() {
     try {
         const response = await api.get('/todotask/filtered-inquiries')
