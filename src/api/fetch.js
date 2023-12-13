@@ -114,7 +114,6 @@ export async function fetchData({ tableId, viewId, filterCriterias, secTab }) {
     let newCriterias = filterCriterias;
     let newViewId = tableId > 1 && viewId > 0 ? -1 : viewId
     if (secTab) {
-        console.log(secTab);
         const additionalCriterias = secTabMapping[secTab];
         if (additionalCriterias) {
             newCriterias = [...newCriterias, ...additionalCriterias];

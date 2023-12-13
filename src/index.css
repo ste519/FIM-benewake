@@ -8,7 +8,7 @@
   --blue5: #F1F4F6;
   --gray20: #EAEAEA;
   --error-light: #FFD8D8;
-  --error-dark: #E93D3D;
+  --error-dark: #ff0000;
   --warning-light: #FFF0E4;
   --warning-dark: #FF974D;
   --success-light: #E5FFE4;
@@ -33,7 +33,12 @@ input[type="submit"] {
   cursor: pointer;
 }
 
+.btn {
+  line-height: 2rem;
+}
+
 button.small,
+.btn.small,
 input[type="button"].small,
 input[type="submit"].small {
   display: flex;
@@ -43,6 +48,7 @@ input[type="submit"].small {
 
 
 button.rounded,
+.btn.rounded,
 input[type="button"].rounded,
 input[type="submit"].rounded {
   display: flex;
@@ -56,6 +62,7 @@ input[type="submit"].rounded {
 }
 
 button.blue60,
+.btn.blue60,
 input[type="button"].blue60,
 input[type="submit"].blue60 {
   background-color: var(--blue60);
@@ -63,6 +70,7 @@ input[type="submit"].blue60 {
 }
 
 button.blue40,
+.btn.blue40,
 input[type="button"].blue40,
 input[type="submit"].blue40 {
   background-color: var(--blue40);
@@ -70,6 +78,7 @@ input[type="submit"].blue40 {
 }
 
 button.blue5,
+.btn.blue5,
 input[type="button"].blue5,
 input[type="submit"].blue5 {
   background-color: var(--blue5);
@@ -77,12 +86,14 @@ input[type="submit"].blue5 {
 }
 
 button.rounded svg,
+.btn.rounded svg,
 input[type="button"].rounded svg,
 input[type="submit"].rounded svg {
   height: 1rem;
 }
 
 button.white,
+.btn.white,
 input[type="button"].white,
 input[type="submit"].white {
   background-color: white;
@@ -90,6 +101,7 @@ input[type="submit"].white {
 }
 
 button.transparent,
+.btn.transparent,
 input[type="button"].transparent,
 input[type="submit"].transparent {
   background: none;
@@ -1446,7 +1458,7 @@ input[type=number] {
 .message-wrapper,
 .todos-wrapper {
   background: white;
-  padding: 1rem;
+  padding: 1.5rem;
   display: flex;
   border-left: 0.5rem solid;
   border-radius: 5px;
@@ -1454,11 +1466,24 @@ input[type=number] {
 
 .message-wrapper.abnormal {
   border-color: var(--error-dark);
-  background-color: var(--error-light)
+  background-color: var(--error-light);
+  font-weight: 600;
 }
 
 .message-wrapper.abnormal h1,
 .message-wrapper.abnormal .transparent {
+  color: var(--error-dark);
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.message-wrapper h6{
+  font-size: 10px;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.message-wrapper.abnormal h6{
   color: var(--error-dark);
 }
 
@@ -1469,7 +1494,8 @@ input[type=number] {
 
 
 .message-wrapper.normal h1,
-.message-wrapper.normal .transparent {
+.message-wrapper.normal .transparent,
+.message-wrapper.normal h6 {
   color: var(--confirm-dark);
 }
 

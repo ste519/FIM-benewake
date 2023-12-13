@@ -2,10 +2,12 @@ import React from 'react'
 import { ReactComponent as CloseIcon } from '../assets/icons/cross.svg'
 import { useAlertContext } from '../hooks/useCustomContext'
 import { deleteMessages, findMessages } from '../api/message'
+import moment from 'moment'
 
 const Message = ({ message, setMessages, deletable }) => {
-    const { alertSuccess, alertError, alertWarning, alertConfirm } = useAlertContext()
+    const { alertSuccess, alertError, alertConfirm } = useAlertContext()
 
+    console.log(message);
     const handleDelete = async (id) => {
         alertConfirm("确认删除消息？",
             async () => {
@@ -28,33 +30,18 @@ const Message = ({ message, setMessages, deletable }) => {
     }
 
     return (
-        <>
-            {message?.type == "1"
-                ? < div key={message.id} className='row message-wrapper flex-start abnormal g1 flex-between' >
-                    <div className='row g1 flex-start'>
-                        {message.message}
-                    </div>
-                    <div className='row flex-end g1'>
-                        <h1>异常</h1>
-                        {deletable &&
-                            < button className='transparent' onClick={() => handleDelete(message.id)}><CloseIcon /></button>
-                        }
-                    </div>
-                </div>
-                :
-                < div key={message.id} className='row message-wrapper normal g1 flex-between'>
-                    <div className='row g1 flex-start'>
-                        {message.message}
-                    </div>
-                    <div className='row flex-end g1'>
-                        <h1>普通</h1>
-                        {deletable &&
-                            <button className='transparent ' onClick={() => handleDelete(message.id)}><CloseIcon /></button>
-                        }
-                    </div>
-                </div>
-            }
-        </>
+        < div key={message.id} className={`row message-wrapper flex-start ${message?.type == "1" ? 'abnormal' : 'normal'} g1 flex-between`} >
+            <div className='col'>
+                <h6>{moment(message.update_time).format('YYYY/MM/DD')}</h6>
+                <p>{message.message}</p>
+            </div>
+            <div className='row flex-end g1'>
+                <h1>{message?.type == "1" ? '异常' : '普通'}</h1>
+                {deletable &&
+                    < button className='transparent' onClick={() => handleDelete(message.id)}><CloseIcon /></button>
+                }
+            </div>
+        </div>
     )
 }
 

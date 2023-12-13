@@ -10,22 +10,6 @@ export default function ExcelUploader({ close }) {
         setFile(event.target.files[0])
     };
 
-    const downloadTemplate = async () => {
-        try {
-            const response = await api.get('/order/downloadFile')
-            const url = window.URL.createObjectURL(new Blob([response.data]));
-            const link = document.createElement('a');
-            link.href = url;
-            link.setAttribute('download', '导入模板.xlsx'); 
-            document.body.appendChild(link);
-            link.click();
-            link.remove()
-        }
-        catch (err) {
-            console.log(err);
-        }
-    }
-
     const addData = async () => {
         if (!file) {
             alertWarning("未选择文件！")
@@ -48,7 +32,9 @@ export default function ExcelUploader({ close }) {
     return (
         <div className='excel-uploader-container col flex-center '>
             <input id="excel-uploader" type="file" accept=".xlsx,.xls" onChange={handleFile} className='hidden' />
-            <div><button onClick={downloadTemplate} className='blue40 small'>下载导入模板</button></div>
+            <a href="/benewake/order/downloadFile" download="导入模板.xlsx" className="btn blue40 small">
+               下载导入模板
+            </a>
             <label htmlFor="excel-uploader">选择文件(.xls, .xlsx)</label>
             {file?.name}
             <div className='row flex-center g1'>
