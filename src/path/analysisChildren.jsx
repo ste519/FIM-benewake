@@ -8,7 +8,7 @@ const analysisChildren = Object.keys(analysisSchema).map(
         return {
             name: item.cn,
             path: key,
-            element: <Analysis />,
+            element: <Analysis schema={item} />,
             type: "analysis",
             loader: async ({ signal }) => {
                 try {

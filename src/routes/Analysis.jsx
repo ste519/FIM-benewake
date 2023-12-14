@@ -11,16 +11,70 @@ function EngToCn(col_name_ENG) {
     return analysisDefs.find(col => col.id === col_name_ENG)?.header
 }
 
-const Analysis = () => {
+const FilterPopup = ({ url, open, closePopup, setRows }) => {
+    const { alertError } = useAlertContext()
+    const [params, setParams] = useState({
+        yearly: 1,
+        monthly: 1,
+        agent: 1,
+        newCustomer: 1,
+        temporaryCustomer: 1,
+        daily: 1
+    });
+
+    const labels = ['年度客户', '月度客户', '代理商', '新增客户', '临时客户', '日常客户'];
+    const keys = Object.keys(params);
+
+    const handleClick = async () => {
+        const res = await fetchAnalysisData(url, params);
+        switch (res.code) {
+            case 200:
+                setRows(res.data)
+                break;
+            case 1:
+            case 400:
+                alertError(res.message)
+                break
+        }
+        // closePopup(); 
+    };
+
+    return (
+        <div className='popup-container'>
+            <div className="popup-wrapper filter-popup g1">
+                是否显示:
+                {open && labels.map((label, i) => (
+                    <label htmlFor={'analysis-filter' + i} key={i}>
+                        {label}: 
+                        <select
+                            id={'analysis-filter' + i}
+                            value={params[keys[i]]}
+                            onChange={(e) => setParams(prev => ({
+                                ...prev, [keys[i]]: e.target.value
+                            }))}>
+                            <option value={1}>是</option>
+                            <option value={0}>否</option>
+                        </select>
+                    </label>
+                ))}
+                <button onClick={handleClick} className='small blue40'>确认</button>
+            </div>
+        </div>
+    );
+};
+
+const Analysis = ({ schema }) => {
     const res = useLoaderData();
     const [rows, setRows] = useState([])
     const { alertConfirm } = useAlertContext()
+    const [openPopup, setOpenPopup] = useState(true)
 
+    console.log(schema);
     useEffect(() => { setRows(res.data) }, [res])
-    
+
     const handleRefresh = async () => {
         setRows([])
-        const res = await fetchAnalysisData('getAllPastAnalysis')
+        const res = await fetchAnalysisData(schema.select)
         setRows(res.data)
     }
 
@@ -55,11 +109,21 @@ const Analysis = () => {
                     <button onClick={handleExport}>导出</button>
                 </div>
             </div>
-            {rows?.length > 0 &&
+            {
+                schema.cn.includes("客户类型分类-订单版") &&
+                < FilterPopup
+                    open={openPopup}
+                    closePopup={() => setOpenPopup(false)}
+                    url={schema.select}
+                    setRows={setRows}
+                />
+            }
+            {rows?.length > 0 ?
                 <Table
                     data={rows}
                     columns={defs}
-                />
+                /> :
+                <Loader />
             }
         </div>
     )

@@ -1477,13 +1477,13 @@ input[type=number] {
   font-weight: 900;
 }
 
-.message-wrapper h6{
+.message-wrapper h6 {
   font-size: 10px;
   font-weight: 700;
   margin-bottom: 0.5rem;
 }
 
-.message-wrapper.abnormal h6{
+.message-wrapper.abnormal h6 {
   color: var(--error-dark);
 }
 
@@ -1597,4 +1597,16 @@ input[type=number] {
 .arrow-down {
   transform: rotate(0deg);
   transition: transform 100ms;
+}
+
+.filter-popup select {
+  background-color: var(--blue10);
+  width: 4rem;
+  padding: 4px 6px;
+  border: 1px solid var(--blue30);
+  margin-left: 1rem;
+}
+
+.filter-popup label {
+  flex-grow: 1;
 }
