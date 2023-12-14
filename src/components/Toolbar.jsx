@@ -17,6 +17,8 @@ import { getVisbleTableData, parseInquiryObj } from '../js/parseData';
 import { getTableId } from '../js/getData';
 import { EDIT_INQUIRY_TAB, NEW_INQUIRY_TAB } from '../constants/Global';
 
+
+
 export default function Toolbar({ features }) {
 
     const updateTabs = useUpdateTabContext()
@@ -194,43 +196,33 @@ export default function Toolbar({ features }) {
         </div>
 
 
+
+    function ToolbarButton({ feature, handler, text, additionalCondition = true }) {
+        const isVisible = features?.includes(feature) && additionalCondition;
+        return isVisible ? <button onClick={handler}>{text}</button> : null;
+    }
+
     return (
-        <div className='row toolbar' >
+        <div className='row toolbar'>
             <div className='row flex-center'>
-                <button to="/new" onClick={handleNew} className={`${features?.includes("new") ? "" : "hidden"}`}>新增</button>
-
-                <button onClick={handleDelete} className={`${features?.includes("delete") ? "" : "hidden"}`}>删除</button>
-
-                <button onClick={handlePin} className={`${features?.includes("pin") ? "" : "hidden"}`}>置顶</button>
-
-                <button onClick={handleUnpin} className={`${features?.includes("unpin") ? "" : "hidden"}`}>取消置顶</button>
-
-                <button onClick={handleRefresh} className={`${features?.includes("refresh") ? "" : "hidden"}`}>刷新</button>
-
-                <button onClick={toggleImportPopup} className={`${features?.includes("import") ? "" : "hidden"}`}>导入</button>
+                <ToolbarButton feature="new" handler={handleNew} text="新增" additionalCondition={auth.userType != "3"} />
+                <ToolbarButton feature="delete" handler={handleDelete} text="删除" additionalCondition={auth.userType != "3"} />
+                <ToolbarButton feature="pin" handler={handlePin} text="置顶" />
+                <ToolbarButton feature="unpin" handler={handleUnpin} text="取消置顶" />
+                <ToolbarButton feature="refresh" handler={handleRefresh} text="刷新" />
+                <ToolbarButton feature="import" handler={toggleImportPopup} text="导入" additionalCondition={auth.userType != "3"}/>
                 {openImportPopup && importPopup}
-
-                <button onClick={handleExport} className={`${features?.includes("export") ? "" : "hidden"}`}>导出</button>
-
-                <button onClick={handleEdit} className={`${features?.includes("edit") ? "" : "hidden"}`}>修改</button>
-
-                <button onClick={handleStartInquiry} className={`${features?.includes("startInquiry") ? "" : "hidden"}`}>开始询单</button>
-
-                <button onClick={handleAllowInquiry}
-                    className={`${features?.includes("allowInquiry") && auth.userType == "1" ? "" : "hidden"}`}>
-                    允许询单
-                </button>
+                <ToolbarButton feature="export" handler={handleExport} text="导出" />
+                <ToolbarButton feature="edit" handler={handleEdit} text="修改" additionalCondition={auth.userType != "3"} />
+                <ToolbarButton feature="startInquiry" handler={handleStartInquiry} text="开始询单" additionalCondition={auth.userType != "3"} />
+                <ToolbarButton feature="allowInquiry" handler={handleAllowInquiry} text="允许询单" additionalCondition={auth.userType == "1"} />
             </div>
 
-            {
-                features.includes("visibility")
-                && !noData(tableData)
-                &&
+            {features.includes("visibility") && !noData(tableData) && (
                 <div className="row flex-center status">
                     <ColVisibility editable={tableId === 1 && defaultSelection.viewId > 0} />
                 </div>
-            }
-
-        </div >
-    )
+            )}
+        </div>
+    );
 }

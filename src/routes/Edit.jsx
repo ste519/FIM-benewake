@@ -53,12 +53,23 @@ const SimpleToolbar = ({ rows, ids, setIds }) => {
 
     }
 
+    const handleSplitOrder = async () => {
+        const newInquiries = await Promise.all(
+            rows.map(row => rowToInquiry(row, inquiryType))
+        );
+
+        const res = await postDivideList(newInquiries)
+        console.log(res);
+    }
+
+
 
     return (
         <div className='row toolbar' >
             <div className='row flex-center'>
                 <button onClick={handleSaveClick} >保存</button>
                 <button onClick={handleStartClick}>开始询单</button>
+                <button onClick={handleSplitOrder}>拆分询单</button>
             </div>
             <div className="row flex-center status">
                 {action &&

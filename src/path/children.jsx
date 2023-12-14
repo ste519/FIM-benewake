@@ -42,7 +42,7 @@ const children = [
     // { name: "库存占用情况", path: "inventory", element: <Inventory /> },
     // { name: "生产计划", path: "production", element: <Production /> },
     // { name: "仪表盘", path: "charts", element: <Charts /> },
-    { name: "销售计划", path: "sales", element: <Sales /> },
+    // { name: "销售计划", path: "sales", element: <Sales /> },
     { name: "用户主页", path: "user", element: <User /> },
     { name: "新增询单", path: "new", element: <New /> },
     { name: "修改询单", path: "edit", element: <Edit /> },

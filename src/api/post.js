@@ -18,10 +18,22 @@ export async function postExcelFile(file) {
 }
 
 //新建视图
-export async function postView({ tableId, viewName, cols, viewId}) {
+export async function postView({ tableId, viewName, cols, viewId }) {
     try {
         const response = await api.post('/order/saveView', {
             tableId, viewName, cols, viewId
+        })
+        return response.data;
+    }
+    catch (err) {
+        console.log(err);
+    }
+}
+
+export async function postDivideList({ inquiryList }) {
+    try {
+        const response = await api.post('/order/divideList', {
+            inquiryList
         })
         return response.data;
     }

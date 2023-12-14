@@ -7,7 +7,6 @@ import moment from 'moment'
 const Message = ({ message, setMessages, deletable }) => {
     const { alertSuccess, alertError, alertConfirm } = useAlertContext()
 
-    console.log(message);
     const handleDelete = async (id) => {
         alertConfirm("确认删除消息？",
             async () => {
