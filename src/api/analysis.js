@@ -1,8 +1,8 @@
 import axios from "./axios";
 
-export async function fetchAnalysisData(url) {
+export async function fetchAnalysisData(url, params) {
     try {
-        const response = await axios.get(`/past-analysis/${url}`)
+        const response = await axios.get(`/past-analysis/${url}`, { params: params })
         return response.data;
     }
     catch (err) {
