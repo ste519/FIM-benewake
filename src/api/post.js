@@ -30,10 +30,11 @@ export async function postView({ tableId, viewName, cols, viewId }) {
     }
 }
 
-export async function postDivideList({ inquiryList }) {
+export async function postDivideList(inquiryList, divideNum) {
     try {
         const response = await api.post('/order/divideList', {
-            inquiryList
+            inquiryList: inquiryList,
+            devideNum: divideNum
         })
         return response.data;
     }

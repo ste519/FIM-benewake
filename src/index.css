@@ -1599,14 +1599,29 @@ input[type=number] {
   transition: transform 100ms;
 }
 
-.filter-popup select {
+.filter-popup .select-wrapper {
   background-color: var(--blue10);
-  width: 4rem;
-  padding: 4px 6px;
+  width: auto;
+  padding: 6px;
   border: 1px solid var(--blue30);
   margin-left: 1rem;
 }
 
-.filter-popup label {
-  flex-grow: 1;
+.filter-popup .select-wrapper select {
+  appearance: auto;
+}
+
+.divide-popup input {
+  width: 7rem;
+  border: 1px solid var(--blue30);
+  padding: 0.5rem;
+}
+
+button:disabled {
+  color: #acacac;
+}
+
+button:disabled:hover{
+  background-color: initial !important;
+  color: #acacac !important;
 }

@@ -10,18 +10,6 @@ const analysisChildren = Object.keys(analysisSchema).map(
             path: key,
             element: <Analysis schema={item} />,
             type: "analysis",
-            loader: async ({ signal }) => {
-                try {
-                    const res = await fetchAnalysisData(item.select, { signal });
-                    return res;
-                } catch (err) {
-                    if (err.name !== 'AbortError') {
-                        console.error("Error fetching analysis data:", err);
-                    }
-                    throw err;
-                }
-            }
-
         }
     }
 )

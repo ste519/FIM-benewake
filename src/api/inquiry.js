@@ -12,31 +12,15 @@ export async function startInquiry(inquiryList, status) {
 
 
 export async function updateInquiry(
-    { inquiryId,
-        inquiryType,
-        inquiryCode,
-        itemId,
-        saleNum,
-        customerId,
-        expectedTime,
-        salesmanId,
-        arrangedTime,
-        state,
-        remark }) {
+    inquiryList) {
+    const updatedList = inquiryList.map(inquiry => ({
+        ...inquiry,
+        inquiryCode: null
+    }));
     try {
-        const response = await api.post('/order/update', {
-            inquiryId,
-            inquiryType,
-            inquiryCode,
-            itemId,
-            saleNum,
-            customerId,
-            expectedTime,
-            salesmanId,
-            arrangedTime,
-            state,
-            remark
-        })
+        const response = await api.post('/order/saveDivideList',
+            { inquiries: updatedList, inquiryCode: inquiryList[0].inquiryCode }
+        )
         return response.data;
     }
     catch (err) {

@@ -57,7 +57,7 @@ const schema = [
     },
     {
         header: "期望发货日期 *",
-        identifier: "expected_time",
+        identifier: "expectedTime",
         element:
             (data, handleChange) =>
                 <DatePicker selected={data.expectedTime ? new Date(data.expectedTime) : null}
@@ -182,6 +182,9 @@ const Row = ({ rowIndex, data, updateCells, colWidths }) => {
 
     }, [data.customerId, data.itemId])
 
+    const safeDisplay = (value, defaultValue = '') => 
+    value !== null && value !== undefined ? value : defaultValue;
+
     return (
         <div className="tr">
             <div className='td fixed' style={{ width: 45 }}>{rowIndex + 1}</div>
@@ -191,7 +194,10 @@ const Row = ({ rowIndex, data, updateCells, colWidths }) => {
                     style={{ width: colWidths?.[i] ?? 70 }}
                     className='td'
                     key={cell.identifier}>
-                    {cell.element(data, handleChange)}
+                    {cell.element(
+                        { ...data, [cell.identifier]: safeDisplay(data[cell.identifier]) },
+                        handleChange
+                    )}
                 </div>
             )}
         </div>
@@ -199,6 +205,7 @@ const Row = ({ rowIndex, data, updateCells, colWidths }) => {
 }
 
 const EditTable = ({ rows, setRows }) => {
+
     const [colWidths, setColWidths] = useState(
         schema.map(
             (item) => EngToSize(camelToSnakeCase(item.identifier))

@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react'
 import Table from '../components/table/Table';
-import { useLoaderData } from 'react-router-dom'
 import { fetchAnalysisData } from '../api/analysis';
 import analysisDefs from '../constants/defs/AnalysisDefs';
 import * as XLSX from 'xlsx';
-import { useAlertContext } from '../hooks/useCustomContext';
+import { useAlertContext, useSelectedDataContext } from '../hooks/useCustomContext';
 import moment from 'moment';
+import Loader from '../components/Loader';
 
 function EngToCn(col_name_ENG) {
     return analysisDefs.find(col => col.id === col_name_ENG)?.header
@@ -13,6 +13,8 @@ function EngToCn(col_name_ENG) {
 
 const FilterPopup = ({ url, open, closePopup, setRows }) => {
     const { alertError } = useAlertContext()
+    const { setSelectedCustomerDisplay } = useSelectedDataContext()
+
     const [params, setParams] = useState({
         yearly: 1,
         monthly: 1,
@@ -26,6 +28,7 @@ const FilterPopup = ({ url, open, closePopup, setRows }) => {
     const keys = Object.keys(params);
 
     const handleClick = async () => {
+        setSelectedCustomerDisplay(prev => ({ ...prev, [url]: params }))
         const res = await fetchAnalysisData(url, params);
         switch (res.code) {
             case 200:
@@ -36,47 +39,102 @@ const FilterPopup = ({ url, open, closePopup, setRows }) => {
                 alertError(res.message)
                 break
         }
-        // closePopup(); 
+        closePopup();
     };
 
+    const CustomeSelect = ({ label, index }) => {
+        return (
+            <div className='row flex-between '>
+                {label}:
+                <div className='select-wrapper'>
+                    <select
+                        id={'analysis-filter' + index}
+                        value={params[keys[index]]}
+                        onChange={(e) => setParams(prev => ({
+                            ...prev, [keys[index]]: e.target.value
+                        }))}>
+                        <option value={1}>显示</option>
+                        <option value={0}>不显示</option>
+                    </select>
+                </div>
+            </div>)
+    }
+
     return (
+        open &&
         <div className='popup-container'>
-            <div className="popup-wrapper filter-popup g1">
-                是否显示:
-                {open && labels.map((label, i) => (
-                    <label htmlFor={'analysis-filter' + i} key={i}>
-                        {label}: 
-                        <select
-                            id={'analysis-filter' + i}
-                            value={params[keys[i]]}
-                            onChange={(e) => setParams(prev => ({
-                                ...prev, [keys[i]]: e.target.value
-                            }))}>
-                            <option value={1}>是</option>
-                            <option value={0}>否</option>
-                        </select>
-                    </label>
-                ))}
-                <button onClick={handleClick} className='small blue40'>确认</button>
+            <div className="popup-wrapper filter-popup g2 ">
+                客户显示选项:
+
+                <div className='row g2'>
+                    <div className='col g1'>
+                        {labels.slice(0, 3).map((label, i) =>
+                            <CustomeSelect label={label} index={i} />
+                        )}
+                    </div>
+                    <div className='col g1'>
+                        {labels.slice(3,).map((label, i) =>
+                            <CustomeSelect label={label} index={i + 3} />
+                        )}
+                    </div>
+                </div>
+
+                <button onClick={handleClick} className=' blue40'>确认</button>
             </div>
-        </div>
+        </div >
     );
 };
 
 const Analysis = ({ schema }) => {
-    const res = useLoaderData();
     const [rows, setRows] = useState([])
     const { alertConfirm } = useAlertContext()
     const [openPopup, setOpenPopup] = useState(true)
+    const { selectedCustomerDisplay, setSelectedCustomerDisplay } = useSelectedDataContext()
 
-    console.log(schema);
-    useEffect(() => { setRows(res.data) }, [res])
+
+    const fetchData = async () => {
+        try {
+            const res = await fetchAnalysisData(schema.select, selectedCustomerDisplay?.[schema.select]);
+            setRows(res.data);
+        } catch (err) {
+            if (err.name !== 'AbortError') {
+                console.error("Error fetching analysis data:", err);
+            }
+        }
+    };
+
+    useEffect(() => {
+        setRows([])
+
+        if (selectedCustomerDisplay?.[schema.select]) {
+            setOpenPopup(false)
+        }
+        else {
+            setOpenPopup(true)
+        }
+
+        fetchData();
+    }, [schema.select, selectedCustomerDisplay]);
 
     const handleRefresh = async () => {
-        setRows([])
-        const res = await fetchAnalysisData(schema.select)
-        setRows(res.data)
-    }
+        setRows([]);
+        setOpenPopup(true);
+        setSelectedCustomerDisplay(prevState => {
+            const { [schema.select]: _, ...rest } = prevState;
+            return rest;
+        });
+    
+        try {
+            const res = await fetchData();
+            if (res && res.data) {
+                setRows(res.data);
+            } else {
+                console.error('Invalid response:', res);
+            }
+        } catch (error) {
+            console.error('Error during fetchData:', error);
+        }
+    };
 
     const handleExport = () => {
         alertConfirm("确定导出该表单？", () => {
@@ -111,6 +169,7 @@ const Analysis = ({ schema }) => {
             </div>
             {
                 schema.cn.includes("客户类型分类-订单版") &&
+                openPopup &&
                 < FilterPopup
                     open={openPopup}
                     closePopup={() => setOpenPopup(false)}
@@ -118,12 +177,13 @@ const Analysis = ({ schema }) => {
                     setRows={setRows}
                 />
             }
-            {rows?.length > 0 ?
-                <Table
-                    data={rows}
-                    columns={defs}
-                /> :
-                <Loader />
+            {
+                rows?.length > 0 && Array.isArray(rows) ?
+                    <Table
+                        data={rows}
+                        columns={defs}
+                    /> :
+                    <Loader />
             }
         </div>
     )
