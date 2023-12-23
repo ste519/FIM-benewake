@@ -60,3 +60,17 @@ export async function fetchFilteredInquiries() {
         console.log(err);
     }
 }
+
+export async function hideMessage(id) {
+    try {
+        const response = await api.post('/notice/hiden', null, {
+            params: {
+                id
+            }
+        })
+        return response.data;
+    }
+    catch (err) {
+        console.log(err);
+    }
+}

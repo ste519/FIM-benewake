@@ -356,10 +356,11 @@ button svg {
   height: 10px;
 }
 
-/* 
-.arrow-icon {
-  
-} */
+svg.md {
+  width: 15px;
+  height: 15px;
+}
+
 
 .rotate180 {
   transition: 0.1s;
@@ -1624,4 +1625,12 @@ button:disabled {
 button:disabled:hover{
   background-color: initial !important;
   color: #acacac !important;
+}
+
+.message-wrapper.faded {
+  opacity: 0.4;
+}
+
+.user-feature .message-wrapper.faded {
+  display: none;
 }
