@@ -1,7 +1,7 @@
 import DatePicker from '../components/DatePicker';
 import EditTable from '../components/EditTable';
 import { useState, useEffect } from 'react';
-import { startInquiry, updateInquiry } from '../api/inquiry';
+import { saveDivideList, startInquiry, updateInquiry } from '../api/inquiry';
 import { rowToInquiry } from '../js/parseData';
 import moment from 'moment';
 import { useAlertContext, useSelectedDataContext } from '../hooks/useCustomContext';
@@ -11,18 +11,37 @@ const SimpleToolbar = ({ rows, ids, setOpenPopup, isSplitOrderDisabled }) => {
     const { alertSuccess, alertError, alertWarning } = useAlertContext()
     const [action, setAction] = useState(null)
 
+
     const handleSaveClick = async () => {
         setAction({ type: "保存", time: new Date() })
 
         const newInquiries = await Promise.all(rows.map(row => rowToInquiry(row)));
 
-        const res = await updateInquiry(newInquiries)
+        if (isSplitOrderDisabled) {
+            const res = await saveDivideList(newInquiries)
 
-        if (res?.message.includes('成功')) {
-            alertSuccess(res.message)
+            if (res?.message.includes('成功')) {
+                alertSuccess(res.message)
+            }
+            else {
+                alertError(res.message || "未知错误")
+            }
         }
         else {
-            alertError(res.message || "未知错误")
+            const res = await updateInquiry(newInquiries[0])
+            switch (res.code) {
+                case 200:
+                    alertSuccess(res.message)
+                    setIds([res.data])
+                    break
+                case 400:
+                case 1:
+                    alertError(res.message)
+                    break
+                default:
+                    alertError("未知错误")
+                    break
+            }
         }
     }
 
@@ -77,7 +96,7 @@ const Edit = () => {
     const [rows, setRows] = useState(Array.isArray(selectedData) ? selectedData : [selectedData])
     const [openPopup, setOpenPopup] = useState(false)
     const [divideNum, setDivideNum] = useState(2)
-    const [isSplitOrderDisabled, setIsSplitOrderDisabled] = useState(false)
+    const [isSplitOrderDisabled, setIsSplitOrderDisabled] = useState(rows.length > 1)
 
     const handleSplitOrder = () => {
         if (divideNum < 2) {
@@ -85,7 +104,7 @@ const Edit = () => {
             return;
         }
         setIsSplitOrderDisabled(true)
-        const newRows = Array(divideNum).fill().map(() => ({
+        const newRows = Array(Number(divideNum)).fill().map(() => ({
             ...rows[0],
             inquiryId: null,
             saleNum: null
@@ -99,7 +118,7 @@ const Edit = () => {
                 <div className='col popup-wrapper g1 flex-center divide-popup'>
                     <div className='row g1 flex-between'>
                         拆分数量：
-                        <input value={divideNum} onInput={(e) => setDivideNum(e.target.value)} />
+                        <input type="number" value={divideNum} onInput={(e) => setDivideNum(e.target.value)} autoFocus />
                     </div>
                     <div className='row g1'>
                         <button className='small white bordered' onClick={() => {
@@ -117,7 +136,6 @@ const Edit = () => {
         )
     }
 
-    console.log(rows);
     useEffect(() => {
         setSelectedData(rows);
     }, [rows]);
