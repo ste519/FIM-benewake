@@ -9,7 +9,7 @@ import moment from 'moment';
 moment.updateLocale('zh-cn')
 import "moment/dist/locale/zh-cn";
 import { deleteInquiry } from '../api/delete';
-import { allowInquiry, startInquiry } from '../api/inquiry';
+import { allowInquiry, restoreInquiry, startInquiry } from '../api/inquiry';
 import ColVisibility from './ColVisibility';
 import { getIndexes, EngToCn, VisibilityToHeadersENG, snakeToCamelCase } from '../js/transformType';
 import { noData, isObjectEmpty, noVisibleCols } from '../js/valueCheck';
@@ -29,6 +29,7 @@ export default function Toolbar({ features }) {
     const { alertSuccess, alertError, alertConfirm, alertWarning } = useAlertContext()
 
     const { selectedQuery, setSelectedData, setSavedNewData } = useSelectedDataContext()
+
     const location = useLocation()
     const tableId = getTableId(location)
     const defaultSelection = selectedQuery[tableId]
@@ -54,21 +55,19 @@ export default function Toolbar({ features }) {
         if (!noRowSelected())
             alertConfirm("确定删除选定的信息？",
                 async () => {
-                    if (!noRowSelected()) {
-                        const orderIds = getIndexes(rowSelection)?.map((index) => tableData[index].inquiry_id);
-                        const res = [];
-                        orderIds?.forEach(async (orderId, i) => { res[i] = await deleteInquiry(orderId) })
+                    const orderIds = getIndexes(rowSelection)?.map((index) => tableData[index].inquiry_id);
+                    const res = [];
+                    orderIds?.forEach(async (orderId, i) => { res[i] = await deleteInquiry(orderId) })
 
-                        if (res.some(item => item.code === 400 || item.code === 1)) {
-                            alertError("删除失败！失败原因：" + [...new Set(res.filter(item => item.code === 400).map(item => item.message))].join(' ')
-                            )
-                        } else {
-                            alertSuccess("删除成功！")
-                        }
-
-                        updateTableData({ type: "DELETE_ROWS", rowSelection: rowSelection })
-                        updateTableStates({ type: "RESET_ROW_SELECTION" })
+                    if (res.some(item => item.code === 400 || item.code === 1)) {
+                        alertError("删除失败！失败原因：" + [...new Set(res.filter(item => item.code === 400).map(item => item.message))].join(' ')
+                        )
+                    } else {
+                        alertSuccess("删除成功！")
                     }
+
+                    updateTableData({ type: "DELETE_ROWS", rowSelection: rowSelection })
+                    updateTableStates({ type: "RESET_ROW_SELECTION" })
                 }
             )
     }
@@ -181,6 +180,33 @@ export default function Toolbar({ features }) {
         //TODO
     }
 
+    const handleRestoreOrder = () => {
+        if (!noRowSelected()) {
+            alertConfirm("确定恢复选中的订单？", async () => {
+
+                const indexes = getIndexes(rowSelection)
+                const inquiries = indexes.map(i => tableData[i])
+                const codes = inquiries.map(obj => obj.inquiry_code);
+
+                const res = await restoreInquiry(codes)
+
+                switch (res.code) {
+                    case 400:
+                    case 1:
+                        alertError(res.data)
+                        break
+                    case 200:
+                        alertSuccess(res.data)
+                        handleRefresh()
+                        break
+                    default:
+                        alertError('未知错误')
+                        break
+                }
+            })
+        }
+    }
+
     const navigate = useNavigate()
 
     const handleNew = () => {
@@ -210,12 +236,13 @@ export default function Toolbar({ features }) {
                 <ToolbarButton feature="pin" handler={handlePin} text="置顶" />
                 <ToolbarButton feature="unpin" handler={handleUnpin} text="取消置顶" />
                 <ToolbarButton feature="refresh" handler={handleRefresh} text="刷新" />
-                <ToolbarButton feature="import" handler={toggleImportPopup} text="导入" additionalCondition={auth.userType != "3"}/>
+                <ToolbarButton feature="import" handler={toggleImportPopup} text="导入" additionalCondition={auth.userType != "3"} />
                 {openImportPopup && importPopup}
                 <ToolbarButton feature="export" handler={handleExport} text="导出" />
                 <ToolbarButton feature="edit" handler={handleEdit} text="修改" additionalCondition={auth.userType != "3"} />
                 <ToolbarButton feature="startInquiry" handler={handleStartInquiry} text="开始询单" additionalCondition={auth.userType != "3"} />
                 <ToolbarButton feature="allowInquiry" handler={handleAllowInquiry} text="允许询单" additionalCondition={auth.userType == "1"} />
+                <ToolbarButton feature="restoreOrder" handler={handleRestoreOrder} text="恢复订单" additionalCondition={selectedQuery[5].viewId === 3 || selectedQuery[5].viewId === 4} />
             </div>
 
             {features.includes("visibility") && !noData(tableData) && (

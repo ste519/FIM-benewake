@@ -11,7 +11,7 @@ import AllDefs from '../constants/defs/AllDefs';
 export default function Inquiry() {
   const tableData = useTableDataContext()
   const columns = useMemo(() => AllDefs, [])
-  const features = ["delete", "export", "refresh", 'visibility']
+  const features = ["delete", "export", "refresh", 'visibility', 'restoreOrder']
   const [views, setViews] = useState(inquiryViews)
 
   return (

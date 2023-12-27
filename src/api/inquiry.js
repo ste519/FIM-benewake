@@ -70,3 +70,13 @@ export async function updateInquiry(
         console.log(err);
     }
 }
+
+export const restoreInquiry = async (inquiryCodes) => {
+    try {
+        const response = await api.post('/order/restoreOrder',  inquiryCodes )
+        return response.data;
+    }
+    catch (err) {
+        console.log(err);
+    }
+}
