@@ -63,7 +63,7 @@
         "col_id": 11,
         "col_name_CN": "数量",
         "col_name_ENG": "sale_num",
-        "size": 50
+        "size": 100
     },
     {
         "col_id": 12,
