@@ -1426,6 +1426,7 @@ input[type=number] {
 }
 
 .sidebar .user-info-container {
+  margin-top: 1rem;
   color: var(--blue40)
 }
 

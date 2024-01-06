@@ -91,7 +91,6 @@ const Analysis = ({ schema }) => {
     const [openPopup, setOpenPopup] = useState(true)
     const { selectedCustomerDisplay, setSelectedCustomerDisplay } = useSelectedDataContext()
 
-
     const fetchData = async () => {
         try {
             const res = await fetchAnalysisData(schema.select, selectedCustomerDisplay?.[schema.select]);
@@ -113,7 +112,7 @@ const Analysis = ({ schema }) => {
             setOpenPopup(true)
         }
 
-        fetchData();
+        !schema.cn.includes("客户类型分类") && fetchData();
     }, [schema.select, selectedCustomerDisplay]);
 
     const handleRefresh = async () => {
@@ -123,7 +122,7 @@ const Analysis = ({ schema }) => {
             const { [schema.select]: _, ...rest } = prevState;
             return rest;
         });
-    
+
         try {
             const res = await fetchData();
             if (res && res.data) {
@@ -168,7 +167,7 @@ const Analysis = ({ schema }) => {
                 </div>
             </div>
             {
-                schema.cn.includes("客户类型分类-订单版") &&
+                schema.cn.includes("客户类型分类") &&
                 openPopup &&
                 < FilterPopup
                     open={openPopup}
@@ -178,6 +177,7 @@ const Analysis = ({ schema }) => {
                 />
             }
             {
+
                 rows?.length > 0 && Array.isArray(rows) ?
                     <Table
                         data={rows}
