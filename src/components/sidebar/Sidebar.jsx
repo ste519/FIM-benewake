@@ -57,7 +57,14 @@ export default function Sidebar({ showSidebar }) {
                     label="数据分析"
                     type="analysis"
                 />
-
+                {
+                    auth?.userType == ADMIN_USER &&
+                    <Dropdown
+                        items={adminChildren.filter((item) => !item.inSidebar)}
+                        label="数据管理"
+                        type="admin"
+                    />
+                }
 
             </nav >
             <div className='row flex-center mb1 user-info-container'>

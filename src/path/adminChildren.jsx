@@ -18,9 +18,6 @@ const adminChildren = [
             }
         }
     },
-    {
-        name: "数据管理", path: "tables", element: <AdminTables />, type: "admin", menu: true, inSidebar: true
-    },
     ...Object.keys(adminSchema).map(key => ({
         name: adminSchema[key].cn,
         path: key,
