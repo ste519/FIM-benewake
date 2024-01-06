@@ -1,6 +1,5 @@
 
 import { findMessages } from '../api/message';
-import AdminTables from '../routes/AdminTables';
 import PostMessage from '../routes/PostMessage';
 import Manage from '../routes/Manage';
 import adminSchema from '../constants/schemas/adminSchema'
