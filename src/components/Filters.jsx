@@ -192,16 +192,18 @@ export default function Filters({ display, headers }) {
                 filters={filters}
               />
             )}
+
+          </div>
+          <div className="col flex-center controls g1">
+
+            <button className="rounded blue40" onClick={queryData}>
+              <SearchIcon />搜索
+            </button>
             {enabledHeaders?.length > 0 &&
               <button onClick={addFilter} className="icon-btn">
                 <AddIcon className="icon__small add-icon" /> 新增筛选
               </button>
             }
-          </div>
-          <div className="col flex-center controls">
-            <button className="rounded blue40" onClick={queryData}>
-              <SearchIcon />搜索
-            </button>
           </div>
         </div>
       }
