@@ -47,7 +47,7 @@ const Message = ({ message, setMessages, editable }) => {
                 {editable &&
                     <div className='col'>
                         <button className='transparent' onClick={() => handleDelete(message.id)}><CloseIcon /></button>
-                        <button className='transparent' onClick={() => handleHidden(message.id)}>{message.is_hiden ? <VisibilityOnIcon className="md" /> : <VisibilityOffIcon className="md" />}</button>
+                        <button className='transparent' onClick={() => handleHidden(message.id)}>{message.is_hiden ? <VisibilityOffIcon className="md" /> : <VisibilityOnIcon className="md" />}</button>
                     </div>
                 }
             </div>

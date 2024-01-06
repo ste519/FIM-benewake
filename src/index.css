@@ -853,7 +853,7 @@ tr:focus {
 
 .navbar .logo {
   width: 40px;
-  margin-left: 2rem;
+  margin-left: 2.5rem;
 }
 
 .user-container {
@@ -1129,7 +1129,7 @@ td.select {
 .placeholder {
   width: 100%;
   background-color: var(--blue5);
-  height: 2rem;
+  height: 1rem;
   border: 1px solid var(--blue30);
   border-top: none
 }
