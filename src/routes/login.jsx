@@ -1,8 +1,9 @@
-import { ReactComponent as LogoIcon } from '../assets/logos/logo+en.svg'
+import { ReactComponent as LogoEngIcon } from '../assets/logos/logo+en.svg'
 import { ReactComponent as AppIcon } from '../assets/logos/App.svg'
+import { ReactComponent as FeishuIcon } from '../assets/logos/feishu.svg'
 
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { createUser, login, logout } from '../api/auth';
 import { useAlertContext, useAuthContext } from '../hooks/useCustomContext';
 
@@ -90,7 +91,7 @@ export default function Login() {
     return (
         <div id="login-page" className="container">
             <div className="logo-wrapper">
-                <LogoIcon className="logo" />
+                <LogoEngIcon className="logo" />
             </div>
             <div className="login-form-wrapper">
                 <AppIcon className="app-icon" />
@@ -117,6 +118,7 @@ export default function Login() {
                         <h1 onClick={handleForgetPassword} className="row forget-password">忘记密码？</h1>
                     </div>
                     <button className="login-btn" type="submit">登录</button>
+                    <Link className='col flex-center feishu-wrapper' to="https://open.feishu.cn/open-apis/authen/v1/authorize?app_id=cli_a5e56060a07ad00c&redirect_uri=http://localhost:8080//benewake/callback"><FeishuIcon className="feishu-logo" />飞书登录</Link>
                 </form>
             </div>
 

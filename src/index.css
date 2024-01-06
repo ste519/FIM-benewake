@@ -1622,7 +1622,7 @@ button:disabled {
   color: #acacac;
 }
 
-button:disabled:hover{
+button:disabled:hover {
   background-color: initial !important;
   color: #acacac !important;
 }
@@ -1633,4 +1633,21 @@ button:disabled:hover{
 
 .user-feature .message-wrapper.faded {
   display: none;
+}
+
+.feishu-logo {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  padding: 8px 5px 5px 7px;
+  border: 1px solid var(--blue40);
+}
+
+.feishu-logo svg {
+  width: 100%;
+}
+
+.feishu-wrapper {
+  color: var(--blue40);
+  gap: 0.5rem
 }
