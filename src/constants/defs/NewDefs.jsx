@@ -131,11 +131,11 @@ const newDefs = [
     },
     {
         header: "是否延期",
-        identifier: "isLate",
+        identifier: "delay",
         element:
             (data) => <Input
-                name="isLate"
-                value={data.isLate}
+                name="delay"
+                value={data.delay}
                 readOnly
             />
     },

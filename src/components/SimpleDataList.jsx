@@ -48,7 +48,6 @@ const SimpleDataList = ({ name, initialValue, handleChange, searchKey, url }) =>
         setValue(initialValue);
     }, [initialValue])
 
-    console.log(name);
     useEffect(() => {
         if (name === "state") {
             async function fetch() {
