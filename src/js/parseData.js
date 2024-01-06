@@ -17,14 +17,15 @@ export function getInquiryTypeInt(str) {
 }
 
 export function getStateStr(num) {
-    if (num == 0)
-        return "保存"
-    else if (num == -1)
-        return "无效"
-    else
-        return `询单${num}次`
+    switch (Number(num)) {
+        case 0:
+            return "保存"
+        case -2:
+            return "无效"
+        default:
+            return `询单${num}次`
+    }
 }
-
 
 export function filterOut9999(data) {
     const result = data.map(row => (
